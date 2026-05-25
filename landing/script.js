@@ -133,7 +133,7 @@ initRevealAnimations();
  */
 
 // ← Pega aquí el link de tu Google Form cuando esté listo
-const GOOGLE_FORM_URL = '';
+const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScoE0Q864YQ2bS9WHnH7K54mwuSX3ss5A7s_9MB9ZSVHa8dDQ/viewform?usp=sharing&ouid=114584054455936335010';
 
 /**
  * Configura los botones CTA con el link del formulario.
