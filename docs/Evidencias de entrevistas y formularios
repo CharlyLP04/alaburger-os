@@ -1,0 +1,39 @@
+Este Pull Request incorpora los instrumentos utilizados para la recolección de datos durante las fases ACT-1 y ACT-2 del proyecto Dulce & Orden. Se documenta la metodología de entrevistas realizadas por medios electrónicos, conforme a los criterios establecidos en la tarea [VALIDATION] Documentar hallazgos de las 10 entrevistas.
+
+## Cambios realizados
+1. Se añade el directorio `docs/entrevistas/formularios/` con los formatos de entrevista digital aplicados.
+2. Se incluye el archivo `docs/metodologia-entrevistas.md` donde se describe el proceso de recolección: selección de muestra, medio electrónico utilizado, periodo de aplicación y estructura de las preguntas.
+3. Se adjunta el formulario base de Google Forms utilizado para estandarizar las respuestas.
+
+## Justificación
+La evidencia de los instrumentos permite validar la trazabilidad del proceso de investigación de usuarios. Las entrevistas por medios electrónicos se seleccionaron para optimizar tiempos de respuesta del segmento objetivo: dueños y gerentes de cafeterías y restaurantes pequeños.
+
+## Criterios de aceptación cumplidos
+- [x] Documentación de metodología en `docs/`
+- [x] Formularios utilizados disponibles en repositorio
+- [x] Alineación con tarea [VALIDATION] de ACT-1 y ACT-2
+
+Relacionado con: #3
+---
+
+PR #2: Evidencias de entrevistas y formularios
+
+Título del PR:
+
+
+Descripción del PR:
+## Resumen
+Este Pull Request integra la evidencia documental correspondiente a las 10 entrevistas realizadas durante ACT-1 y ACT-2, así como las capturas de pantalla de los formularios de validación con interacciones reales. El objetivo es sustentar los hallazgos documentados y cumplir con los criterios de evidencia del entregable de validación.
+
+## Contenido del PR
+1. Directorio `docs/entrevistas/evidencias/` con 10 capturas anonimizadas de las entrevistas realizadas por medios electrónicos.
+2. Archivo `docs/hallazgos-entrevistas.md` que contiene la tabla de hallazgos consolidada: principales dolores, frecuencia de problemas operativos y citas relevantes del segmento.
+3. Capturas de pantalla de las respuestas del formulario de validación de interés, mostrando mínimo 3 interacciones reales de usuarios pertenecientes al segmento objetivo.
+
+## Notas de confidencialidad
+Los datos personales de los entrevistados fueron tratados conforme a buenas prácticas de privacidad. Las evidencias se presentan anonimizadas, mostrando únicamente información relevante para la validación del problema.
+
+## Criterios de aceptación cumplidos
+- [x] Evidencia visual de 10 entrevistas en `docs/entrevistas/evidencias/`
+- [x] Tabla de hallazgos completa y trazable
+- [x] Capturas de mínimo 3 respuestas reales al formulario de interés
