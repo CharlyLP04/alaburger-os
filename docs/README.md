@@ -1,20 +1,25 @@
-# 📚 Documentación Técnica — Dulce & Orden
+# 🍔 A La Burger OS — Documentación Técnica
 
-¡Bienvenido a la carpeta de documentación del proyecto **Dulce & Orden**! Aquí guardamos toda la información técnica, guías de diseño, arquitectura y flujos de trabajo necesarios para el equipo de desarrollo.
+Bienvenido a la carpeta de documentación del proyecto **A La Burger OS**. 
+Aquí guardamos toda la información técnica, guías de diseño, 
+arquitectura y flujos de trabajo necesarios para el equipo.
 
-## 📂 Contenido de esta carpeta
+## 📁 Contenido de esta carpeta
 
-Actualmente, esta carpeta contiene o está destinada a contener:
+- **github-flow.md** — Guía obligatoria para el control de versiones y flujo de trabajo en Git/GitHub.
+- **arquitectura.md** — Diagramas del sistema, API endpoints y estructura de carpetas.
+- **guias-de-estilo.md** — Estándares de código (ESLint, Prettier) y diseño visual.
 
-*   **[`github-flow.md`](github-flow.md)**: Nuestra guía obligatoria para el control de versiones y el flujo de trabajo en Git/GitHub.
-*   **Arquitectura del Sistema**: (Próximamente) Diagramas de base de datos, API endpoints y estructura de carpetas de `client` y `server`.
-*   **Guías de Estilo**: (Próximamente) Estándares de código (ESLint, Prettier) y diseño visual.
+## 👥 Roles clave
 
----
+| Rol | Responsable |
+|-----|-------------|
+| Product Owner | Castañeda Sánchez Dana Lizbeth |
+| Tech Lead | Olaya Gutiérrez Carlos |
+| Product Engineer | Montalvo Osorio Alexis |
+| QA / Delivery | Flores Osorio Jarumi Guadalupe |
+| Growth Lead | Reyes Torres Manelic Alitzel |
 
-## 👥 Roles Clave
+## 🔀 Flujo de trabajo
 
-Si tienes dudas sobre el contenido de esta carpeta o necesitas agregar nueva documentación, ponte en contacto con los líderes del proyecto:
-
-*   **Tech Lead**: Carlos Olaya Gutiérrez
-*   **Product Owner**: Dana Lizbeth Castañeda Sánchez
+Ver [github-flow.md](github-flow.md) antes de hacer cualquier cambio.
