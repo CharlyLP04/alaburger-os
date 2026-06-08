@@ -20,7 +20,6 @@ de caja — en tiempo real y desde cualquier sucursal.
 - 📦 Control de inventario automático por pedido
 - 📊 Dashboard de ventas por sucursal
 - 🔔 Alertas de stock bajo
-- 🏪 Gestión multi-sucursal desde un solo panel
 - 🔐 Roles: Administrador, Gerente, Cajero, Mesero
 
 ## 🛠️ Stack tecnológico
