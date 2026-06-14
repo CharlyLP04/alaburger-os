@@ -3,332 +3,840 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dulce & Orden — Control de pedidos e inventario</title>
+  <title>A La Burger OS — Gestión total para tu cadena</title>
+  <meta name="description" content="Software de gestión de pedidos, inventario y ventas para restaurantes de hamburguesas con múltiples sucursales." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ========================
+  <!-- ================================================================
        NAVBAR
-  ======================== -->
-  <nav class="navbar" id="navbar">
+  ================================================================ -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Navegación principal">
     <div class="nav-inner">
-      <!-- Logo textual con símbolo decorativo -->
-      <a href="#" class="nav-logo">
-        <span class="logo-icon">☕</span>
-        <span class="logo-text">Dulce <em>&</em> Orden</span>
+
+      <!-- Logo -->
+      <a href="#inicio" class="nav-logo" aria-label="A La Burger OS — inicio">
+        <span class="logo-icon" aria-hidden="true">
+          <!-- Ícono: patty simplificada -->
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect y="8"  width="32" height="5" rx="2.5" fill="#E8530A"/>
+            <rect y="15" width="32" height="5" rx="2.5" fill="#D4A017"/>
+            <rect y="22" width="32" height="5" rx="2.5" fill="#E8530A"/>
+          </svg>
+        </span>
+        <span class="logo-wordmark">
+          A La Burger <strong>OS</strong>
+        </span>
       </a>
 
-      <!-- Links de navegación -->
-      <ul class="nav-links" id="navLinks">
+      <!-- Links desktop -->
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="#inicio">Inicio</a></li>
         <li><a href="#problema">Problema</a></li>
         <li><a href="#solucion">Solución</a></li>
+        <li><a href="#caracteristicas">Características</a></li>
         <li><a href="#beneficios">Beneficios</a></li>
-        <li><a href="#cta-final" class="nav-cta">Solicitar info</a></li>
+        <li><a href="#faq">FAQ</a></li>
       </ul>
 
-      <!-- Botón hamburguesa para móvil -->
-      <button class="hamburger" id="hamburger" aria-label="Abrir menú">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      <!-- CTA + hamburguesa -->
+      <div class="nav-end">
+        <a href="#cta-final" class="btn btn-primary nav-cta">Solicitar demo</a>
+        <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
 
-  <!-- ========================
+
+  <!-- ================================================================
        HERO
-  ======================== -->
-  <section class="hero" id="inicio">
-    <!-- Decoración de fondo -->
-    <div class="hero-bg-decor" aria-hidden="true">
-      <div class="decor-circle decor-circle--1"></div>
-      <div class="decor-circle decor-circle--2"></div>
-      <div class="decor-grain"></div>
+  ================================================================ -->
+  <header class="hero" id="inicio" aria-label="Presentación principal">
+
+    <!-- Textura de fondo -->
+    <div class="hero-texture" aria-hidden="true">
+      <div class="grid-dots"></div>
+      <div class="ember ember-1"></div>
+      <div class="ember ember-2"></div>
     </div>
 
-    <div class="hero-content">
-      <!-- Etiqueta pequeña superior -->
-      <span class="hero-badge">🍰 Para cafeterías y pastelerías</span>
-
-      <!-- Título principal -->
-      <h1 class="hero-title">
-        Controla pedidos e inventario
-        <em>sin complicaciones</em>
-      </h1>
-
-      <!-- Subtítulo -->
-      <p class="hero-subtitle">
-        Automatiza pedidos, genera tickets digitales y mantén tu inventario
-        actualizado en tiempo real.
-      </p>
-
-      <!-- CTA principal -->
-      <a href="#cta-final" class="btn btn--primary" id="hero-cta">
-        Solicitar información
-        <span class="btn-arrow">→</span>
-      </a>
-
-      <!-- Indicadores de confianza -->
-      <div class="hero-trust">
-        <span>✓ Sin papeles</span>
-        <span>✓ Sin Excel</span>
-        <span>✓ Sin errores</span>
-      </div>
-    </div>
-
-    <!-- Mockup visual del dashboard (SVG ilustrativo) -->
-    <div class="hero-visual" aria-hidden="true">
-      <div class="mockup-card">
-        <div class="mockup-header">
-          <div class="mockup-dot"></div>
-          <div class="mockup-dot"></div>
-          <div class="mockup-dot"></div>
-          <span class="mockup-title-bar">Dashboard — Dulce & Orden</span>
+    <div class="hero-layout">
+      <!-- Columna izquierda: copy -->
+      <div class="hero-copy">
+        <div class="hero-eyebrow">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          Sistema operativo para tu cadena de burgers
         </div>
-        <div class="mockup-body">
-          <!-- Fila de métricas -->
-          <div class="mockup-stats">
-            <div class="mockup-stat">
-              <span class="stat-num">24</span>
-              <span class="stat-label">Pedidos hoy</span>
-            </div>
-            <div class="mockup-stat">
-              <span class="stat-num">$3,480</span>
-              <span class="stat-label">Ventas</span>
-            </div>
-            <div class="mockup-stat mockup-stat--alert">
-              <span class="stat-num">⚠ 2</span>
-              <span class="stat-label">Alertas</span>
-            </div>
+
+        <h1 class="hero-title">
+          Tu operación,<br/>
+          <span class="title-highlight">sin caos.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Desde que el mesero toma el pedido hasta que el administrador cierra caja —
+          A La Burger OS conecta todo en tiempo real, en cada sucursal.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#cta-final" class="btn btn-primary" id="hero-cta">
+            Solicitar demostración
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href="#solucion" class="btn btn-ghost">
+            Ver cómo funciona
+          </a>
+        </div>
+
+        <!-- Capacidades clave del sistema (sin cifras no validadas) -->
+        <div class="hero-stats" role="list" aria-label="Capacidades del sistema">
+          <div class="hero-stat" role="listitem">
+            <span class="stat-val stat-val--text">Pedidos</span>
+            <span class="stat-lbl">Registro en tiempo real</span>
           </div>
-          <!-- Mini lista de pedidos -->
-          <div class="mockup-list">
-            <div class="mockup-item mockup-item--new">
-              <span class="item-badge">NUEVO</span>
-              <span>Mesa 4 — Latte + Pay de queso</span>
-            </div>
-            <div class="mockup-item">
-              <span class="item-badge item-badge--done">LISTO</span>
-              <span>Mesa 2 — Cappuccino + Croissant</span>
-            </div>
-            <div class="mockup-item">
-              <span class="item-badge">EN PROCESO</span>
-              <span>Mesa 7 — Café americano x2</span>
-            </div>
+          <div class="stat-sep" aria-hidden="true"></div>
+          <div class="hero-stat" role="listitem">
+            <span class="stat-val stat-val--text">Inventario</span>
+            <span class="stat-lbl">Actualización automática</span>
           </div>
-          <!-- Barra de inventario -->
-          <div class="mockup-inventory">
-            <span class="inv-label">Harina (kg)</span>
-            <div class="inv-bar"><div class="inv-fill" style="width:30%"></div></div>
-            <span class="inv-warn">⚠ Bajo stock</span>
+          <div class="stat-sep" aria-hidden="true"></div>
+          <div class="hero-stat" role="listitem">
+            <span class="stat-val stat-val--text">Sucursales</span>
+            <span class="stat-lbl">Gestión centralizada</span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ========================
+      <!-- Columna derecha: mockup dashboard -->
+      <div class="hero-mockup" aria-label="Vista previa del dashboard" role="img">
+        <div class="mockup-shell">
+
+          <!-- Barra superior del mockup -->
+          <div class="mockup-bar">
+            <div class="wdots">
+              <span class="wdot wdot-r"></span>
+              <span class="wdot wdot-y"></span>
+              <span class="wdot wdot-g"></span>
+            </div>
+            <span class="mockup-url">A La Burger OS · Dashboard Central</span>
+            <span class="mockup-badge-live">● EN VIVO</span>
+          </div>
+
+          <!-- Sidebar mockup -->
+          <div class="mockup-sidebar">
+            <div class="ms-logo" aria-hidden="true">🍔</div>
+            <nav class="ms-nav" aria-hidden="true">
+              <div class="ms-item ms-active">📊 Dashboard</div>
+              <div class="ms-item">🗂 Pedidos</div>
+              <div class="ms-item">📦 Inventario</div>
+              <div class="ms-item">🏪 Sucursales</div>
+              <div class="ms-item">👥 Usuarios</div>
+              <div class="ms-item ms-alert">🔔 <span class="alert-count">3</span></div>
+            </nav>
+          </div>
+
+          <!-- Área de contenido del mockup -->
+          <div class="mockup-body" aria-hidden="true">
+
+            <!-- Stat cards -->
+            <div class="mk-stats">
+              <div class="mk-stat">
+                <span class="mk-stat-label">Ventas hoy</span>
+                <span class="mk-stat-value">$48,320</span>
+                <span class="mk-stat-delta up">↑ 14%</span>
+              </div>
+              <div class="mk-stat">
+                <span class="mk-stat-label">Pedidos</span>
+                <span class="mk-stat-value">287</span>
+                <span class="mk-stat-delta up">↑ 9%</span>
+              </div>
+              <div class="mk-stat mk-alert-stat">
+                <span class="mk-stat-label">Stock bajo</span>
+                <span class="mk-stat-value">⚠ 4</span>
+                <span class="mk-stat-delta warn">Revisar</span>
+              </div>
+              <div class="mk-stat">
+                <span class="mk-stat-label">Sucursales</span>
+                <span class="mk-stat-value">6/6</span>
+                <span class="mk-stat-delta up">Online</span>
+              </div>
+            </div>
+
+            <!-- Barra de gráfica simulada -->
+            <div class="mk-chart">
+              <div class="mk-chart-title">Ventas por hora — hoy</div>
+              <div class="mk-bars" aria-hidden="true">
+                <div class="mk-bar" style="height:35%"></div>
+                <div class="mk-bar" style="height:55%"></div>
+                <div class="mk-bar" style="height:42%"></div>
+                <div class="mk-bar" style="height:80%"></div>
+                <div class="mk-bar mk-bar-peak" style="height:100%"></div>
+                <div class="mk-bar" style="height:88%"></div>
+                <div class="mk-bar" style="height:70%"></div>
+                <div class="mk-bar mk-bar-now" style="height:60%"></div>
+              </div>
+              <div class="mk-chart-labels" aria-hidden="true">
+                <span>9am</span><span>11am</span><span>1pm</span><span>3pm</span>
+              </div>
+            </div>
+
+            <!-- Lista de pedidos recientes -->
+            <div class="mk-orders">
+              <div class="mk-orders-head">
+                <span>Pedido</span><span>Sucursal</span><span>Estado</span>
+              </div>
+              <div class="mk-order-row">
+                <span>#4821</span>
+                <span class="order-branch">Centro</span>
+                <span class="order-status st-kitchen">Cocina</span>
+              </div>
+              <div class="mk-order-row">
+                <span>#4820</span>
+                <span class="order-branch">Norte</span>
+                <span class="order-status st-ready">Listo</span>
+              </div>
+              <div class="mk-order-row">
+                <span>#4819</span>
+                <span class="order-branch">Sur</span>
+                <span class="order-status st-done">Entregado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ================================================================
+       ENFOQUE DEL PROYECTO
+  ================================================================ -->
+  <div class="trust-band" aria-label="Enfoque del proyecto">
+    <div class="trust-inner">
+      <span class="trust-copy">Diseñado a partir de investigación de campo en hamburgueserías</span>
+      <div class="trust-names" aria-hidden="true">
+        <span>Pedidos</span>
+        <span>Inventario</span>
+        <span>Cocina</span>
+        <span>Sucursales</span>
+        <span>Dashboard</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================================================================
        PROBLEMA
-  ======================== -->
-  <section class="section problema" id="problema">
+  ================================================================ -->
+  <section class="section" id="problema" aria-labelledby="problema-h2">
     <div class="container">
-      <!-- Etiqueta de sección -->
-      <span class="section-label">El problema actual</span>
+      <div class="section-header">
+        <span class="eyebrow">El problema real</span>
+        <h2 class="section-title" id="problema-h2">
+          Así operan hoy<br/>la mayoría de restaurantes
+        </h2>
+        <p class="section-sub">
+          Sin un sistema centralizado, cada sucursal trabaja con sus propias reglas —
+          y los errores se multiplican junto con las ventas.
+        </p>
+      </div>
 
-      <h2 class="section-title">
-        ¿Sigues usando Excel y libretas<br />para controlar tu negocio?
-      </h2>
-
-      <p class="section-intro">
-        La mayoría de las cafeterías y pastelerías pequeñas aún gestionan
-        sus operaciones de forma manual. Esto genera problemas reales todos los días.
-      </p>
-
-      <!-- Tarjetas de problema -->
       <div class="problema-grid">
-        <div class="problema-card" data-reveal>
-          <div class="problema-icon">📋</div>
-          <h3>Libretas y hojas sueltas</h3>
-          <p>Los pedidos se anotan a mano, se pierden o se leen mal. Un error puede arruinar la experiencia del cliente.</p>
+        <article class="problema-card" data-reveal>
+          <div class="prob-icon" aria-hidden="true">📋</div>
+          <h3>Pedidos en papel</h3>
+          <p>El mesero anota el pedido a mano. El cocinero lo interpreta. El cliente recibe algo diferente.</p>
+          <div class="prob-tag">Error humano</div>
+        </article>
+        <article class="problema-card" data-reveal>
+          <div class="prob-icon" aria-hidden="true">📦</div>
+          <h3>Inventario manual</h3>
+          <p>El encargado cuenta ingredientes al inicio del día. Para la cena, los números ya son incorrectos.</p>
+          <div class="prob-tag">Descontrol de stock</div>
+        </article>
+        <article class="problema-card" data-reveal>
+          <div class="prob-icon" aria-hidden="true">🏪</div>
+          <h3>Sucursales desconectadas</h3>
+          <p>Cada local usa su propia hoja de cálculo. El dueño nunca sabe qué pasa en tiempo real.</p>
+          <div class="prob-tag">Falta de visibilidad</div>
+        </article>
+        <article class="problema-card" data-reveal>
+          <div class="prob-icon" aria-hidden="true">💸</div>
+          <h3>Pérdidas invisibles</h3>
+          <p>Ingredientes caducados, sobreproducción y pedidos cancelados por falta de stock. Todo sin registro.</p>
+          <div class="prob-tag">Merma no controlada</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       SOLUCIÓN — FLUJO DE ENSAMBLAJE
+  ================================================================ -->
+  <section class="section section-dark" id="solucion" aria-labelledby="solucion-h2">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">La solución</span>
+        <h2 class="section-title" id="solucion-h2">
+          Un pedido, un flujo,<br/>cero fricciones
+        </h2>
+        <p class="section-sub">
+          A La Burger OS convierte cada pedido en un evento sincronizado que recorre
+          toda la operación —de la mesa a la cocina, del inventario al reporte.
+        </p>
+      </div>
+
+      <!-- Línea de ensamblaje: la firma visual del diseño -->
+      <div class="assembly-line" role="list" aria-label="Flujo de un pedido en el sistema">
+        <div class="assembly-step" role="listitem" data-reveal>
+          <div class="as-icon" aria-hidden="true">🧑‍💼</div>
+          <h3 class="as-title">Mesero</h3>
+          <p class="as-desc">Registra el pedido en tablet o celular en segundos.</p>
         </div>
-        <div class="problema-card" data-reveal>
-          <div class="problema-icon">📊</div>
-          <h3>Excel desactualizado</h3>
-          <p>El inventario en Excel nunca refleja la realidad. Actualizarlo toma tiempo y nadie sabe quién tiene la versión correcta.</p>
+
+        <div class="assembly-arrow" aria-hidden="true">
+          <svg viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="6" x2="32" y2="6" stroke="#E8530A" stroke-width="2" stroke-dasharray="4 3"/>
+            <polyline points="28,2 36,6 28,10" stroke="#E8530A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
         </div>
-        <div class="problema-card" data-reveal>
-          <div class="problema-icon">⏳</div>
-          <h3>Pérdida de tiempo</h3>
-          <p>Contar ingredientes, escribir tickets a mano y cuadrar cuentas al final del día consume horas que podrías invertir en crecer.</p>
+
+        <div class="assembly-step" role="listitem" data-reveal>
+          <div class="as-icon" aria-hidden="true">👨‍🍳</div>
+          <h3 class="as-title">Cocina</h3>
+          <p class="as-desc">El panel de cocina muestra el ticket digital al instante.</p>
         </div>
-        <div class="problema-card" data-reveal>
-          <div class="problema-icon">😵</div>
-          <h3>Desorganización constante</h3>
-          <p>Sin un sistema claro, los errores se acumulan: pedidos duplicados, faltantes de ingredientes, clientes insatisfechos.</p>
+
+        <div class="assembly-arrow" aria-hidden="true">
+          <svg viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="6" x2="32" y2="6" stroke="#E8530A" stroke-width="2" stroke-dasharray="4 3"/>
+            <polyline points="28,2 36,6 28,10" stroke="#E8530A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="assembly-step" role="listitem" data-reveal>
+          <div class="as-icon" aria-hidden="true">📦</div>
+          <h3 class="as-title">Inventario</h3>
+          <p class="as-desc">Los ingredientes usados se descuentan automáticamente.</p>
+        </div>
+
+        <div class="assembly-arrow" aria-hidden="true">
+          <svg viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="6" x2="32" y2="6" stroke="#E8530A" stroke-width="2" stroke-dasharray="4 3"/>
+            <polyline points="28,2 36,6 28,10" stroke="#E8530A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="assembly-step" role="listitem" data-reveal>
+          <div class="as-icon" aria-hidden="true">📊</div>
+          <h3 class="as-title">Dashboard</h3>
+          <p class="as-desc">Las métricas se actualizan en vivo para cada sucursal.</p>
+        </div>
+
+        <div class="assembly-arrow" aria-hidden="true">
+          <svg viewBox="0 0 40 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="6" x2="32" y2="6" stroke="#E8530A" stroke-width="2" stroke-dasharray="4 3"/>
+            <polyline points="28,2 36,6 28,10" stroke="#E8530A" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="assembly-step" role="listitem" data-reveal>
+          <div class="as-icon" aria-hidden="true">🧑‍💻</div>
+          <h3 class="as-title">Administrador</h3>
+          <p class="as-desc">Visualiza ventas, stock y alertas desde cualquier lugar.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ========================
-       SOLUCIÓN
-  ======================== -->
-  <section class="section solucion" id="solucion">
+
+  <!-- ================================================================
+       CARACTERÍSTICAS
+  ================================================================ -->
+  <section class="section" id="caracteristicas" aria-labelledby="caract-h2">
     <div class="container">
-      <span class="section-label">Nuestra solución</span>
-      <h2 class="section-title">
-        Una plataforma diseñada<br />para tu negocio
-      </h2>
-      <p class="section-intro">
-        Dulce & Orden centraliza todo en un solo lugar: pedidos, tickets e inventario,
-        actualizados automáticamente en tiempo real.
-      </p>
-
-      <!-- Flujo de pasos -->
-      <div class="flujo">
-        <div class="flujo-paso" data-reveal>
-          <div class="paso-num">01</div>
-          <div class="paso-content">
-            <div class="paso-icon">🧾</div>
-            <h3>Registro de pedidos</h3>
-            <p>El mesero registra el pedido desde cualquier dispositivo en segundos. Sin papel, sin errores de escritura.</p>
-          </div>
-        </div>
-
-        <div class="flujo-conector" aria-hidden="true">↓</div>
-
-        <div class="flujo-paso" data-reveal>
-          <div class="paso-num">02</div>
-          <div class="paso-content">
-            <div class="paso-icon">🎫</div>
-            <h3>Ticket digital automático</h3>
-            <p>El sistema genera automáticamente un ticket digital con número, mesa, productos y hora del pedido.</p>
-          </div>
-        </div>
-
-        <div class="flujo-conector" aria-hidden="true">↓</div>
-
-        <div class="flujo-paso" data-reveal>
-          <div class="paso-num">03</div>
-          <div class="paso-content">
-            <div class="paso-icon">📦</div>
-            <h3>Inventario actualizado</h3>
-            <p>Cada pedido descuenta automáticamente los ingredientes usados. Tu stock siempre está al día, sin intervención manual.</p>
-          </div>
-        </div>
-
-        <div class="flujo-conector" aria-hidden="true">↓</div>
-
-        <div class="flujo-paso" data-reveal>
-          <div class="paso-num">04</div>
-          <div class="paso-content">
-            <div class="paso-icon">🔔</div>
-            <h3>Alertas inteligentes</h3>
-            <p>Cuando un producto o ingrediente está por agotarse, el sistema te avisa antes de que sea un problema.</p>
-          </div>
-        </div>
+      <div class="section-header">
+        <span class="eyebrow">Funcionalidades</span>
+        <h2 class="section-title" id="caract-h2">
+          Todo lo que necesita<br/>tu cadena, incluido
+        </h2>
       </div>
-    </div>
-  </section>
 
-  <!-- ========================
-       BENEFICIOS
-  ======================== -->
-  <section class="section beneficios" id="beneficios">
-    <div class="container">
-      <span class="section-label">¿Por qué elegir Dulce & Orden?</span>
-      <h2 class="section-title">Beneficios reales para tu negocio</h2>
+      <div class="features-grid">
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">🗂</div>
+          <h3>Pedidos en tiempo real</h3>
+          <p>Desde mesa, barra o para llevar. El pedido llega a cocina sin intermediarios.</p>
+        </article>
 
-      <div class="beneficios-grid">
-        <!-- Tarjeta 1 -->
-        <div class="beneficio-card" data-reveal>
-          <div class="beneficio-icon-wrap">
-            <span class="beneficio-icon">✅</span>
-          </div>
-          <h3>Menos errores</h3>
-          <p>Al digitalizar el proceso, los errores humanos al anotar o interpretar pedidos desaparecen casi por completo.</p>
-        </div>
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">👨‍🍳</div>
+          <h3>Panel de cocina digital</h3>
+          <p>Cada sucursal tiene su propio KDS. Sin papel, sin confusiones de tickets.</p>
+        </article>
 
-        <!-- Tarjeta 2 -->
-        <div class="beneficio-card" data-reveal>
-          <div class="beneficio-icon-wrap">
-            <span class="beneficio-icon">⚡</span>
-          </div>
-          <h3>Ahorro de tiempo</h3>
-          <p>Lo que antes tardaba 10 minutos, ahora tarda 30 segundos. Más tiempo para atender clientes y hacer crecer tu negocio.</p>
-        </div>
+        <article class="feature-card feature-card--highlight" data-reveal>
+          <div class="feat-icon" aria-hidden="true">📦</div>
+          <h3>Inventario inteligente</h3>
+          <p>Cada venta descuenta ingredientes automáticamente. Recibe alertas antes de quedarte sin stock.</p>
+        </article>
 
-        <!-- Tarjeta 3 -->
-        <div class="beneficio-card" data-reveal>
-          <div class="beneficio-icon-wrap">
-            <span class="beneficio-icon">📦</span>
-          </div>
-          <h3>Inventario siempre actualizado</h3>
-          <p>Olvídate de contar ingredientes manualmente. El sistema lo hace por ti en tiempo real.</p>
-        </div>
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">📊</div>
+          <h3>Dashboard administrativo</h3>
+          <p>Ventas, pedidos y métricas por sucursal en un solo lugar. Disponible 24/7.</p>
+        </article>
 
-        <!-- Tarjeta 4 -->
-        <div class="beneficio-card" data-reveal>
-          <div class="beneficio-icon-wrap">
-            <span class="beneficio-icon">🔔</span>
-          </div>
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">📈</div>
+          <h3>Reportes operativos</h3>
+          <p>Consulta reportes de ventas, inventario y operación desde el dashboard.</p>
+        </article>
+
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">🔔</div>
           <h3>Alertas automáticas</h3>
-          <p>Recibe notificaciones cuando un ingrediente esté por agotarse, antes de que afecte tus ventas.</p>
-        </div>
+          <p>Stock bajo, sucursal sin conexión, pico de demanda. Siempre estás informado.</p>
+        </article>
+
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">🏪</div>
+          <h3>Gestión de sucursales</h3>
+          <p>Agrega, configura y monitorea cada local desde el panel central.</p>
+        </article>
+
+        <article class="feature-card" data-reveal>
+          <div class="feat-icon" aria-hidden="true">🔒</div>
+          <h3>Roles y permisos</h3>
+          <p>Mesero, cajero, gerente, administrador. Define exactamente qué puede hacer cada quien.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- ========================
+
+  <!-- ================================================================
+       DASHBOARD PREVIEW
+  ================================================================ -->
+  <section class="section section-carbon" id="dashboard" aria-labelledby="dash-h2">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Vista del sistema</span>
+        <h2 class="section-title" id="dash-h2">
+          Tu operación completa<br/>en una sola pantalla
+        </h2>
+      </div>
+
+      <div class="dash-grid">
+
+        <!-- Card: ventas -->
+        <div class="dash-card dash-card-wide" data-reveal>
+          <div class="dash-card-head">
+            <span class="dash-card-title">Métricas del día</span>
+            <span class="live-dot" aria-label="Datos en vivo">● En vivo</span>
+          </div>
+          <div class="dash-kpis">
+            <div class="kpi-item">
+              <div class="kpi-icon" aria-hidden="true">💰</div>
+              <div>
+                <div class="kpi-val" data-count="48320">0</div>
+                <div class="kpi-lbl">Ventas del día ($)</div>
+              </div>
+            </div>
+            <div class="kpi-item">
+              <div class="kpi-icon" aria-hidden="true">🗂</div>
+              <div>
+                <div class="kpi-val" data-count="287">0</div>
+                <div class="kpi-lbl">Pedidos procesados</div>
+              </div>
+            </div>
+            <div class="kpi-item">
+              <div class="kpi-icon" aria-hidden="true">📦</div>
+              <div>
+                <div class="kpi-val" data-count="1240">0</div>
+                <div class="kpi-lbl">SKUs en inventario</div>
+              </div>
+            </div>
+            <div class="kpi-item">
+              <div class="kpi-icon" aria-hidden="true">🏪</div>
+              <div>
+                <div class="kpi-val" data-count="6">0</div>
+                <div class="kpi-lbl">Sucursales activas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: alertas -->
+        <div class="dash-card" data-reveal>
+          <div class="dash-card-head">
+            <span class="dash-card-title">Alertas recientes</span>
+          </div>
+          <div class="dash-alerts-list">
+            <div class="dal dal-warn">
+              <span class="dal-icon" aria-hidden="true">⚠</span>
+              <div>
+                <div class="dal-title">Stock bajo — Queso Cheddar</div>
+                <div class="dal-sub">Sucursal Norte · 2 kg restantes</div>
+              </div>
+            </div>
+            <div class="dal dal-warn">
+              <span class="dal-icon" aria-hidden="true">⚠</span>
+              <div>
+                <div class="dal-title">Stock bajo — Pan Brioche</div>
+                <div class="dal-sub">Sucursal Sur · 18 piezas</div>
+              </div>
+            </div>
+            <div class="dal dal-info">
+              <span class="dal-icon" aria-hidden="true">ℹ</span>
+              <div>
+                <div class="dal-title">Pico de demanda detectado</div>
+                <div class="dal-sub">Sucursal Centro · 1:30 PM</div>
+              </div>
+            </div>
+            <div class="dal dal-ok">
+              <span class="dal-icon" aria-hidden="true">✓</span>
+              <div>
+                <div class="dal-title">Inventario sincronizado</div>
+                <div class="dal-sub">Todas las sucursales · hace 2 min</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: sucursales -->
+        <div class="dash-card" data-reveal>
+          <div class="dash-card-head">
+            <span class="dash-card-title">Estado de sucursales</span>
+          </div>
+          <div class="branch-list">
+            <div class="branch-row">
+              <span class="branch-name">🏪 Centro</span>
+              <span class="branch-orders">84 pedidos</span>
+              <span class="branch-status st-online">Online</span>
+            </div>
+            <div class="branch-row">
+              <span class="branch-name">🏪 Norte</span>
+              <span class="branch-orders">61 pedidos</span>
+              <span class="branch-status st-online">Online</span>
+            </div>
+            <div class="branch-row">
+              <span class="branch-name">🏪 Sur</span>
+              <span class="branch-orders">52 pedidos</span>
+              <span class="branch-status st-online">Online</span>
+            </div>
+            <div class="branch-row">
+              <span class="branch-name">🏪 Oriente</span>
+              <span class="branch-orders">47 pedidos</span>
+              <span class="branch-status st-online">Online</span>
+            </div>
+            <div class="branch-row">
+              <span class="branch-name">🏪 Poniente</span>
+              <span class="branch-orders">43 pedidos</span>
+              <span class="branch-status st-online">Online</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       BENEFICIOS
+  ================================================================ -->
+  <section class="section" id="beneficios" aria-labelledby="benef-h2">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">¿Por qué A La Burger OS?</span>
+        <h2 class="section-title" id="benef-h2">
+          El impacto real<br/>en tu operación
+        </h2>
+      </div>
+
+      <div class="benefits-grid">
+        <article class="benefit-card" data-reveal>
+          <div class="benefit-num" aria-hidden="true">01</div>
+          <h3>Menos errores en pedidos</h3>
+          <p>El pedido digital viaja directo a cocina. Sin letras ilegibles ni olvidos del mesero.</p>
+        </article>
+        <article class="benefit-card" data-reveal>
+          <div class="benefit-num" aria-hidden="true">02</div>
+          <h3>Más velocidad de servicio</h3>
+          <p>Ayuda a agilizar la comunicación entre meseros, cocina y administración.</p>
+        </article>
+        <article class="benefit-card" data-reveal>
+          <div class="benefit-num" aria-hidden="true">03</div>
+          <h3>Control operativo total</h3>
+          <p>Sabes qué pasa en cada sucursal, en todo momento, sin llamar a nadie para preguntar.</p>
+        </article>
+        <article class="benefit-card" data-reveal>
+          <div class="benefit-num" aria-hidden="true">04</div>
+          <h3>Crece sin perder el control</h3>
+          <p>La arquitectura está pensada para facilitar la incorporación de nuevas sucursales.</p>
+        </article>
+        <article class="benefit-card" data-reveal>
+          <div class="benefit-num" aria-hidden="true">05</div>
+          <h3>Información centralizada</h3>
+          <p>Un solo panel para ventas, stock y personal de todas tus ubicaciones. Sin saltar entre apps.</p>
+        </article>
+        <article class="benefit-card" data-reveal>
+          <div class="benefit-num" aria-hidden="true">06</div>
+          <h3>Decisiones con datos reales</h3>
+          <p>Reportes automáticos cada día. Descubre tus productos estrella y tus horas pico sin hacer cuentas.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       HALLAZGOS DE LA INVESTIGACIÓN
+  ================================================================ -->
+  <section class="section section-dark" id="testimonios" aria-labelledby="test-h2">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Investigación de campo</span>
+        <h2 class="section-title" id="test-h2">
+          Lo que encontramos<br/>en hamburgueserías reales
+        </h2>
+        <p class="section-sub">
+          Antes de diseñar el sistema, entrevistamos a dueños y encargados de
+          operación para identificar los puntos de fricción más comunes en el día a día.
+        </p>
+      </div>
+
+      <div class="testi-grid">
+        <blockquote class="testi-card" data-reveal>
+          <div class="testi-stars" aria-label="Hallazgo de investigación">🔍 Hallazgo</div>
+          <p class="testi-body">
+            "Cerramos el día sin saber con certeza cuánto inventario nos queda.
+            Contamos al inicio, pero durante el servicio nadie lleva el registro."
+          </p>
+          <footer class="testi-foot">
+            <div class="testi-avatar" aria-hidden="true">📦</div>
+            <div>
+              <div class="testi-name">Control de inventario</div>
+              <div class="testi-role">Mencionado en entrevistas con encargados de turno</div>
+            </div>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testi-card" data-reveal>
+          <div class="testi-stars" aria-label="Hallazgo de investigación">🔍 Hallazgo</div>
+          <p class="testi-body">
+            "Los tickets de cocina se escriben a mano. Cuando hay mucha demanda,
+            se pierden, se confunden o se duplican pedidos."
+          </p>
+          <footer class="testi-foot">
+            <div class="testi-avatar" aria-hidden="true">👨‍🍳</div>
+            <div>
+              <div class="testi-name">Comunicación con cocina</div>
+              <div class="testi-role">Mencionado en entrevistas con personal de cocina</div>
+            </div>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testi-card" data-reveal>
+          <div class="testi-stars" aria-label="Hallazgo de investigación">🔍 Hallazgo</div>
+          <p class="testi-body">
+            "Cada sucursal reporta sus ventas por separado. Para tener el panorama
+            completo, alguien tiene que juntar todo manualmente al final del mes."
+          </p>
+          <footer class="testi-foot">
+            <div class="testi-avatar" aria-hidden="true">🏪</div>
+            <div>
+              <div class="testi-name">Visibilidad entre sucursales</div>
+              <div class="testi-role">Mencionado en entrevistas con dueños de cadenas pequeñas</div>
+            </div>
+          </footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
+       FAQ
+  ================================================================ -->
+  <section class="section" id="faq" aria-labelledby="faq-h2">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 class="section-title" id="faq-h2">
+          Todo lo que necesitas saber
+        </h2>
+      </div>
+
+      <div class="faq-list" role="list">
+
+        <div class="faq-item" role="listitem" data-reveal>
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a1">
+            ¿Necesito instalar algún software o equipo especial?
+            <span class="faq-chevron" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-a" id="faq-a1" hidden>
+            <p>No. A La Burger OS funciona 100% en el navegador. No necesitas instalar nada en tus equipos. Funciona en tablets, celulares y computadoras desde el primer día.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" role="listitem" data-reveal>
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a2">
+            ¿Puedo gestionar varias sucursales desde un solo panel?
+            <span class="faq-chevron" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-a" id="faq-a2" hidden>
+            <p>Sí. Todas las sucursales aparecen en un dashboard central. Puedes ver ventas, inventario y pedidos de cada local en tiempo real, sin necesidad de cambiar de cuenta.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" role="listitem" data-reveal>
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a3">
+            ¿Cómo se actualiza el inventario con cada pedido?
+            <span class="faq-chevron" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-a" id="faq-a3" hidden>
+            <p>Cada pedido registrado descuenta automáticamente los ingredientes correspondientes del inventario de la sucursal, manteniendo el stock actualizado sin captura manual.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" role="listitem" data-reveal>
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a4">
+            ¿Puedo definir roles y permisos distintos para cada empleado?
+            <span class="faq-chevron" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-a" id="faq-a4" hidden>
+            <p>Completamente. Puedes asignar roles de mesero, cajero, gerente de sucursal y administrador general. Cada rol tiene acceso solo a lo que necesita ver o modificar.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" role="listitem" data-reveal>
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a5">
+            ¿Puedo ver el inventario y las ventas de cada sucursal?
+            <span class="faq-chevron" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-a" id="faq-a5" hidden>
+            <p>Sí. El dashboard administrativo concentra el inventario, los pedidos y las ventas de todas las sucursales en una sola vista, organizados de forma individual y consolidada.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" role="listitem" data-reveal>
+          <button class="faq-q" aria-expanded="false" aria-controls="faq-a6">
+            ¿Qué información ve cada rol dentro del sistema?
+            <span class="faq-chevron" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-a" id="faq-a6" hidden>
+            <p>Cada rol (mesero, cocina, gerente de sucursal o administrador) tiene acceso únicamente a las funciones que le corresponden: registro de pedidos, panel de cocina, inventario, ventas o dashboard general.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================================================================
        CTA FINAL
-  ======================== -->
-  <section class="section cta-final" id="cta-final">
+  ================================================================ -->
+  <section class="section section-carbon" id="cta-final" aria-labelledby="cta-h2">
     <div class="container">
       <div class="cta-box">
-        <div class="cta-decor" aria-hidden="true">☕</div>
-        <h2 class="cta-title">
-          ¿Quieres mejorar la organización<br />de tu negocio?
-        </h2>
-        <p class="cta-text">
-          Déjanos tu información y te contactaremos para contarte cómo
-          Dulce & Orden puede transformar la operación de tu cafetería o pastelería.
-        </p>
-        <!-- 
-          El atributo href está preparado para reemplazarse con 
-          el link de tu Google Form cuando esté listo.
-          Ejemplo: href="https://forms.gle/TULINK"
-        -->
-        <a
-          href="#"
-          class="btn btn--primary btn--large"
-          id="final-cta"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-form-url=""
-        >
-          Quiero probarlo
-          <span class="btn-arrow">→</span>
-        </a>
-        <p class="cta-disclaimer">Sin compromisos. Solo queremos escucharte.</p>
+        <div class="cta-glow" aria-hidden="true"></div>
+        <div class="cta-inner">
+          <span class="eyebrow">¿Listo para operar en modo pro?</span>
+          <h2 class="cta-title" id="cta-h2">
+            Solicita una demostración<br/>sin costo
+          </h2>
+          <p class="cta-body">
+            En 30 minutos te mostramos cómo A La Burger OS transforma la operación
+            de tu restaurante. Sin contratos, sin tarjeta de crédito.
+          </p>
+          <!--
+            INSTRUCCIONES: cuando tu Google Form esté listo,
+            cambia la variable FORM_URL en script.js con el enlace.
+            Los botones se actualizarán automáticamente.
+          -->
+          <a
+            href="#"
+            class="btn btn-primary btn-xl"
+            id="final-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Quiero mi demostración gratuita
+            <span aria-hidden="true">→</span>
+          </a>
+          <p class="cta-disclaimer">
+            Respuesta en menos de 24 h · Sin compromisos
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ========================
+
+  <!-- ================================================================
        FOOTER
-  ======================== -->
-  <footer class="footer">
+  ================================================================ -->
+  <footer class="site-footer" role="contentinfo">
     <div class="container">
-      <div class="footer-inner">
-        <span class="footer-logo">☕ Dulce & Orden</span>
-        <span class="footer-copy">© 2026 · Proyecto universitario · Todos los derechos reservados</span>
+      <div class="footer-top">
+
+        <!-- Brand -->
+        <div class="footer-brand">
+          <a href="#inicio" class="nav-logo footer-logo" aria-label="A La Burger OS inicio">
+            <span class="logo-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+                <rect y="8"  width="32" height="5" rx="2.5" fill="#E8530A"/>
+                <rect y="15" width="32" height="5" rx="2.5" fill="#D4A017"/>
+                <rect y="22" width="32" height="5" rx="2.5" fill="#E8530A"/>
+              </svg>
+            </span>
+            <span class="logo-wordmark">A La Burger <strong>OS</strong></span>
+          </a>
+          <p class="footer-desc">
+            Sistema operativo para restaurantes de hamburguesas con múltiples sucursales.
+            Pedidos, inventario y ventas en una sola plataforma.
+          </p>
+        </div>
+
+        <!-- Navegación footer -->
+        <nav class="footer-nav" aria-label="Navegación del footer">
+          <div class="fnav-col">
+            <h4>Producto</h4>
+            <ul role="list">
+              <li><a href="#solucion">Cómo funciona</a></li>
+              <li><a href="#caracteristicas">Características</a></li>
+              <li><a href="#dashboard">Dashboard</a></li>
+              <li><a href="#beneficios">Beneficios</a></li>
+            </ul>
+          </div>
+          <div class="fnav-col">
+            <h4>Empresa</h4>
+            <ul role="list">
+              <li><a href="#testimonios">Investigación</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="#cta-final">Contacto</a></li>
+            </ul>
+          </div>
+        </nav>
+
+      </div>
+
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 A La Burger OS · Proyecto universitario</span>
       </div>
     </div>
   </footer>
+
 
   <script src="script.js"></script>
 </body>
