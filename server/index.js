@@ -14,8 +14,20 @@ const PUERTO = process.env.PORT || 3000;
 // ─── Middlewares globales ───────────────────────────────────────────────────
 
 // Configurar CORS para aceptar peticiones del frontend
+// FRONTEND_URL puede ser una lista separada por comas: url1,url2
+const origenesPermitidos = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(u => u.trim()) : []),
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // URL típica de Vite
+  origin: (origin, callback) => {
+    // Permitir peticiones sin origin (ej. curl, Postman, mobile apps)
+    if (!origin) return callback(null, true);
+    if (origenesPermitidos.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS bloqueado para origen: ${origin}`));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
