@@ -1,29 +1,18 @@
-# Hallazgos Operativos de Campo - AlaBurger
-
-## Información General
-- **Negocio:** AlaBurger
-- **Fecha de entrevista:** Junio 2026
-- **Entrevistador:** Equipo AlaBurger-OS
-- **Método:** Entrevista presencial
+# Matriz de Hallazgos Operativos Críticos - Trabajo de Campo
+**Ubicación:** A la Burguer Tehuacán
+**Metodología:** Entrevista presencial con el dueño (Early Adopter) y consolidación de evidencias multimedia.
 
 ---
 
-## Matriz de Hallazgos Operativos Críticos
-
-| # | Área | Hallazgo | Impacto | Prioridad |
-|---|------|----------|---------|-----------|
-| H-01 | Pedidos | Los pedidos se toman de forma verbal o en papel, sin sistema digital | Errores frecuentes en órdenes | Alta |
-| H-02 | Inventario | El control de ingredientes se hace de forma manual en hojas de papel | Desabasto inesperado de ingredientes | Alta |
-| H-03 | Cocina | No existe comunicación formal entre caja y cocina | Retrasos y confusiones en pedidos | Alta |
-| H-04 | Ventas | No tienen forma de ver ventas en tiempo real | Dificultad para tomar decisiones del día | Media |
-| H-05 | Cierre de caja | El corte de caja toma entre 30 y 60 minutos de forma manual | Pérdida de tiempo y posibles errores | Media |
-| H-06 | Multi-sucursal | Las sucursales no comparten información entre sí | Inconsistencia en precios y stock | Alta |
-| H-07 | Inventario | No hay alertas cuando un ingrediente está por agotarse | Mermas y pérdidas económicas | Alta |
-| H-08 | Pagos | Solo aceptan efectivo, sin opción de pago digital | Pérdida de clientes potenciales | Media |
-| H-09 | Promociones | Las promociones se manejan de memoria o en pizarrón | Errores en descuentos aplicados | Baja |
-| H-10 | Tecnología | El personal no está familiarizado con software de gestión | Resistencia al cambio tecnológico | Media |
-
----
-
-## Conclusión
-Los principales problemas detectados giran en torno a la **falta de digitalización** en los procesos de pedidos, inventario y comunicación entre áreas. Existe disposición por parte del negocio para adoptar una solución tecnológica que centralice estas operaciones.
+| ID | Área Operativa | Hallazgo Crítico Identificado | Impacto en el Negocio | Requerimiento Técnico / Solución en Software |
+|:---|:---|:---|:---|:---|
+| **01** | Multi-Sucursal | Falta de consolidación de ventas entre la matriz y planes de nuevas sucursales. | Pérdida de visibilidad financiera global. | Módulo de dashboard centralizado con selector de sucursal. |
+| **02** | Toma de Pedidos | Cuello de botella telefónico y por WhatsApp en horas pico de fin de semana. | Pérdida de clientes por tiempos de espera altos. | Integración de la Landing Page con el Google Form de prospección comercial acelerada. |
+| **03** | Inventarios | Registro manual en libreta del inventario de carne y pan artesanal. | Riesgo de desabasto a mitad de jornada o merma por sobre-compra. | Sistema simple de alertas de stock mínimo para insumos críticos. |
+| **04** | Volumen de Ventas | Desconocimiento del ticket promedio exacto por cliente en días de promoción. | Dificultad para calcular el retorno de inversión en marketing. | Reportes automatizados de ventas con gráficos de barras por día/hora. |
+| **05** | Flujo de Caja | Arqueo de caja manual al cierre de turno propenso a errores humanos. | Descuadres menores pero constantes de dinero al final de la semana. | Registro digital de ingresos y egresos con cierre de caja protegido por contraseña. |
+| **06** | Delivery | El repartidor propio gestiona las direcciones mediante su WhatsApp personal. | Falta de control de tiempos de entrega y rutas ineficientes. | Módulo de asignación de pedidos a repartidores con estatus en tiempo real. |
+| **07** | Copys / Marketing | Los clientes locales no conocen las promociones vigentes antes de llegar al local. | Menor rotación de productos secundarios o nuevos lanzamientos. | Actualización de copys persuasivos en la Landing Page apuntando al mercado de Tehuacán. |
+| **08** | Menú Dinámico | Cambios de precios o productos agotados requieren rediseñar e imprimir menús físicos. | Costo extra de imprenta y descontento del cliente por productos no disponibles. | Menú digital interactivo actualizable desde un panel de administración básico. |
+| **09** | Datos de Clientes | No existe una base de datos de los clientes más recurrentes ("frecuentes"). | Imposibilidad de lanzar campañas de fidelización o descuentos dirigidos. | Captura obligatoria de datos de contacto mínimos mediante el formulario de prospección. |
+| **10** | Infraestructura IT | El local cuenta con conexión Wi-Fi inestable para el personal de barra. | Retrasos en la sincronización de pedidos si el sistema requiere internet constante. | Enfoque de arquitectura híbrida (guardado local en caché y sincronización al detectar red). |

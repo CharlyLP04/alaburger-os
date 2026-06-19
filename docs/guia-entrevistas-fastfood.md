@@ -1,45 +1,28 @@
-# Guía de Entrevistas - FastFood AlaBurger
-
-## Objetivo
-Levantar requerimientos operativos en las sucursales de AlaBurger mediante
-entrevistas estructuradas al personal clave del negocio.
-
-## Participantes objetivo
-- Dueño o gerente de sucursal
-- Personal de cocina
-- Cajero / Tomador de pedidos
+# Guía Técnica de Entrevistas para Levantamiento de Requerimientos Multi-Sucursal
+**Proyecto:** alaburger-os
+**Caso de Estudio:** A la Burguer Tehuacán (Validación de Cliente Beta / Early Adopter)
+**Objetivo:** Capturar la información operativa, estructura de sucursales y volumen de venta para alinear el Google Form y la Landing Page.
 
 ---
 
-## Preguntas Generales
+## 1. Bloque de Estructura Comercial y Multi-Sucursal
+* ¿Cuántas sucursales físicas operan actualmente bajo la marca y en qué ubicaciones de Tehuacán se encuentran?
+* ¿Existe un modelo de administración centralizado o cada sucursal gestiona sus compras, inventarios y caja de forma independiente?
+* ¿Tienen planes a corto plazo para expandirse a nuevas zonas o franquiciar el modelo de negocio?
 
-1. ¿Cómo manejan actualmente los pedidos en su hamburguesería?
-2. ¿Tienen algún sistema para controlar su inventario o lo hacen de forma manual?
-3. ¿Han tenido problemas por errores en los pedidos o falta de ingredientes?
-4. ¿Cómo saben cuándo se les está acabando algún ingrediente?
-5. ¿Tienen varias sucursales? ¿Cómo se comunican entre ellas?
-6. ¿Cómo manejan el cierre de caja al final del día?
-7. ¿Han tenido pérdidas económicas por descontrol de inventario o errores en pedidos?
-8. ¿Usan alguna aplicación o software actualmente para gestionar su negocio?
+## 2. Bloque de Operación, Cocina y Pedidos
+* ¿Cuál es el flujo exacto desde que un cliente solicita una hamburguesa hasta que se le entrega (Mostrador, Delivery propio, Apps)?
+* ¿Cómo se gestiona el inventario de insumos críticos (carne, pan artesanal, vegetales) para asegurar la frescura diaria sin generar merma excesiva?
+* ¿Qué métricas o métodos utilizan actualmente para calcular el tiempo de preparación en cocina durante las horas pico de fin de semana?
 
----
+## 3. Bloque de Volumen de Venta y Validación Comercial
+* ¿Cuál es el volumen promedio de ventas diarias (en número de hamburguesas o tickets) en días particulares vs. fines de semana?
+* ¿Cuáles son los productos del menú con mayor rotación ("best sellers") y cuáles generan el mayor margen de ganancia?
+* ¿Cómo manejan actualmente el registro de sus ingresos (libreta manuscrita, Excel, software punto de venta/POS)?
 
-## Preguntas de Operación
+## 4. En esta sección de igual manera se le pedirian cosas específicas que el cliente necesite
 
-1. ¿Cuántas personas trabajan en su negocio y cuáles son sus roles?
-2. ¿Cómo se comunica el mesero con la cocina cuando toma un pedido?
-3. ¿Tienen alguna forma de ver las ventas del día en tiempo real?
-4. ¿Cómo registran los productos que se venden cada día?
-5. ¿Alguna vez han tenido problemas porque dos sucursales no tienen la misma información?
-6. ¿Cómo manejan las promociones o descuentos especiales?
-7. ¿Cuánto tiempo les toma hacer un corte de caja al final del día?
-
----
-
-## Preguntas de Interés y Solución
-
-1. ¿Estarían dispuestos a usar un sistema digital para gestionar todo esto?
-2. ¿Qué tan cómodos se sienten usando tecnología en su negocio?
-3. ¿Qué funcionalidad les sería más útil: control de pedidos, inventario o ventas?
-4. ¿Cuánto estarían dispuestos a pagar mensualmente por un sistema así?
-5. ¿Hay algo más que les cause problemas en la operación diaria que no hayamos mencionado?
+## 4. Bloque de Consolidación de Evidencia de Campo (Audios/Fotos)
+* **Archivo de Audio 01 (Entrevista Inicial):** Registro de la conversación con el dueño (contacto de confianza/amigo de la familia) sobre su disposición para apoyar el proyecto como cliente Beta.
+* **Archivo de Audio 02 (Operación en Barra):** Notas de voz sobre el cuello de botella identificado en la toma de pedidos telefónicos.
+* **Registro Fotográfico (Fachada e Interior):** Capturas de la organización de la cocina y el flujo de entrega de pedidos para mapear la necesidad de módulos digitales.
