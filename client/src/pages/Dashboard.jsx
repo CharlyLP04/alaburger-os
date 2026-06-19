@@ -1,8 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
+import { clearAuth, getInitials, getUsuario } from '../utils/auth';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const usuario = getUsuario();
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate('/login', { replace: true });
+  };
   return (
     <div className="flex min-h-screen bg-[#0E0E10] text-white font-sans selection:bg-primary/30">
       
@@ -153,12 +161,17 @@ export default function Dashboard() {
             {/* Perfil del Administrador */}
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-xs font-bold leading-tight">Marco Reyes</p>
-                <p className="text-[10px] text-[#E8530A] font-black tracking-wider uppercase">Gerente General</p>
+                <p className="text-xs font-bold leading-tight">{usuario?.nombre || 'Usuario'}</p>
+                <p className="text-[10px] text-[#E8530A] font-black tracking-wider uppercase">{usuario?.rol || 'Sin rol'}</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-[#E8530A] font-bold text-xs flex items-center justify-center shadow-lg border border-[#E8530A]/30">
-                MR
-              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Cerrar sesión"
+                className="w-8 h-8 rounded-full bg-[#E8530A] font-bold text-xs flex items-center justify-center shadow-lg border border-[#E8530A]/30 hover:opacity-80 transition-opacity"
+              >
+                {getInitials(usuario?.nombre)}
+              </button>
             </div>
           </div>
         </header>
