@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { login as loginApi } from '../services/api';
+import { setAuth } from '../utils/auth';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const data = await loginApi(email, password);
+      setAuth(data.token, data.usuario);
+      navigate('/', { replace: true });
+    } catch (err) {
+      setError(err.message || 'No se pudo iniciar sesión.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     // Contenedor principal con fondo oscuro y patrón de cuadrícula
     <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:40px_40px]">
@@ -43,7 +68,13 @@ export default function Login() {
           <div className="bg-card p-8 rounded-2xl border border-muted shadow-2xl">
             <h2 className="text-xl font-bold mb-6 tracking-wide uppercase">Login</h2>
             
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              {error && (
+                <p className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-2">
+                  {error}
+                </p>
+              )}
+
               {/* Input Correo */}
               <div className="space-y-2">
                 <label className="text-sm text-muted-foreground" htmlFor="email">
@@ -52,7 +83,10 @@ export default function Login() {
                 <input 
                   type="email" 
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="correo@ejemplo.com"
+                  required
                   className="w-full bg-muted border border-transparent focus:border-primary text-foreground rounded-lg px-4 py-3 outline-none transition-colors"
                 />
               </div>
@@ -65,24 +99,28 @@ export default function Login() {
                 <input 
                   type="password" 
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
+                  required
                   className="w-full bg-muted border border-transparent focus:border-primary text-foreground rounded-lg px-4 py-3 outline-none transition-colors"
                 />
               </div>
 
               {/* Botón de Submit */}
               <button 
-                type="button" 
-                className="w-full bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors mt-4"
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition-colors mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Iniciar Sesión
+                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </button>
             </form>
 
             {/* Link secundario */}
             <div className="mt-6 text-center">
               <a href="#" className="text-sm text-muted-foreground hover:text-white transition-colors">
-                Solicitar Demo &rarr;
+               
               </a>
             </div>
           </div>
