@@ -1,9 +1,10 @@
-// Enrutador principal — agrupa todas las rutas de la API
 const express = require('express');
+const authRoutes = require('./authRoutes');
+const productRoutes = require('./productRoutes');
+const orderRoutes = require('./orderRoutes');
+
 const router = express.Router();
 
-// ─── Ruta de salud del servidor ────────────────────────────────────────────
-// GET /api/health → verifica que el servidor esté activo
 router.get('/health', (req, res) => {
   res.status(200).json({
     estado: 'ok',
@@ -12,14 +13,8 @@ router.get('/health', (req, res) => {
   });
 });
 
-// ─── Aquí se importarán las rutas de cada módulo ───────────────────────────
-// Ejemplo futuro:
-// const rutasUsuarios = require('./usuarios');
-// const rutasProductos = require('./productos');
-// const rutasPedidos   = require('./pedidos');
-//
-// router.use('/usuarios', rutasUsuarios);
-// router.use('/productos', rutasProductos);
-// router.use('/pedidos', rutasPedidos);
+router.use('/auth', authRoutes);
+router.use('/productos', productRoutes);
+router.use('/pedidos', orderRoutes);
 
 module.exports = router;
