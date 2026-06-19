@@ -1,0 +1,7 @@
+# [AUDIT-1] Evaluación de MVP (Semana 7)
+
+## 🎯 Objetivo de la Evaluación
+Validar detalladamente que el MVP asignado cumpla con las siguientes condiciones fundamentales:
+*   **Funcionamiento:** El sistema es operativo.
+*   **Lógica:** Los procesos y transiciones tienen coherencia.
+*   **Realidad:** El sistema es funcional y no está simulado (hardcoded).
