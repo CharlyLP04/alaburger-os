@@ -6,7 +6,7 @@
 ## 🚀 ¿Qué problema resuelve?
 
 A La Burger gestiona sus pedidos e inventario de forma 
-manual en cada sucursal. Esto genera errores, descontrol 
+manual. Esto genera errores, descontrol 
 de stock y falta de visibilidad entre sucursales.
 
 **A La Burger OS** digitaliza la operación completa:
