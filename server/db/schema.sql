@@ -147,6 +147,9 @@ CREATE TABLE IF NOT EXISTS pedidos (
                                 CHECK (tipo IN ('local', 'para_llevar')),
     notas           TEXT,                       -- instrucciones especiales del cliente
     total           NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0),
+    estado_pago     VARCHAR(20) NOT NULL DEFAULT 'pendiente'
+                                CHECK (estado_pago IN ('pendiente', 'pagado', 'fallido')),
+    stripe_payment_intent_id VARCHAR(120),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
