@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login as loginApi } from '../services/api';
-import { setAuth } from '../utils/auth';
+import { consumeAuthMessage, getDefaultRouteForRole, setAuth } from '../utils/auth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,15 +10,48 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const pendingMessage = consumeAuthMessage();
+    if (pendingMessage) {
+      setError(pendingMessage);
+    }
+  }, []);
+
+  const validateForm = () => {
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      setError('El correo es obligatorio.');
+      return false;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Ingresa un correo electrónico válido.');
+      return false;
+    }
+
+    if (!password) {
+      setError('La contraseña es obligatoria.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const data = await loginApi(email, password);
+      const data = await loginApi(email.trim(), password);
       setAuth(data.token, data.usuario);
-      navigate('/', { replace: true });
+      navigate(getDefaultRouteForRole(data.usuario?.rol), { replace: true });
     } catch (err) {
       setError(err.message || 'No se pudo iniciar sesión.');
     } finally {
@@ -48,7 +81,7 @@ export default function Login() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-muted bg-card">
             <span className="w-2 h-2 rounded-full bg-primary"></span>
-            <span className="text-xs font-semibold tracking-wider text-foreground">PLATAFORMA SaaS PARA RESTAURANTES</span>
+            <span className="text-xs font-semibold tracking-wider text-foreground">PLATAFORMA PARA RESTAURANTES</span>
           </div>
 
           {/* Título Principal */}

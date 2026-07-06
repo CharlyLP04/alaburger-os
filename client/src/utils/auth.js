@@ -1,5 +1,13 @@
 const TOKEN_KEY = 'alaburger_token';
 const USER_KEY = 'alaburger_usuario';
+const AUTH_MESSAGE_KEY = 'alaburger_auth_message';
+
+/** Rutas de inicio según el rol del usuario (HU-01). */
+const DEFAULT_ROUTES_BY_ROLE = {
+  administrador: '/',
+  cocina: '/cocina',
+  mesero: '/mesero',
+};
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -27,6 +35,43 @@ export function clearAuth() {
 
 export function isAuthenticated() {
   return Boolean(getToken());
+}
+
+/** Normaliza el nombre del rol para comparaciones consistentes. */
+export function normalizeRole(rol) {
+  return typeof rol === 'string' ? rol.trim().toLowerCase() : '';
+}
+
+/** Devuelve la ruta de inicio correspondiente al rol del usuario. */
+export function getDefaultRouteForRole(rol) {
+  return DEFAULT_ROUTES_BY_ROLE[normalizeRole(rol)] ?? '/403';
+}
+
+/** Verifica si el usuario autenticado tiene alguno de los roles permitidos. */
+export function hasRole(allowedRoles = []) {
+  const usuario = getUsuario();
+  if (!usuario?.rol || !Array.isArray(allowedRoles) || allowedRoles.length === 0) {
+    return false;
+  }
+
+  const userRole = normalizeRole(usuario.rol);
+  return allowedRoles.some((role) => normalizeRole(role) === userRole);
+}
+
+/** Limpia la sesión y guarda un mensaje para mostrar en el login (HU-04). */
+export function handleSessionExpired(message = 'Tu sesión ha expirado. Inicia sesión nuevamente.') {
+  clearAuth();
+  sessionStorage.setItem(AUTH_MESSAGE_KEY, message);
+  window.location.assign('/login');
+}
+
+/** Lee y elimina el mensaje de autenticación pendiente (p. ej. sesión expirada). */
+export function consumeAuthMessage() {
+  const message = sessionStorage.getItem(AUTH_MESSAGE_KEY);
+  if (message) {
+    sessionStorage.removeItem(AUTH_MESSAGE_KEY);
+  }
+  return message;
 }
 
 export function getInitials(nombre) {

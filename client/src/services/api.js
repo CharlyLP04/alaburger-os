@@ -1,6 +1,19 @@
-import { getToken } from '../utils/auth';
+import { getToken, handleSessionExpired } from '../utils/auth';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+function isTokenAuthError(status, data, hadToken) {
+  if (!hadToken) return false;
+
+  if (status === 401) return true;
+
+  if (status === 403) {
+    const errorCode = data?.error?.toLowerCase?.() ?? '';
+    return errorCode.includes('token');
+  }
+
+  return false;
+}
 
 async function apiFetch(path, options = {}) {
   const headers = {
@@ -21,6 +34,12 @@ async function apiFetch(path, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
+    if (isTokenAuthError(response.status, data, Boolean(token))) {
+      handleSessionExpired(
+        data.mensaje || 'Tu sesión ha expirado. Inicia sesión nuevamente.'
+      );
+    }
+
     const error = new Error(data.mensaje || data.error || 'Error en la solicitud');
     error.status = response.status;
     error.data = data;

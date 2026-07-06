@@ -164,13 +164,18 @@ export default function Dashboard() {
                 <p className="text-xs font-bold leading-tight">{usuario?.nombre || 'Usuario'}</p>
                 <p className="text-[10px] text-[#E8530A] font-black tracking-wider uppercase">{usuario?.rol || 'Sin rol'}</p>
               </div>
+              <div
+                aria-hidden="true"
+                className="w-8 h-8 rounded-full bg-[#E8530A] font-bold text-xs flex items-center justify-center shadow-lg border border-[#E8530A]/30"
+              >
+                {getInitials(usuario?.nombre)}
+              </div>
               <button
                 type="button"
                 onClick={handleLogout}
-                title="Cerrar sesión"
-                className="w-8 h-8 rounded-full bg-[#E8530A] font-bold text-xs flex items-center justify-center shadow-lg border border-[#E8530A]/30 hover:opacity-80 transition-opacity"
+                className="text-[10px] font-bold tracking-wider uppercase text-neutral-400 hover:text-white border border-[#1F1F23] hover:border-neutral-600 bg-[#141416] px-3 py-1.5 rounded-lg transition-colors"
               >
-                {getInitials(usuario?.nombre)}
+                Cerrar sesión
               </button>
             </div>
           </div>
