@@ -85,3 +85,10 @@ export function editarIngrediente(id, payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function registrarEntrada(id, payload) {
+  return apiFetch(`/inventario/${id}/entrada`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
