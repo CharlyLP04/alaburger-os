@@ -78,3 +78,10 @@ export function crearIngrediente(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function editarIngrediente(id, payload) {
+  return apiFetch(`/inventario/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}

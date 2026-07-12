@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario, hasRole } from '../utils/auth';
-import { getInventario, crearIngrediente } from '../services/api';
+import { getInventario, crearIngrediente, editarIngrediente } from '../services/api';
 
 export default function Inventario() {
   const navigate = useNavigate();
@@ -13,8 +13,10 @@ export default function Inventario() {
   const [inventario, setInventario] = useState([]);
   const [soloStockBajo, setSoloStockBajo] = useState(false);
 
-  // Estados del modal para nuevo ingrediente (HU-42)
+  // Estados del modal para nuevo ingrediente (HU-42 / HU-43)
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [modalNombre, setModalNombre] = useState('');
   const [modalCantidad, setModalCantidad] = useState('');
   const [modalUnidad, setModalUnidad] = useState('kg');
@@ -24,7 +26,7 @@ export default function Inventario() {
 
   const handleLogout = () => {
     clearAuth();
-    navigate('/login', { replace: true });
+    window.location.href = '/login';
   };
 
   const loadInventario = async (stockBajoOnly) => {
@@ -50,14 +52,23 @@ export default function Inventario() {
     setModalError('');
     setModalSubmitting(true);
     try {
-      await crearIngrediente({
+      const payload = {
         nombre: modalNombre.trim(),
-        cantidad_actual: Number(modalCantidad),
         unidad: modalUnidad,
         stock_minimo: Number(modalStockMinimo),
-      });
+      };
+
+      if (isEditing) {
+        await editarIngrediente(editingId, payload);
+      } else {
+        payload.cantidad_actual = Number(modalCantidad);
+        await crearIngrediente(payload);
+      }
+
       // Cerrar y limpiar formulario
       setIsModalOpen(false);
+      setIsEditing(false);
+      setEditingId(null);
       setModalNombre('');
       setModalCantidad('');
       setModalUnidad('kg');
@@ -65,11 +76,22 @@ export default function Inventario() {
       // Recargar listado
       loadInventario(soloStockBajo);
     } catch (err) {
-      console.error('Error al crear ingrediente:', err);
-      setModalError(err.message || 'No se pudo crear el ingrediente.');
+      console.error('Error al guardar ingrediente:', err);
+      setModalError(err.message || 'No se pudo guardar el ingrediente.');
     } finally {
       setModalSubmitting(false);
     }
+  };
+
+  const handleOpenEditModal = (item) => {
+    setIsEditing(true);
+    setEditingId(item.id);
+    setModalNombre(item.nombre);
+    setModalCantidad(item.cantidad_actual.toString());
+    setModalUnidad(item.unidad);
+    setModalStockMinimo(item.stock_minimo.toString());
+    setModalError('');
+    setIsModalOpen(true);
   };
 
   return (
@@ -219,7 +241,16 @@ export default function Inventario() {
               {hasRole(['administrador']) && (
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditingId(null);
+                    setModalNombre('');
+                    setModalCantidad('');
+                    setModalUnidad('kg');
+                    setModalStockMinimo('');
+                    setModalError('');
+                    setIsModalOpen(true);
+                  }}
                   className="flex items-center gap-2 bg-[#E8530A] hover:bg-[#ff6214] text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all shadow-md active:scale-98 cursor-pointer"
                 >
                   + Agregar ingrediente
@@ -271,6 +302,7 @@ export default function Inventario() {
                     <th className="p-4 text-right">Stock Mínimo</th>
                     <th className="p-4 text-center">Estado</th>
                     <th className="p-4 pr-6">Última Actualización</th>
+                    {hasRole(['administrador']) && <th className="p-4 text-center pr-6">Acciones</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1F1F23] text-sm">
@@ -314,6 +346,17 @@ export default function Inventario() {
                               })
                             : 'Sin registro'}
                         </td>
+                        {hasRole(['administrador']) && (
+                          <td className="p-4 text-center pr-6">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditModal(item)}
+                              className="text-xs font-bold bg-[#141416] hover:bg-[#E8530A]/20 hover:text-[#E8530A] border border-[#1F1F23] hover:border-[#E8530A]/40 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                            >
+                              Editar
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}
@@ -324,18 +367,26 @@ export default function Inventario() {
         </main>
       </div>
 
-      {/* MODAL DE NUEVO INGREDIENTE */}
+      {/* MODAL DE INGREDIENTE */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 transition-all">
           <div className="bg-[#09090A] border border-[#1F1F23] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             {/* Header del Modal */}
             <div className="p-6 border-b border-[#1F1F23] flex items-center justify-between">
-              <h3 className="font-black tracking-wide text-lg text-white uppercase">Agregar Ingrediente</h3>
+              <h3 className="font-black tracking-wide text-lg text-white uppercase">
+                {isEditing ? 'Editar Ingrediente' : 'Agregar Ingrediente'}
+              </h3>
               <button 
                 type="button"
                 onClick={() => {
                   setIsModalOpen(false);
+                  setIsEditing(false);
+                  setEditingId(null);
                   setModalError('');
+                  setModalNombre('');
+                  setModalCantidad('');
+                  setModalUnidad('kg');
+                  setModalStockMinimo('');
                 }}
                 className="text-neutral-500 hover:text-white transition-colors cursor-pointer"
               >
@@ -367,21 +418,29 @@ export default function Inventario() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Cantidad Inicial */}
+                {/* Cantidad */}
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
-                    Cantidad Inicial
+                    {isEditing ? 'Cantidad Actual' : 'Cantidad Inicial'}
                   </label>
                   <input
                     type="number"
                     step="0.001"
                     required
                     min="0"
+                    readOnly={isEditing}
                     value={modalCantidad}
                     onChange={(e) => setModalCantidad(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                    className={`w-full border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors ${
+                      isEditing ? 'bg-[#0E0E10] text-neutral-500 cursor-not-allowed border-dashed' : 'bg-[#141416]'
+                    }`}
                   />
+                  {isEditing && (
+                    <p className="text-[9px] font-semibold text-neutral-500 leading-tight mt-1">
+                      Ajustable solo vía movimientos
+                    </p>
+                  )}
                 </div>
 
                 {/* Unidad */}
@@ -426,7 +485,13 @@ export default function Inventario() {
                   type="button"
                   onClick={() => {
                     setIsModalOpen(false);
+                    setIsEditing(false);
+                    setEditingId(null);
                     setModalError('');
+                    setModalNombre('');
+                    setModalCantidad('');
+                    setModalUnidad('kg');
+                    setModalStockMinimo('');
                   }}
                   className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white px-4 py-2.5 rounded-lg border border-[#1F1F23] bg-[#141416] hover:border-neutral-700 transition-colors cursor-pointer"
                 >
@@ -437,7 +502,7 @@ export default function Inventario() {
                   disabled={modalSubmitting}
                   className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] disabled:opacity-60 disabled:cursor-not-allowed px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
                 >
-                  {modalSubmitting ? 'Registrando...' : 'Registrar'}
+                  {modalSubmitting ? (isEditing ? 'Guardando...' : 'Registrando...') : (isEditing ? 'Guardar' : 'Registrar')}
                 </button>
               </div>
             </form>

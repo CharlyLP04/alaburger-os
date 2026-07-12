@@ -9,7 +9,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     clearAuth();
-    navigate('/login', { replace: true });
+    window.location.href = '/login';
   };
   return (
     <div className="flex min-h-screen bg-[#0E0E10] text-white font-sans selection:bg-primary/30">
