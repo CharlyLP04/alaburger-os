@@ -92,3 +92,7 @@ export function registrarEntrada(id, payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function getAlertasStockBajo() {
+  return apiFetch('/inventario/alertas/resumen');
+}

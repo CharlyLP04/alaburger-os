@@ -1,11 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario } from '../utils/auth';
+import { getAlertasStockBajo } from '../services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const usuario = getUsuario();
+
+  const [alertCount, setAlertCount] = useState(0);
+  const [alertItems, setAlertItems] = useState([]);
+  const [loadingAlerts, setLoadingAlerts] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    async function loadAlerts() {
+      try {
+        const result = await getAlertasStockBajo();
+        if (active) {
+          setAlertCount(result.total || 0);
+          setAlertItems(result.data || []);
+        }
+      } catch (error) {
+        console.error('Error al cargar alertas de stock bajo:', error);
+      } finally {
+        if (active) {
+          setLoadingAlerts(false);
+        }
+      }
+    }
+    loadAlerts();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const criticos = alertItems.filter(item => item.cantidad_actual === 0 || item.stock_minimo === 0 || (item.cantidad_actual / item.stock_minimo) <= 0.5).length;
+  const advertencias = alertCount - criticos;
 
   const handleLogout = () => {
     clearAuth();
@@ -257,12 +288,12 @@ export default function Dashboard() {
               </div>
               <div>
                 <h3 className="text-2xl font-black tracking-tight mb-2">
-                  7 <span className="text-xs font-bold text-neutral-500 ml-0.5">PRODUCTOS</span>
+                  {loadingAlerts ? '...' : alertCount} <span className="text-xs font-bold text-neutral-500 ml-0.5">PRODUCTOS</span>
                 </h3>
                 <div className="text-destructive text-xs font-bold flex items-center gap-1.5">
-                  <span className="bg-destructive/10 px-1.5 py-0.5 rounded text-[10px]">↘ -2%</span>
-                  <span className="text-neutral-400 font-bold text-[11px]">3 críticos</span>
-                  <span className="text-neutral-500 font-medium text-[11px]"> 4 advertencia</span>
+                  <span className="bg-destructive/10 px-1.5 py-0.5 rounded text-[10px]">↘ ALERTA</span>
+                  <span className="text-neutral-400 font-bold text-[11px]">{criticos} críticos</span>
+                  <span className="text-neutral-500 font-medium text-[11px]">{advertencias} {advertencias === 1 ? 'advertencia' : 'advertencias'}</span>
                 </div>
               </div>
             </div>
