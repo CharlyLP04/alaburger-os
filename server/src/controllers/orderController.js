@@ -79,6 +79,72 @@ const crearPedido = async (req, res) => {
         precio_unitario: parseFloat(fila.precio_unitario),
         subtotal: parseFloat(fila.subtotal),
       });
+
+      // --- DESCUENTO AUTOMÁTICO DE INVENTARIO (HU-45) ---
+      const recetasResult = await client.query(
+        `SELECT pi.ingrediente_id, pi.cantidad AS cantidad_requerida, ing.nombre AS ingrediente_nombre
+         FROM producto_ingredientes pi
+         INNER JOIN ingredientes ing ON ing.id = pi.ingrediente_id
+         WHERE pi.producto_id = $1`,
+        [detalle.producto_id]
+      );
+
+      if (recetasResult.rows.length === 0) {
+        console.warn(`Producto ${detalle.producto_id} sin receta asignada`);
+        continue;
+      }
+
+      for (const rec of recetasResult.rows) {
+        const cantidadADescontar = Number(rec.cantidad_requerida) * detalle.cantidad;
+
+        // Obtener stock actual bloqueándolo para concurrencia
+        const invResult = await client.query(
+          `SELECT cantidad_disponible, stock_minimo
+           FROM inventario
+           WHERE ingrediente_id = $1
+           FOR UPDATE`,
+          [rec.ingrediente_id]
+        );
+
+        if (invResult.rows.length === 0) {
+          const errorInv = new Error(`El ingrediente "${rec.ingrediente_nombre}" no está registrado en el inventario.`);
+          errorInv.type = 'STOCK_INSUFICIENTE';
+          errorInv.ingrediente_id = rec.ingrediente_id;
+          errorInv.faltante = cantidadADescontar;
+          throw errorInv;
+        }
+
+        const cantidadDisponible = Number(invResult.rows[0].cantidad_disponible);
+
+        if (cantidadDisponible < cantidadADescontar) {
+          const errorStock = new Error(`Stock insuficiente de "${rec.ingrediente_nombre}". Requerido: ${cantidadADescontar}, Disponible: ${cantidadDisponible}`);
+          errorStock.type = 'STOCK_INSUFICIENTE';
+          errorStock.ingrediente_id = rec.ingrediente_id;
+          errorStock.faltante = cantidadADescontar - cantidadDisponible;
+          throw errorStock;
+        }
+
+        // Descontar de inventario
+        await client.query(
+          `UPDATE inventario
+           SET cantidad_disponible = cantidad_disponible - $1,
+               updated_at = NOW()
+           WHERE ingrediente_id = $2`,
+          [cantidadADescontar, rec.ingrediente_id]
+        );
+
+        // Registrar movimiento
+        await client.query(
+          `INSERT INTO movimientos_inventario (ingrediente_id, tipo, cantidad, referencia, usuario_id, fecha)
+           VALUES ($1, 'salida', $2, $3, $4, NOW())`,
+          [
+            rec.ingrediente_id,
+            cantidadADescontar,
+            `pedido #${pedido.id}`,
+            req.usuario?.id || null
+          ]
+        );
+      }
     }
 
     await client.query('COMMIT');
@@ -94,6 +160,15 @@ const crearPedido = async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error al crear pedido:', error);
+
+    if (error.type === 'STOCK_INSUFICIENTE') {
+      return res.status(409).json({
+        error: 'Stock insuficiente',
+        mensaje: error.message,
+        ingrediente_id: error.ingrediente_id,
+        faltante: error.faltante,
+      });
+    }
 
     const esValidacion = error.message.includes('Producto') || error.message.includes('producto');
 
