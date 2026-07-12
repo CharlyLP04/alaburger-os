@@ -1,6 +1,7 @@
 // Controlador de pagos — integración con Stripe (modo test)
 const Stripe = require('stripe');
 const pool = require('../config/db');
+const { manejarErrorInterno } = require('../utils/errorHandler');
 
 // La clave secreta SIEMPRE se lee de variables de entorno, nunca hardcodeada.
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -82,10 +83,7 @@ const crearIntentoPago = async (req, res) => {
       });
     }
 
-    return res.status(500).json({
-      error: 'Error interno del servidor',
-      mensaje: error.message,
-    });
+    return manejarErrorInterno(error, res, 'crear intento de pago');
   }
 };
 
@@ -140,10 +138,7 @@ const confirmarPago = async (req, res) => {
       });
     }
 
-    return res.status(500).json({
-      error: 'Error interno del servidor',
-      mensaje: error.message,
-    });
+    return manejarErrorInterno(error, res, 'confirmar pago');
   }
 };
 
