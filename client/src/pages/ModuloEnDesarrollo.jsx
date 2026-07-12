@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario } from '../utils/auth';
@@ -6,6 +6,19 @@ import { clearAuth, getInitials, getUsuario } from '../utils/auth';
 export default function ModuloEnDesarrollo({ modulo }) {
   const navigate = useNavigate();
   const usuario = getUsuario();
+
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const handleLogout = () => {
     clearAuth();
@@ -155,7 +168,7 @@ export default function ModuloEnDesarrollo({ modulo }) {
                 className="w-full bg-[#141416] border border-[#1F1F23] rounded-lg pl-9 pr-8 py-1.5 text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    alert('Buscador: Función en desarrollo para una futura HU.');
+                    showToast('Buscador: Función en desarrollo para una futura HU.', 'info');
                   }
                 }}
               />
@@ -167,14 +180,14 @@ export default function ModuloEnDesarrollo({ modulo }) {
             {/* Acciones Rápidas */}
             <div className="flex items-center gap-2 text-neutral-400 border-r border-[#1F1F23] pr-4">
               <button 
-                onClick={() => alert('Datos actualizados correctamente.')}
+                onClick={() => showToast('Datos actualizados correctamente.', 'success')}
                 className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors cursor-pointer"
                 title="Actualizar datos"
               >
                 <Icon path={ICONS.refresh} size={16} />
               </button>
               <button 
-                onClick={() => alert('Notificaciones: \n1. Alerta de stock bajo en Pan Burger.\n2. Alerta de stock bajo en Carne Res.')}
+                onClick={() => showToast('Stock bajo: Pan Burger (10) • Carne Res (15)', 'warning')}
                 className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors relative cursor-pointer"
                 title="Ver notificaciones"
               >
@@ -184,7 +197,7 @@ export default function ModuloEnDesarrollo({ modulo }) {
                 </span>
               </button>
               <button 
-                onClick={() => alert('Ajustes del sistema: Módulo en desarrollo.')}
+                onClick={() => showToast('Ajustes del sistema: Módulo en desarrollo.', 'info')}
                 className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors cursor-pointer"
                 title="Configuración"
               >
@@ -243,6 +256,21 @@ export default function ModuloEnDesarrollo({ modulo }) {
           </div>
         </main>
       </div>
+
+      {/* Toast Alert */}
+      {toast && (
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-[#141416]/95 backdrop-blur-md border border-neutral-800 rounded-xl px-5 py-3.5 shadow-2xl animate-in slide-in-from-top-4 fade-in duration-300">
+          <div className={`w-2.5 h-2.5 rounded-full ${
+            toast.type === 'success' ? 'bg-success shadow-[0_0_10px_rgba(74,222,128,0.5)]' :
+            toast.type === 'warning' ? 'bg-destructive shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 
+            'bg-[#E8530A] shadow-[0_0_10px_rgba(232,83,10,0.5)]'
+          }`} />
+          <p className="text-[11px] font-black uppercase tracking-wider text-neutral-200">{toast.message}</p>
+          <button onClick={() => setToast(null)} className="text-neutral-500 hover:text-white ml-3 text-xs cursor-pointer">
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 }
