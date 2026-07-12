@@ -5,6 +5,7 @@ import KDS from './pages/KDS';
 import WaiterApp from './pages/WaiterApp';
 import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
+import Inventario from './pages/Inventario';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
@@ -43,6 +44,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inventario"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Inventario />
             </ProtectedRoute>
           }
         />

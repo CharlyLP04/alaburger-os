@@ -66,3 +66,8 @@ export function crearPedido(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function getInventario(stockBajo = false) {
+  const query = stockBajo ? '?stock_bajo=true' : '';
+  return apiFetch(`/inventario${query}`);
+}
