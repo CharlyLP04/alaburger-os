@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { getProductos, crearPedido } from '../services/api';
 import { getUsuario } from '../utils/auth';
@@ -114,8 +115,15 @@ export default function WaiterApp() {
         <header className="p-6 flex justify-between items-center border-b border-[#1E1E1E]">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <div className="bg-primary text-white font-bold w-6 h-6 rounded flex items-center justify-center text-xs">A</div>
-              <h1 className="font-bold tracking-widest text-lg">BURGER OS</h1>
+              <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="bg-primary text-white font-bold w-6 h-6 rounded flex items-center justify-center text-xs">A</div>
+                <h1 className="font-bold tracking-widest text-lg text-white">BURGER OS</h1>
+              </Link>
+              {usuario?.rol === 'administrador' && (
+                <Link to="/" className="text-[10px] bg-[#1E1E1E] border border-[#2A2A2F] text-neutral-300 font-bold px-2.5 py-1 rounded-lg ml-2 transition-colors uppercase">
+                  Panel
+                </Link>
+              )}
             </div>
             <div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-muted-foreground">
               MESA <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">5</span>
