@@ -167,6 +167,11 @@ export default function Dashboard() {
                 type="text" 
                 placeholder="Buscar pedido, prod..." 
                 className="w-full bg-[#141416] border border-[#1F1F23] rounded-lg pl-9 pr-8 py-1.5 text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    alert('Buscador: Función en desarrollo para una futura HU.');
+                  }
+                }}
               />
               <span className="absolute inset-y-0 right-3 flex items-center text-[10px] text-neutral-600 font-bold bg-[#09090A] px-1.5 my-1.5 border border-[#1F1F23] rounded">
                 ⌘K
@@ -175,16 +180,28 @@ export default function Dashboard() {
 
             {/* Acciones Rápidas */}
             <div className="flex items-center gap-2 text-neutral-400 border-r border-[#1F1F23] pr-4">
-              <button className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors">
+              <button 
+                onClick={() => alert('Datos actualizados correctamente.')}
+                className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors cursor-pointer"
+                title="Actualizar datos"
+              >
                 <Icon path={ICONS.refresh} size={16} />
               </button>
-              <button className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors relative">
+              <button 
+                onClick={() => alert('Notificaciones: \n1. Alerta de stock bajo en Pan Burger.\n2. Alerta de stock bajo en Carne Res.')}
+                className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors relative cursor-pointer"
+                title="Ver notificaciones"
+              >
                 <Icon path={ICONS.bell} size={16} />
                 <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#E8530A] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-[#09090A]">
-                  3
+                  2
                 </span>
               </button>
-              <button className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors">
+              <button 
+                onClick={() => alert('Ajustes del sistema: Módulo en desarrollo.')}
+                className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors cursor-pointer"
+                title="Configuración"
+              >
                 <Icon path={ICONS.settings} size={16} />
               </button>
             </div>
