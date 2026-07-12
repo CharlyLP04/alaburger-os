@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { manejarErrorInterno } = require('../utils/errorHandler');
 
 const crearPedido = async (req, res) => {
   const client = await pool.connect();
@@ -172,10 +173,14 @@ const crearPedido = async (req, res) => {
 
     const esValidacion = error.message.includes('Producto') || error.message.includes('producto');
 
-    return res.status(esValidacion ? 400 : 500).json({
-      error: esValidacion ? 'Datos inválidos' : 'Error interno del servidor',
-      mensaje: error.message,
-    });
+    if (esValidacion) {
+      return res.status(400).json({
+        error: 'Datos inválidos',
+        mensaje: error.message,
+      });
+    }
+
+    return manejarErrorInterno(error, res, 'crear pedido');
   } finally {
     client.release();
   }

@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { manejarErrorInterno } = require('../utils/errorHandler');
 
 const obtenerProductos = async (req, res) => {
   try {
@@ -18,11 +19,7 @@ const obtenerProductos = async (req, res) => {
 
     return res.status(200).json({ productos });
   } catch (error) {
-    console.error('Error al obtener productos:', error);
-    return res.status(500).json({
-      error: 'Error interno del servidor',
-      mensaje: error.message,
-    });
+    return manejarErrorInterno(error, res, 'obtener productos');
   }
 };
 
