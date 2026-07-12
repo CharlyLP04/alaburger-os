@@ -139,4 +139,141 @@ const crearIngrediente = async (req, res) => {
   }
 };
 
-module.exports = { obtenerInventario, crearIngrediente };
+const editarIngrediente = async (req, res) => {
+  const { id } = req.params;
+  const client = await pool.connect();
+  try {
+    const { nombre, unidad, stock_minimo, cantidad_actual, cantidad_disponible } = req.body;
+
+    // 1. Validar que no intenten editar cantidad_actual o cantidad_disponible
+    if (cantidad_actual !== undefined || cantidad_disponible !== undefined) {
+      return res.status(400).json({
+        error: 'Campo no editable',
+        mensaje: 'La cantidad se modifica solo mediante movimientos de inventario (entradas/salidas/mermas).',
+      });
+    }
+
+    // 2. Verificar que el registro de inventario exista
+    const resInventarioExist = await pool.query(
+      'SELECT ingrediente_id, cantidad_disponible, stock_minimo FROM inventario WHERE id = $1',
+      [id]
+    );
+
+    if (resInventarioExist.rows.length === 0) {
+      return res.status(404).json({
+        error: 'No encontrado',
+        mensaje: 'El ingrediente de inventario especificado no existe.',
+      });
+    }
+
+    const currentInv = resInventarioExist.rows[0];
+    const ingredienteId = currentInv.ingrediente_id;
+
+    // 3. Validaciones de tipos de datos parciales
+    if (nombre !== undefined && (typeof nombre !== 'string' || nombre.trim() === '')) {
+      return res.status(400).json({
+        error: 'Datos inválidos',
+        mensaje: 'El nombre debe ser un texto válido no vacío.',
+      });
+    }
+
+    const unidadesValidas = ['kg', 'g', 'l', 'ml', 'pza'];
+    if (unidad !== undefined && (typeof unidad !== 'string' || !unidadesValidas.includes(unidad.toLowerCase()))) {
+      return res.status(400).json({
+        error: 'Datos inválidos',
+        mensaje: `La unidad debe ser una de las siguientes: ${unidadesValidas.join(', ')}.`,
+      });
+    }
+
+    if (stock_minimo !== undefined) {
+      const stockMinimoNum = Number(stock_minimo);
+      if (isNaN(stockMinimoNum) || stockMinimoNum < 0) {
+        return res.status(400).json({
+          error: 'Datos inválidos',
+          mensaje: 'El stock mínimo debe ser un número no menor a 0.',
+        });
+      }
+    }
+
+    // 4. Si cambia el nombre, verificar que no esté duplicado con otro ID
+    if (nombre !== undefined) {
+      const resDuplicado = await pool.query(
+        'SELECT id FROM ingredientes WHERE LOWER(nombre) = LOWER($1) AND id <> $2',
+        [nombre.trim(), ingredienteId]
+      );
+      if (resDuplicado.rows.length > 0) {
+        return res.status(409).json({
+          error: 'El ingrediente ya existe',
+          mensaje: 'Ya existe otro ingrediente registrado con ese nombre.',
+        });
+      }
+    }
+
+    // 5. Ejecutar la transacción
+    await client.query('BEGIN');
+
+    // Actualizar ingredientes
+    if (nombre !== undefined || unidad !== undefined) {
+      await client.query(
+        `UPDATE ingredientes
+         SET nombre = COALESCE($1, nombre),
+             unidad = COALESCE($2, unidad),
+             updated_at = NOW()
+         WHERE id = $3`,
+        [
+          nombre !== undefined ? nombre.trim() : null,
+          unidad !== undefined ? unidad.toLowerCase() : null,
+          ingredienteId
+        ]
+      );
+    }
+
+    // Actualizar inventario
+    if (stock_minimo !== undefined) {
+      await client.query(
+        `UPDATE inventario
+         SET stock_minimo = $1,
+             updated_at = NOW()
+         WHERE id = $2`,
+        [Number(stock_minimo), id]
+      );
+    }
+
+    // Obtener resultado final
+    const resFinal = await client.query(
+      `SELECT i.id, ing.nombre, i.cantidad_disponible AS cantidad_actual,
+              ing.unidad, i.stock_minimo, i.updated_at AS ultima_actualizacion
+       FROM inventario i
+       INNER JOIN ingredientes ing ON ing.id = i.ingrediente_id
+       WHERE i.id = $1`,
+      [id]
+    );
+
+    await client.query('COMMIT');
+
+    const row = resFinal.rows[0];
+    const stockBajo = Number(row.cantidad_actual) <= Number(row.stock_minimo);
+
+    return res.status(200).json({
+      id: row.id,
+      nombre: row.nombre,
+      cantidad_actual: Number(row.cantidad_actual),
+      unidad: row.unidad,
+      stock_minimo: Number(row.stock_minimo),
+      stock_bajo: stockBajo,
+      ultima_actualizacion: row.ultima_actualizacion,
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error al editar el ingrediente:', error);
+    return res.status(500).json({
+      error: 'Error interno del servidor',
+      mensaje: error.message,
+    });
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { obtenerInventario, crearIngrediente, editarIngrediente };
