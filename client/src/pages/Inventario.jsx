@@ -24,7 +24,7 @@ export default function Inventario() {
 
   const handleLogout = () => {
     clearAuth();
-    navigate('/login', { replace: true });
+    window.location.href = '/login';
   };
 
   const loadInventario = async (stockBajoOnly) => {
