@@ -276,4 +276,106 @@ const editarIngrediente = async (req, res) => {
   }
 };
 
-module.exports = { obtenerInventario, crearIngrediente, editarIngrediente };
+const registrarEntrada = async (req, res) => {
+  const { id } = req.params;
+  const client = await pool.connect();
+  try {
+    const { cantidad, proveedor, costo_unitario, fecha } = req.body;
+
+    // 1. Validar que la cantidad sea un número > 0
+    const cantidadNum = Number(cantidad);
+    if (isNaN(cantidadNum) || cantidadNum <= 0) {
+      return res.status(400).json({
+        error: 'Datos inválidos',
+        mensaje: 'La cantidad debe ser un número mayor a 0.',
+      });
+    }
+
+    // Validar costo_unitario opcional
+    if (costo_unitario !== undefined && costo_unitario !== null) {
+      const costoNum = Number(costo_unitario);
+      if (isNaN(costoNum) || costoNum < 0) {
+        return res.status(400).json({
+          error: 'Datos inválidos',
+          mensaje: 'El costo unitario debe ser un número no menor a 0.',
+        });
+      }
+    }
+
+    // 2. Verificar que el ingrediente de inventario exista
+    const resInventarioExist = await pool.query(
+      'SELECT ingrediente_id FROM inventario WHERE id = $1',
+      [id]
+    );
+
+    if (resInventarioExist.rows.length === 0) {
+      return res.status(404).json({
+        error: 'No encontrado',
+        mensaje: 'El ingrediente de inventario especificado no existe.',
+      });
+    }
+
+    const ingredienteId = resInventarioExist.rows[0].ingrediente_id;
+
+    // 3. Transacción para actualizar stock e insertar movimiento
+    await client.query('BEGIN');
+
+    // a) Actualizar cantidad en inventario
+    const resUpdate = await client.query(
+      `UPDATE inventario
+       SET cantidad_disponible = cantidad_disponible + $1,
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING cantidad_disponible, stock_minimo`,
+      [cantidadNum, id]
+    );
+
+    const updatedInv = resUpdate.rows[0];
+
+    // b) Insertar movimiento en movimientos_inventario
+    const resMovimiento = await client.query(
+      `INSERT INTO movimientos_inventario (ingrediente_id, tipo, cantidad, referencia, costo_unitario, usuario_id, fecha)
+       VALUES ($1, 'entrada', $2, $3, $4, $5, COALESCE($6, NOW()))
+       RETURNING id, tipo, cantidad, referencia, costo_unitario, fecha`,
+      [
+        ingredienteId,
+        cantidadNum,
+        proveedor ? proveedor.trim() : null,
+        costo_unitario !== undefined && costo_unitario !== null ? Number(costo_unitario) : null,
+        req.usuario.id,
+        fecha || null
+      ]
+    );
+
+    const newMov = resMovimiento.rows[0];
+
+    await client.query('COMMIT');
+
+    const stockBajo = Number(updatedInv.cantidad_disponible) <= Number(updatedInv.stock_minimo);
+
+    return res.status(200).json({
+      cantidad_actual: Number(updatedInv.cantidad_disponible),
+      stock_bajo: stockBajo,
+      movimiento: {
+        id: newMov.id,
+        tipo: newMov.tipo,
+        cantidad: Number(newMov.cantidad),
+        referencia: newMov.referencia,
+        costo_unitario: newMov.costo_unitario ? Number(newMov.costo_unitario) : null,
+        fecha: newMov.fecha
+      }
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error al registrar entrada de inventario:', error);
+    return res.status(500).json({
+      error: 'Error interno del servidor',
+      mensaje: error.message,
+    });
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada };
