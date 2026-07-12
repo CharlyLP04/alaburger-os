@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario, hasRole } from '../utils/auth';
-import { getInventario, crearIngrediente, editarIngrediente } from '../services/api';
+import { getInventario, crearIngrediente, editarIngrediente, registrarEntrada } from '../services/api';
 
 export default function Inventario() {
   const navigate = useNavigate();
@@ -23,6 +23,17 @@ export default function Inventario() {
   const [modalStockMinimo, setModalStockMinimo] = useState('');
   const [modalError, setModalError] = useState('');
   const [modalSubmitting, setModalSubmitting] = useState(false);
+
+  // Estados del modal para registrar entrada (HU-44)
+  const [isEntradaModalOpen, setIsEntradaModalOpen] = useState(false);
+  const [entradaId, setEntradaId] = useState(null);
+  const [entradaNombre, setEntradaNombre] = useState('');
+  const [entradaCantidad, setEntradaCantidad] = useState('');
+  const [entradaProveedor, setEntradaProveedor] = useState('');
+  const [entradaCosto, setEntradaCosto] = useState('');
+  const [entradaError, setEntradaError] = useState('');
+  const [entradaSubmitting, setEntradaSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleLogout = () => {
     clearAuth();
@@ -92,6 +103,48 @@ export default function Inventario() {
     setModalStockMinimo(item.stock_minimo.toString());
     setModalError('');
     setIsModalOpen(true);
+  };
+
+  const handleOpenEntradaModal = (item) => {
+    setEntradaId(item.id);
+    setEntradaNombre(item.nombre);
+    setEntradaCantidad('');
+    setEntradaProveedor('');
+    setEntradaCosto('');
+    setEntradaError('');
+    setIsEntradaModalOpen(true);
+  };
+
+  const handleSaveEntrada = async (e) => {
+    e.preventDefault();
+    setEntradaError('');
+    setEntradaSubmitting(true);
+    try {
+      const payload = {
+        cantidad: Number(entradaCantidad),
+        proveedor: entradaProveedor.trim() || undefined,
+        costo_unitario: entradaCosto !== '' ? Number(entradaCosto) : undefined,
+      };
+
+      await registrarEntrada(entradaId, payload);
+      
+      setSuccessMessage(`¡Entrada registrada con éxito para ${entradaNombre}!`);
+      setTimeout(() => setSuccessMessage(''), 4000);
+
+      setIsEntradaModalOpen(false);
+      setEntradaId(null);
+      setEntradaNombre('');
+      setEntradaCantidad('');
+      setEntradaProveedor('');
+      setEntradaCosto('');
+      
+      loadInventario(soloStockBajo);
+    } catch (err) {
+      console.error('Error al registrar entrada:', err);
+      setEntradaError(err.message || 'No se pudo registrar la entrada.');
+    } finally {
+      setEntradaSubmitting(false);
+    }
   };
 
   return (
@@ -274,8 +327,16 @@ export default function Inventario() {
           {/* Banner de error */}
           {error && (
             <div className="mb-6 bg-destructive/10 border border-destructive/30 rounded-xl p-4 flex items-center gap-3 text-destructive">
-              <div className="text-destructive font-bold text-lg">⚠️</div>
-              <div className="text-xs font-bold uppercase tracking-wider">{error}</div>
+               <div className="text-destructive font-bold text-lg">⚠️</div>
+               <div className="text-xs font-bold uppercase tracking-wider">{error}</div>
+            </div>
+          )}
+
+          {/* Banner de éxito */}
+          {successMessage && (
+            <div className="mb-6 bg-success/10 border border-success/30 rounded-xl p-4 flex items-center gap-3 text-success">
+               <div className="text-success font-bold text-lg">✅</div>
+               <div className="text-xs font-bold uppercase tracking-wider">{successMessage}</div>
             </div>
           )}
 
@@ -348,13 +409,22 @@ export default function Inventario() {
                         </td>
                         {hasRole(['administrador']) && (
                           <td className="p-4 text-center pr-6">
-                            <button
-                              type="button"
-                              onClick={() => handleOpenEditModal(item)}
-                              className="text-xs font-bold bg-[#141416] hover:bg-[#E8530A]/20 hover:text-[#E8530A] border border-[#1F1F23] hover:border-[#E8530A]/40 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-                            >
-                              Editar
-                            </button>
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenEntradaModal(item)}
+                                className="text-[10px] font-black bg-[#E8530A]/10 hover:bg-[#E8530A]/25 text-[#E8530A] border border-[#E8530A]/20 hover:border-[#E8530A]/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                              >
+                                Entrada
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenEditModal(item)}
+                                className="text-[10px] font-black bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                              >
+                                Editar
+                              </button>
+                            </div>
                           </td>
                         )}
                       </tr>
@@ -503,6 +573,110 @@ export default function Inventario() {
                   className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] disabled:opacity-60 disabled:cursor-not-allowed px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
                 >
                   {modalSubmitting ? (isEditing ? 'Guardando...' : 'Registrando...') : (isEditing ? 'Guardar' : 'Registrar')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE REGISTRAR ENTRADA */}
+      {isEntradaModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 transition-all">
+          <div className="bg-[#09090A] border border-[#1F1F23] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            {/* Header del Modal */}
+            <div className="p-6 border-b border-[#1F1F23] flex items-center justify-between">
+              <h3 className="font-black tracking-wide text-lg text-white uppercase">
+                Registrar Entrada: {entradaNombre}
+              </h3>
+              <button 
+                type="button"
+                onClick={() => {
+                  setIsEntradaModalOpen(false);
+                  setEntradaError('');
+                }}
+                className="text-neutral-500 hover:text-white transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Formulario */}
+            <form onSubmit={handleSaveEntrada} className="p-6 space-y-4">
+              {entradaError && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3 text-xs font-bold text-destructive uppercase tracking-wide">
+                  ⚠️ {entradaError}
+                </div>
+              )}
+
+              {/* Cantidad */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                  Cantidad a agregar (Requerido)
+                </label>
+                <input
+                  type="number"
+                  step="0.001"
+                  required
+                  min="0.001"
+                  value={entradaCantidad}
+                  onChange={(e) => setEntradaCantidad(e.target.value)}
+                  placeholder="Ej. 10"
+                  className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                />
+              </div>
+
+              {/* Proveedor */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                  Proveedor / Referencia (Opcional)
+                </label>
+                <input
+                  type="text"
+                  value={entradaProveedor}
+                  onChange={(e) => setEntradaProveedor(e.target.value)}
+                  placeholder="Ej. Distribuidora San Juan"
+                  className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                />
+              </div>
+
+              {/* Costo Unitario */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                  Costo Unitario (Opcional)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={entradaCosto}
+                    onChange={(e) => setEntradaCosto(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg pl-7 pr-3 py-2.5 text-sm outline-none transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Acciones */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1F1F23]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEntradaModalOpen(false);
+                    setEntradaError('');
+                  }}
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white px-4 py-2.5 rounded-lg border border-[#1F1F23] bg-[#141416] hover:border-neutral-700 transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={entradaSubmitting}
+                  className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] disabled:opacity-60 disabled:cursor-not-allowed px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  {entradaSubmitting ? 'Guardando...' : 'Registrar Entrada'}
                 </button>
               </div>
             </form>
