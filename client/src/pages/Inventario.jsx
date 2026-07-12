@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
-import { clearAuth, getInitials, getUsuario } from '../utils/auth';
-import { getInventario } from '../services/api';
+import { clearAuth, getInitials, getUsuario, hasRole } from '../utils/auth';
+import { getInventario, crearIngrediente } from '../services/api';
 
 export default function Inventario() {
   const navigate = useNavigate();
@@ -12,6 +12,15 @@ export default function Inventario() {
   const [error, setError] = useState('');
   const [inventario, setInventario] = useState([]);
   const [soloStockBajo, setSoloStockBajo] = useState(false);
+
+  // Estados del modal para nuevo ingrediente (HU-42)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalNombre, setModalNombre] = useState('');
+  const [modalCantidad, setModalCantidad] = useState('');
+  const [modalUnidad, setModalUnidad] = useState('kg');
+  const [modalStockMinimo, setModalStockMinimo] = useState('');
+  const [modalError, setModalError] = useState('');
+  const [modalSubmitting, setModalSubmitting] = useState(false);
 
   const handleLogout = () => {
     clearAuth();
@@ -35,6 +44,33 @@ export default function Inventario() {
   useEffect(() => {
     loadInventario(soloStockBajo);
   }, [soloStockBajo]);
+
+  const handleCrearIngrediente = async (e) => {
+    e.preventDefault();
+    setModalError('');
+    setModalSubmitting(true);
+    try {
+      await crearIngrediente({
+        nombre: modalNombre.trim(),
+        cantidad_actual: Number(modalCantidad),
+        unidad: modalUnidad,
+        stock_minimo: Number(modalStockMinimo),
+      });
+      // Cerrar y limpiar formulario
+      setIsModalOpen(false);
+      setModalNombre('');
+      setModalCantidad('');
+      setModalUnidad('kg');
+      setModalStockMinimo('');
+      // Recargar listado
+      loadInventario(soloStockBajo);
+    } catch (err) {
+      console.error('Error al crear ingrediente:', err);
+      setModalError(err.message || 'No se pudo crear el ingrediente.');
+    } finally {
+      setModalSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#0E0E10] text-white font-sans selection:bg-primary/30">
@@ -178,8 +214,18 @@ export default function Inventario() {
               </p>
             </div>
 
-            {/* Toggle de Stock Bajo */}
-            <div className="flex items-center">
+            {/* Controles de Inventario: Filtro y Botón de Creación para Administradores */}
+            <div className="flex items-center gap-4">
+              {hasRole(['administrador']) && (
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex items-center gap-2 bg-[#E8530A] hover:bg-[#ff6214] text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all shadow-md active:scale-98 cursor-pointer"
+                >
+                  + Agregar ingrediente
+                </button>
+              )}
+
               <label className="flex items-center gap-3 cursor-pointer group bg-[#141416] border border-[#1F1F23] px-4 py-2.5 rounded-lg hover:border-neutral-800 transition-colors">
                 <input
                   type="checkbox"
@@ -277,6 +323,127 @@ export default function Inventario() {
           )}
         </main>
       </div>
+
+      {/* MODAL DE NUEVO INGREDIENTE */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 transition-all">
+          <div className="bg-[#09090A] border border-[#1F1F23] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            {/* Header del Modal */}
+            <div className="p-6 border-b border-[#1F1F23] flex items-center justify-between">
+              <h3 className="font-black tracking-wide text-lg text-white uppercase">Agregar Ingrediente</h3>
+              <button 
+                type="button"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setModalError('');
+                }}
+                className="text-neutral-500 hover:text-white transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Formulario */}
+            <form onSubmit={handleCrearIngrediente} className="p-6 space-y-4">
+              {modalError && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3 text-xs font-bold text-destructive uppercase tracking-wide">
+                  ⚠️ {modalError}
+                </div>
+              )}
+
+              {/* Nombre */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                  Nombre del ingrediente
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={modalNombre}
+                  onChange={(e) => setModalNombre(e.target.value)}
+                  placeholder="Ej. Carne de Res, Queso Cheddar"
+                  className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Cantidad Inicial */}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                    Cantidad Inicial
+                  </label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    required
+                    min="0"
+                    value={modalCantidad}
+                    onChange={(e) => setModalCantidad(e.target.value)}
+                    placeholder="0"
+                    className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                  />
+                </div>
+
+                {/* Unidad */}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                    Unidad de Medida
+                  </label>
+                  <select
+                    value={modalUnidad}
+                    onChange={(e) => setModalUnidad(e.target.value)}
+                    className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                  >
+                    <option value="kg">kg (Kilogramo)</option>
+                    <option value="g">g (Gramo)</option>
+                    <option value="l">l (Litro)</option>
+                    <option value="ml">ml (Mililitro)</option>
+                    <option value="pza">pza (Pieza)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Stock Mínimo */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">
+                  Stock Mínimo (Alerta)
+                </label>
+                <input
+                  type="number"
+                  step="0.001"
+                  required
+                  min="0"
+                  value={modalStockMinimo}
+                  onChange={(e) => setModalStockMinimo(e.target.value)}
+                  placeholder="Ej. 5"
+                  className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary text-neutral-200 rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
+                />
+              </div>
+
+              {/* Acciones */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#1F1F23]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setModalError('');
+                  }}
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white px-4 py-2.5 rounded-lg border border-[#1F1F23] bg-[#141416] hover:border-neutral-700 transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={modalSubmitting}
+                  className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] disabled:opacity-60 disabled:cursor-not-allowed px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  {modalSubmitting ? 'Registrando...' : 'Registrar'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

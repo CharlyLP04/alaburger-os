@@ -71,3 +71,10 @@ export function getInventario(stockBajo = false) {
   const query = stockBajo ? '?stock_bajo=true' : '';
   return apiFetch(`/inventario${query}`);
 }
+
+export function crearIngrediente(payload) {
+  return apiFetch('/inventario', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
