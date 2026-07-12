@@ -147,6 +147,15 @@ export default function Inventario() {
     }
   };
 
+  const displayInventario = [...inventario].sort((a, b) => {
+    if (soloStockBajo) {
+      const ratioA = a.stock_minimo === 0 ? 0 : a.cantidad_actual / a.stock_minimo;
+      const ratioB = b.stock_minimo === 0 ? 0 : b.cantidad_actual / b.stock_minimo;
+      return ratioA - ratioB;
+    }
+    return 0;
+  });
+
   return (
     <div className="flex min-h-screen bg-[#0E0E10] text-white font-sans selection:bg-primary/30">
       
@@ -367,7 +376,7 @@ export default function Inventario() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1F1F23] text-sm">
-                  {inventario.map((item) => {
+                  {displayInventario.map((item) => {
                     const isLowStock = item.cantidad_actual <= item.stock_minimo;
                     return (
                       <tr 

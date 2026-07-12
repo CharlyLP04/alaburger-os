@@ -6,6 +6,7 @@ import WaiterApp from './pages/WaiterApp';
 import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
 import Inventario from './pages/Inventario';
+import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
@@ -56,9 +57,49 @@ export default function App() {
           }
         />
         <Route
+          path="/pedidos"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Pedidos" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/productos"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Productos" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sucursales"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Sucursales" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Usuarios" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reportes"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Reportes" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/cocina"
           element={
-            <ProtectedRoute allowedRoles={['cocina']}>
+            <ProtectedRoute allowedRoles={['cocina', 'administrador']}>
               <KDS />
             </ProtectedRoute>
           }
@@ -66,7 +107,7 @@ export default function App() {
         <Route
           path="/mesero"
           element={
-            <ProtectedRoute allowedRoles={['mesero']}>
+            <ProtectedRoute allowedRoles={['mesero', 'administrador']}>
               <WaiterApp />
             </ProtectedRoute>
           }

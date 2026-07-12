@@ -1,11 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario } from '../utils/auth';
+import { getAlertasStockBajo } from '../services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const usuario = getUsuario();
+
+  const [alertCount, setAlertCount] = useState(0);
+  const [alertItems, setAlertItems] = useState([]);
+  const [loadingAlerts, setLoadingAlerts] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    async function loadAlerts() {
+      try {
+        const result = await getAlertasStockBajo();
+        if (active) {
+          setAlertCount(result.total || 0);
+          setAlertItems(result.data || []);
+        }
+      } catch (error) {
+        console.error('Error al cargar alertas de stock bajo:', error);
+      } finally {
+        if (active) {
+          setLoadingAlerts(false);
+        }
+      }
+    }
+    loadAlerts();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const criticos = alertItems.filter(item => item.cantidad_actual === 0 || item.stock_minimo === 0 || (item.cantidad_actual / item.stock_minimo) <= 0.5).length;
+  const advertencias = alertCount - criticos;
+
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const handleLogout = () => {
     clearAuth();
@@ -135,26 +179,43 @@ export default function Dashboard() {
               <input 
                 type="text" 
                 placeholder="Buscar pedido, prod..." 
-                className="w-full bg-[#141416] border border-[#1F1F23] rounded-lg pl-9 pr-8 py-1.5 text-xs text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
+                className="w-full bg-[#141416] border border-[#1F1F23] rounded-xl pl-10 pr-10 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    showToast('Buscador: Función en desarrollo para una futura HU.', 'info');
+                  }
+                }}
               />
-              <span className="absolute inset-y-0 right-3 flex items-center text-[10px] text-neutral-600 font-bold bg-[#09090A] px-1.5 my-1.5 border border-[#1F1F23] rounded">
+              <span className="absolute inset-y-0 right-3 flex items-center text-[10px] text-neutral-500 font-bold bg-[#09090A] px-2 my-2 border border-[#1F1F23] rounded-lg">
                 ⌘K
               </span>
             </div>
 
             {/* Acciones Rápidas */}
-            <div className="flex items-center gap-2 text-neutral-400 border-r border-[#1F1F23] pr-4">
-              <button className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors">
-                <Icon path={ICONS.refresh} size={16} />
+            <div className="flex items-center gap-3 text-neutral-300 border-r border-[#1F1F23] pr-6">
+              <button 
+                onClick={() => showToast('Datos actualizados correctamente.', 'success')}
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
+                title="Actualizar datos"
+              >
+                <Icon path={ICONS.refresh} size={22} />
               </button>
-              <button className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors relative">
-                <Icon path={ICONS.bell} size={16} />
-                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#E8530A] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-[#09090A]">
-                  3
+              <button 
+                onClick={() => showToast('Stock bajo: Pan Burger (10) • Carne Res (15)', 'warning')}
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors relative cursor-pointer"
+                title="Ver notificaciones"
+              >
+                <Icon path={ICONS.bell} size={22} />
+                <span className="absolute top-1 right-1 w-5.5 h-5.5 bg-[#E8530A] text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-[#09090A]">
+                  2
                 </span>
               </button>
-              <button className="p-2 hover:text-white rounded-lg hover:bg-[#141416] transition-colors">
-                <Icon path={ICONS.settings} size={16} />
+              <button 
+                onClick={() => showToast('Ajustes del sistema: Módulo en desarrollo.', 'info')}
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
+                title="Configuración"
+              >
+                <Icon path={ICONS.settings} size={22} />
               </button>
             </div>
 
@@ -257,12 +318,12 @@ export default function Dashboard() {
               </div>
               <div>
                 <h3 className="text-2xl font-black tracking-tight mb-2">
-                  7 <span className="text-xs font-bold text-neutral-500 ml-0.5">PRODUCTOS</span>
+                  {loadingAlerts ? '...' : alertCount} <span className="text-xs font-bold text-neutral-500 ml-0.5">PRODUCTOS</span>
                 </h3>
                 <div className="text-destructive text-xs font-bold flex items-center gap-1.5">
-                  <span className="bg-destructive/10 px-1.5 py-0.5 rounded text-[10px]">↘ -2%</span>
-                  <span className="text-neutral-400 font-bold text-[11px]">3 críticos</span>
-                  <span className="text-neutral-500 font-medium text-[11px]"> 4 advertencia</span>
+                  <span className="bg-destructive/10 px-1.5 py-0.5 rounded text-[10px]">↘ ALERTA</span>
+                  <span className="text-neutral-400 font-bold text-[11px]">{criticos} críticos</span>
+                  <span className="text-neutral-500 font-medium text-[11px]">{advertencias} {advertencias === 1 ? 'advertencia' : 'advertencias'}</span>
                 </div>
               </div>
             </div>
@@ -300,6 +361,37 @@ export default function Dashboard() {
         </main>
 
       </div>
+
+      {/* Toast Alert */}
+      {toast && (
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-[#141416] border-2 border-neutral-800 rounded-2xl px-6 py-4 shadow-2xl min-w-[380px] max-w-lg animate-in slide-in-from-top-8 fade-in duration-300">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+            toast.type === 'success' ? 'bg-success/10 text-success border border-success/30' :
+            toast.type === 'warning' ? 'bg-destructive/10 text-destructive border border-destructive/30' : 
+            'bg-[#E8530A]/10 text-[#E8530A] border border-[#E8530A]/30'
+          }`}>
+            <Icon 
+              path={toast.type === 'success' ? ICONS.check : toast.type === 'warning' ? ICONS.bell : ICONS.settings} 
+              size={20} 
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-black text-white uppercase tracking-wide leading-tight">
+              {toast.type === 'success' ? 'Éxito' : toast.type === 'warning' ? 'Advertencia' : 'Información'}
+            </p>
+            <p className="text-xs font-bold text-neutral-400 mt-0.5 leading-snug">
+              {toast.message}
+            </p>
+          </div>
+          <button 
+            onClick={() => setToast(null)} 
+            className="text-neutral-500 hover:text-white ml-2 p-2 hover:bg-[#1C1C1F] rounded-lg transition-colors cursor-pointer text-sm font-black"
+            aria-label="Cerrar notificación"
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 }

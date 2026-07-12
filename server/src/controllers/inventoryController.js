@@ -378,4 +378,36 @@ const registrarEntrada = async (req, res) => {
   }
 };
 
-module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada };
+const obtenerResumenStockBajo = async (req, res) => {
+  try {
+    const queryText = `
+      SELECT i.id, ing.nombre, i.cantidad_disponible AS cantidad_actual, i.stock_minimo, ing.unidad,
+             CASE WHEN i.stock_minimo = 0 THEN NULL ELSE (i.cantidad_disponible::numeric / i.stock_minimo::numeric) END AS criticidad
+      FROM inventario i
+      INNER JOIN ingredientes ing ON ing.id = i.ingrediente_id
+      WHERE i.cantidad_disponible <= i.stock_minimo
+      ORDER BY (CASE WHEN i.stock_minimo = 0 THEN 0 ELSE (i.cantidad_disponible::numeric / i.stock_minimo::numeric) END) ASC
+    `;
+
+    const resultado = await pool.query(queryText);
+
+    const data = resultado.rows.map((row) => ({
+      id: row.id,
+      nombre: row.nombre,
+      cantidad_actual: Number(row.cantidad_actual),
+      stock_minimo: Number(row.stock_minimo),
+      unidad: row.unidad,
+      criticidad: row.criticidad !== null ? Number(row.criticidad) : null,
+    }));
+
+    return res.status(200).json({ data, total: data.length });
+  } catch (error) {
+    console.error('Error al obtener resumen de stock bajo:', error);
+    return res.status(500).json({
+      error: 'Error interno del servidor',
+      mensaje: error.message,
+    });
+  }
+};
+
+module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada, obtenerResumenStockBajo };

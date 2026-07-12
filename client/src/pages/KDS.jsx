@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
+import { getUsuario } from '../utils/auth';
 
 const ORDERS = [
   { id: "#4822", table: "MESA 3", time: "3:19", status: "PREPARANDO", items: [
@@ -23,6 +25,7 @@ const ORDERS = [
 ];
 
 export default function KDS() {
+  const usuario = getUsuario();
   const getModColor = (type) => {
     if (type === 'remove') return 'border-destructive text-destructive bg-destructive/10';
     if (type === 'add') return 'border-secondary text-secondary bg-secondary/10';
@@ -35,10 +38,15 @@ export default function KDS() {
       {/* Header Cocina */}
       <header className="flex justify-between items-center mb-8 border-b border-[#1E1E1E] pb-4">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="bg-primary text-white font-bold w-6 h-6 rounded flex items-center justify-center text-xs">A</div>
-            <h1 className="font-bold tracking-widest text-sm uppercase">Burger OS <span className="text-muted-foreground ml-2">/ KDS Cocina</span></h1>
-          </div>
+            <h1 className="font-bold tracking-widest text-sm uppercase text-white">Burger OS <span className="text-muted-foreground ml-2">/ KDS Cocina</span></h1>
+          </Link>
+          {usuario?.rol === 'administrador' && (
+            <Link to="/" className="text-xs bg-[#1E1E1E] hover:bg-neutral-800 border border-[#2A2A2F] text-neutral-300 font-bold px-3 py-1.5 rounded-lg transition-colors ml-2">
+              Volver al Panel
+            </Link>
+          )}
         </div>
         <div className="flex gap-4 text-xs font-bold tracking-wider">
           <span className="text-muted-foreground">MODIFICACIONES:</span>
