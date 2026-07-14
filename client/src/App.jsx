@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
 import Inventario from './pages/Inventario';
 import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
+import Products from './pages/Products';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
@@ -68,7 +69,7 @@ export default function App() {
           path="/productos"
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Productos" />
+              <Products />
             </ProtectedRoute>
           }
         />

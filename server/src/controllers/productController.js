@@ -66,8 +66,13 @@ const obtenerProductos = async (req, res) => {
     const offset = (pageNum - 1) * limitNum;
 
     const resultado = await pool.query(
-      `SELECT p.id, p.nombre, p.descripcion, p.precio, p.disponible,
-              c.nombre AS categoria
+      `SELECT p.id,
+       p.nombre,
+       p.descripcion,
+       p.precio,
+       p.disponible,
+       p.categoria_id,
+       c.nombre AS categoria 
        FROM productos p
        INNER JOIN categorias c ON c.id = p.categoria_id
        ${whereClause}

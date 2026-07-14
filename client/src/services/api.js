@@ -60,6 +60,75 @@ export function getProductos() {
   return apiFetch('/productos');
 }
 
+export async function getProductosList({ page = 1, limit = 20, categoria_id, activo } = {}) {
+  const params = new URLSearchParams();
+  const filtroPorNombre = categoria_id !== undefined
+    && categoria_id !== null
+    && categoria_id !== ''
+    && Number.isNaN(Number(categoria_id));
+
+  if (filtroPorNombre) {
+    params.set('page', '1');
+    params.set('limit', '10000');
+  } else {
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+
+    if (categoria_id !== undefined && categoria_id !== null && categoria_id !== '') {
+      params.set('categoria_id', String(categoria_id));
+    }
+  }
+
+  if (activo === true || activo === 'true') {
+    params.set('activo', 'true');
+  } else if (activo === false || activo === 'false') {
+    params.set('activo', 'false');
+  }
+
+  const resultado = await apiFetch(`/productos?${params.toString()}`);
+
+  if (!filtroPorNombre) {
+    return resultado;
+  }
+
+  const filtrados = (resultado.data ?? []).filter(
+    (producto) => producto.categoria === categoria_id
+  );
+  const total = filtrados.length;
+  const offset = (page - 1) * limit;
+
+  return {
+    data: filtrados.slice(offset, offset + limit),
+    total,
+    page,
+    totalPages: total === 0 ? 1 : Math.ceil(total / limit),
+  };
+}
+
+export async function getCategoriasProducto() {
+  const resultado = await getProductosList({ page: 1, limit: 10000 });
+  const categoriasMap = new Map();
+
+  for (const producto of resultado.data ?? []) {
+    if (
+      producto.categoria_id == null ||
+      !producto.categoria ||
+      categoriasMap.has(producto.categoria_id)
+    ) {
+      continue;
+    }
+
+    categoriasMap.set(producto.categoria_id, {
+      id: producto.categoria_id,
+      nombre: producto.categoria,
+    });
+  }
+
+  return Array.from(categoriasMap.values()).sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es')
+  );
+}
+
 export function crearPedido(payload) {
   return apiFetch('/pedidos', {
     method: 'POST',
