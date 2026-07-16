@@ -392,7 +392,7 @@ export default function Inventario() {
                     onClick={handleOpenHistorialModal}
                     className="flex items-center gap-2 bg-[#141416] hover:bg-[#1F1F23] text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-4 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 cursor-pointer"
                   >
-                    📋 Ver Movimientos
+                    <Icon path={ICONS.clipboardList} size={16} /> Ver Movimientos
                   </button>
                   <button
                     type="button"
@@ -408,7 +408,7 @@ export default function Inventario() {
                     }}
                     className="flex items-center gap-2 bg-[#E8530A] hover:bg-[#ff6214] text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all shadow-md active:scale-98 cursor-pointer"
                   >
-                    + Nuevo Ingrediente
+                    <Icon path={ICONS.plus} size={16} /> Nuevo Ingrediente
                   </button>
                 </>
               )}
@@ -518,25 +518,25 @@ export default function Inventario() {
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEntradaModal(item)}
-                                    className="text-[10px] font-black bg-[#E8530A]/10 hover:bg-[#E8530A]/25 text-[#E8530A] border border-[#E8530A]/20 hover:border-[#E8530A]/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1"
+                                    className="text-[10px] font-bold bg-[#E8530A]/10 hover:bg-[#E8530A] text-[#E8530A] hover:text-white px-3 py-1.5 rounded-md transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1.5"
                                   >
-                                    📥 Entrada
+                                    <Icon path={ICONS.download} size={14} /> Entrada
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEditModal(item)}
-                                    className="text-[10px] font-black bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1"
+                                    className="text-[10px] font-bold bg-[#1F1F23] hover:bg-neutral-600 text-neutral-300 hover:text-white px-3 py-1.5 rounded-md transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1.5"
                                   >
-                                    ✏️ Editar
+                                    <Icon path={ICONS.edit} size={14} /> Editar
                                   </button>
                                 </>
                               )}
                               <button
                                 type="button"
                                 onClick={() => handleOpenMermaModal(item)}
-                                className="text-[10px] font-black bg-destructive/10 hover:bg-destructive/25 text-destructive border border-destructive/20 hover:border-destructive/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1"
+                                className="text-[10px] font-bold bg-destructive/10 hover:bg-destructive text-destructive hover:text-white px-3 py-1.5 rounded-md transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1.5"
                               >
-                                🗑️ Merma
+                                <Icon path={ICONS.trash} size={14} /> Merma
                               </button>
                             </div>
                           </td>
