@@ -113,3 +113,13 @@ export function registrarMerma(id, payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function getTodosLosMovimientos(tipo = '', fechaDesde = '', fechaHasta = '') {
+  const params = new URLSearchParams();
+  if (tipo) params.append('tipo', tipo);
+  if (fechaDesde) params.append('fecha_desde', fechaDesde);
+  if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+  
+  const query = params.toString();
+  return apiFetch(`/inventario/movimientos${query ? '?' + query : ''}`);
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario, hasRole } from '../utils/auth';
-import { getInventario, crearIngrediente, editarIngrediente, registrarEntrada, getMovimientos, registrarMerma } from '../services/api';
+import { getInventario, crearIngrediente, editarIngrediente, registrarEntrada, getMovimientos, registrarMerma, getTodosLosMovimientos } from '../services/api';
 
 export default function Inventario() {
   const navigate = useNavigate();
@@ -204,11 +204,11 @@ export default function Inventario() {
     }
   };
 
-  const loadHistorial = async (id, tipo) => {
+  const loadHistorial = async (tipo) => {
     setHistorialLoading(true);
     setHistorialError('');
     try {
-      const res = await getMovimientos(id, tipo);
+      const res = await getTodosLosMovimientos(tipo);
       setHistorialList(res.data || []);
     } catch (err) {
       console.error('Error al cargar historial:', err);
@@ -218,17 +218,17 @@ export default function Inventario() {
     }
   };
 
-  const handleOpenHistorialModal = (item) => {
-    setHistorialId(item.id);
-    setHistorialNombre(item.nombre);
+  const handleOpenHistorialModal = () => {
+    setHistorialId(null);
+    setHistorialNombre('General');
     setHistorialFiltroTipo('');
     setIsHistorialModalOpen(true);
-    loadHistorial(item.id, '');
+    loadHistorial('');
   };
 
   useEffect(() => {
-    if (isHistorialModalOpen && historialId) {
-      loadHistorial(historialId, historialFiltroTipo);
+    if (isHistorialModalOpen) {
+      loadHistorial(historialFiltroTipo);
     }
   }, [historialFiltroTipo]);
 
@@ -386,9 +386,17 @@ export default function Inventario() {
             {/* Controles de Inventario: Filtro y Botón de Creación para Administradores */}
             <div className="flex items-center gap-4">
               {hasRole(['administrador']) && (
-                <button
-                  type="button"
-                  onClick={() => {
+                <>
+                  <button
+                    type="button"
+                    onClick={handleOpenHistorialModal}
+                    className="flex items-center gap-2 bg-[#141416] hover:bg-[#1F1F23] text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-4 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 cursor-pointer"
+                  >
+                    Historial
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                     setIsEditing(false);
                     setEditingId(null);
                     setModalNombre('');
@@ -519,13 +527,6 @@ export default function Inventario() {
                                     className="text-[10px] font-black bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
                                   >
                                     Editar
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleOpenHistorialModal(item)}
-                                    className="text-[10px] font-black bg-blue-500/10 hover:bg-blue-500/25 text-blue-500 border border-blue-500/20 hover:border-blue-500/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
-                                  >
-                                    Historial
                                   </button>
                                 </>
                               )}
@@ -923,6 +924,7 @@ export default function Inventario() {
                     <thead>
                       <tr className="border-b border-[#1F1F23] text-[10px] font-bold text-neutral-500 uppercase tracking-widest bg-[#09090A]">
                         <th className="p-3 pl-4">Fecha</th>
+                        <th className="p-3">Ingrediente</th>
                         <th className="p-3">Tipo</th>
                         <th className="p-3 text-right">Cantidad</th>
                         <th className="p-3 pr-4">Motivo / Referencia</th>
@@ -941,6 +943,9 @@ export default function Inventario() {
                                 dateStyle: 'short',
                                 timeStyle: 'short',
                               })}
+                            </td>
+                            <td className="p-3 font-bold uppercase tracking-wider text-white">
+                              {mov.ingrediente_nombre}
                             </td>
                             <td className="p-3 font-bold uppercase tracking-wider">
                               {mov.tipo}

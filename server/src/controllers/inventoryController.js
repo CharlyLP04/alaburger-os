@@ -478,6 +478,61 @@ const obtenerMovimientos = async (req, res) => {
   }
 };
 
+const obtenerTodosLosMovimientos = async (req, res) => {
+  try {
+    const { tipo, fecha_desde, fecha_hasta } = req.query;
+
+    let queryText = `
+      SELECT m.id, m.tipo, m.cantidad, m.motivo, m.referencia, m.costo_unitario, m.usuario_id, m.fecha, m.created_at,
+             ing.nombre as ingrediente_nombre
+      FROM movimientos_inventario m
+      INNER JOIN ingredientes ing ON ing.id = m.ingrediente_id
+      WHERE 1=1
+    `;
+    const queryParams = [];
+    let paramCount = 1;
+
+    if (tipo) {
+      queryText += ` AND m.tipo = $${paramCount}`;
+      queryParams.push(tipo.toLowerCase());
+      paramCount++;
+    }
+
+    if (fecha_desde) {
+      queryText += ` AND m.fecha >= $${paramCount}`;
+      queryParams.push(fecha_desde);
+      paramCount++;
+    }
+
+    if (fecha_hasta) {
+      queryText += ` AND m.fecha <= $${paramCount}`;
+      queryParams.push(fecha_hasta);
+      paramCount++;
+    }
+
+    queryText += ' ORDER BY m.fecha DESC NULLS LAST, m.created_at DESC';
+
+    const resultado = await pool.query(queryText, queryParams);
+
+    const data = resultado.rows.map((row) => ({
+      id: row.id,
+      tipo: row.tipo,
+      cantidad: Number(row.cantidad),
+      motivo: row.motivo,
+      referencia: row.referencia,
+      costo_unitario: row.costo_unitario ? Number(row.costo_unitario) : null,
+      usuario_id: row.usuario_id,
+      fecha: row.fecha,
+      created_at: row.created_at,
+      ingrediente_nombre: row.ingrediente_nombre,
+    }));
+
+    return res.status(200).json({ data, total: data.length });
+  } catch (error) {
+    return manejarErrorInterno(error, res, 'obtener todos los movimientos');
+  }
+};
+
 const registrarMerma = async (req, res) => {
   const { id } = req.params;
   const client = await pool.connect();
@@ -569,4 +624,4 @@ const registrarMerma = async (req, res) => {
   }
 };
 
-module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada, obtenerResumenStockBajo, obtenerMovimientos, registrarMerma };
+module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada, obtenerResumenStockBajo, obtenerMovimientos, obtenerTodosLosMovimientos, registrarMerma };
