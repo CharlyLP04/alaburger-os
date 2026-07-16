@@ -73,14 +73,6 @@ export default function App() {
           }
         />
         <Route
-          path="/sucursales"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Sucursales" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/usuarios"
           element={
             <ProtectedRoute allowedRoles={['administrador']}>

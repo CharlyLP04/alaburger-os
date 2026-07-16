@@ -122,8 +122,8 @@ export default function Dashboard() {
                 <div className="w-2 h-2 rounded-full bg-destructive animate-pulse mr-1"></div>
               </Link>
 
-              {["Productos", "Sucursales", "Usuarios", "Reportes"].map((item, index) => {
-                const iconMap = [ICONS.box, ICONS.store, ICONS.users, ICONS.chart];
+              {["Productos", "Usuarios", "Reportes"].map((item, index) => {
+                const iconMap = [ICONS.box, ICONS.users, ICONS.chart];
                 return (
                   <Link 
                     key={index}
@@ -249,7 +249,7 @@ export default function Dashboard() {
             <div>
               <h1 className="text-2xl font-black tracking-wide mb-1">Panel de Control</h1>
               <p className="text-xs font-bold text-neutral-500 tracking-wider uppercase">
-                LUN 15 JUN 2026 <span className="text-neutral-700 mx-1.5">•</span> SEMANA 24 <span className="text-neutral-700 mx-1.5">•</span> 6 SUCURSALES
+                LUN 15 JUN 2026 <span className="text-neutral-700 mx-1.5">•</span> SEMANA 24 <span className="text-neutral-700 mx-1.5">•</span> 1 SUCURSAL
               </p>
             </div>
 
@@ -268,7 +268,7 @@ export default function Dashboard() {
           </div>
 
           {/* 4. CUADRÍCULA DE MÉTRICAS (METRICS GRID) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             
             {/* Tarjeta: Ventas */}
             <div className="bg-[#141416] border border-[#1F1F23] rounded-xl p-5 flex flex-col justify-between hover:border-neutral-800 transition-colors group">
@@ -324,25 +324,6 @@ export default function Dashboard() {
                   <span className="bg-destructive/10 px-1.5 py-0.5 rounded text-[10px]">↘ ALERTA</span>
                   <span className="text-neutral-400 font-bold text-[11px]">{criticos} críticos</span>
                   <span className="text-neutral-500 font-medium text-[11px]">{advertencias} {advertencias === 1 ? 'advertencia' : 'advertencias'}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Tarjeta: Sucursales Activas */}
-            <div className="bg-[#141416] border border-[#1F1F23] rounded-xl p-5 flex flex-col justify-between hover:border-neutral-800 transition-colors group">
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">Sucursales Activas</span>
-                <div className="text-success bg-success/10 p-2 rounded-lg group-hover:scale-105 transition-transform">
-                  <Icon path={ICONS.store} size={16} />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-2xl font-black tracking-tight mb-2">
-                  5 <span className="text-xs font-bold text-neutral-500 ml-0.5">DE 6</span>
-                </h3>
-                <div className="text-neutral-400 text-xs font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-destructive mr-0.5 animate-pulse"></span>
-                  Norte offline <span className="text-neutral-500">desde las 14:32</span>
                 </div>
               </div>
             </div>

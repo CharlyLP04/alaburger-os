@@ -301,8 +301,8 @@ export default function Inventario() {
                 </div>
               </Link>
 
-              {["Productos", "Sucursales", "Usuarios", "Reportes"].map((item, index) => {
-                const iconMap = [ICONS.box, ICONS.store, ICONS.users, ICONS.chart];
+              {["Productos", "Usuarios", "Reportes"].map((item, index) => {
+                const iconMap = [ICONS.box, ICONS.users, ICONS.chart];
                 return (
                   <Link 
                     key={index}

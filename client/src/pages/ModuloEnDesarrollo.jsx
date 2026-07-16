@@ -100,8 +100,8 @@ export default function ModuloEnDesarrollo({ modulo }) {
                 </div>
               </Link>
 
-              {["Productos", "Sucursales", "Usuarios", "Reportes"].map((item, index) => {
-                const iconMap = [ICONS.box, ICONS.store, ICONS.users, ICONS.chart];
+              {["Productos", "Usuarios", "Reportes"].map((item, index) => {
+                const iconMap = [ICONS.box, ICONS.users, ICONS.chart];
                 const isActive = modulo === item;
                 return (
                   <Link 
