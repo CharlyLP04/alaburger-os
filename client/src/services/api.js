@@ -96,3 +96,20 @@ export function registrarEntrada(id, payload) {
 export function getAlertasStockBajo() {
   return apiFetch('/inventario/alertas/resumen');
 }
+
+export function getMovimientos(id, tipo = '', fechaDesde = '', fechaHasta = '') {
+  const params = new URLSearchParams();
+  if (tipo) params.append('tipo', tipo);
+  if (fechaDesde) params.append('fecha_desde', fechaDesde);
+  if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+  
+  const query = params.toString();
+  return apiFetch(`/inventario/${id}/movimientos${query ? '?' + query : ''}`);
+}
+
+export function registrarMerma(id, payload) {
+  return apiFetch(`/inventario/${id}/merma`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
