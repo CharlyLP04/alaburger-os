@@ -410,6 +410,7 @@ export default function Inventario() {
                 >
                   + Agregar ingrediente
                 </button>
+                </>
               )}
 
               <label className="flex items-center gap-3 cursor-pointer group bg-[#141416] border border-[#1F1F23] px-4 py-2.5 rounded-lg hover:border-neutral-800 transition-colors">
