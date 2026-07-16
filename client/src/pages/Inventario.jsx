@@ -392,24 +392,24 @@ export default function Inventario() {
                     onClick={handleOpenHistorialModal}
                     className="flex items-center gap-2 bg-[#141416] hover:bg-[#1F1F23] text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-4 py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-98 cursor-pointer"
                   >
-                    Historial
+                    📋 Ver Movimientos
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                    setIsEditing(false);
-                    setEditingId(null);
-                    setModalNombre('');
-                    setModalCantidad('');
-                    setModalUnidad('kg');
-                    setModalStockMinimo('');
-                    setModalError('');
-                    setIsModalOpen(true);
-                  }}
-                  className="flex items-center gap-2 bg-[#E8530A] hover:bg-[#ff6214] text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all shadow-md active:scale-98 cursor-pointer"
-                >
-                  + Agregar ingrediente
-                </button>
+                      setIsEditing(false);
+                      setEditingId(null);
+                      setModalNombre('');
+                      setModalCantidad('');
+                      setModalUnidad('kg');
+                      setModalStockMinimo('');
+                      setModalError('');
+                      setIsModalOpen(true);
+                    }}
+                    className="flex items-center gap-2 bg-[#E8530A] hover:bg-[#ff6214] text-white font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg transition-all shadow-md active:scale-98 cursor-pointer"
+                  >
+                    + Nuevo Ingrediente
+                  </button>
                 </>
               )}
 
@@ -463,7 +463,7 @@ export default function Inventario() {
                     <th className="p-4 pl-6">Ingrediente</th>
                     <th className="p-4 text-right">Cantidad Actual</th>
                     <th className="p-4">Unidad</th>
-                    <th className="p-4 text-right">Stock Mínimo</th>
+                    <th className="p-4 text-right">Alerta (Mínimo)</th>
                     <th className="p-4 text-center">Estado</th>
                     <th className="p-4 pr-6">Última Actualización</th>
                     {hasRole(['administrador', 'cocina']) && <th className="p-4 text-center pr-6">Acciones</th>}
@@ -518,25 +518,25 @@ export default function Inventario() {
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEntradaModal(item)}
-                                    className="text-[10px] font-black bg-[#E8530A]/10 hover:bg-[#E8530A]/25 text-[#E8530A] border border-[#E8530A]/20 hover:border-[#E8530A]/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                                    className="text-[10px] font-black bg-[#E8530A]/10 hover:bg-[#E8530A]/25 text-[#E8530A] border border-[#E8530A]/20 hover:border-[#E8530A]/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1"
                                   >
-                                    Entrada
+                                    📥 Entrada
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleOpenEditModal(item)}
-                                    className="text-[10px] font-black bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                                    className="text-[10px] font-black bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-[#1F1F23] hover:border-neutral-600 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1"
                                   >
-                                    Editar
+                                    ✏️ Editar
                                   </button>
                                 </>
                               )}
                               <button
                                 type="button"
                                 onClick={() => handleOpenMermaModal(item)}
-                                className="text-[10px] font-black bg-destructive/10 hover:bg-destructive/25 text-destructive border border-destructive/20 hover:border-destructive/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+                                className="text-[10px] font-black bg-destructive/10 hover:bg-destructive/25 text-destructive border border-destructive/20 hover:border-destructive/40 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider flex items-center gap-1"
                               >
-                                Merma
+                                🗑️ Merma
                               </button>
                             </div>
                           </td>
@@ -717,6 +717,9 @@ export default function Inventario() {
 
             {/* Formulario */}
             <form onSubmit={handleSaveEntrada} className="p-6 space-y-4">
+              <p className="text-xs text-neutral-400 mb-2">
+                Suma existencias a tu inventario cuando recibas mercancía de tus proveedores.
+              </p>
               {entradaError && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3 text-xs font-bold text-destructive uppercase tracking-wide">
                   ⚠️ {entradaError}
@@ -817,6 +820,9 @@ export default function Inventario() {
               </button>
             </div>
             <form onSubmit={handleSaveMerma} className="p-6 space-y-4">
+              <p className="text-xs text-neutral-400 mb-2">
+                Descuenta ingredientes que se echaron a perder, caducaron o se dañaron por accidente.
+              </p>
               {mermaError && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3 text-xs font-bold text-destructive uppercase tracking-wide">
                   ⚠️ {mermaError}
