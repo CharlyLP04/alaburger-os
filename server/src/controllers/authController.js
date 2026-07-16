@@ -8,10 +8,10 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        error: 'Datos incompletos',
-        mensaje: 'Email y contraseña son obligatorios.',
-      });
+      const err = new Error('Email y contraseña son obligatorios.');
+      err.status = 400;
+      err.name = 'Datos incompletos';
+      throw err;
     }
 
     const resultado = await pool.query(
@@ -23,28 +23,28 @@ const login = async (req, res) => {
     );
 
     if (resultado.rows.length === 0) {
-      return res.status(401).json({
-        error: 'Credenciales inválidas',
-        mensaje: 'Email o contraseña incorrectos.',
-      });
+      const err = new Error('Email o contraseña incorrectos.');
+      err.status = 401;
+      err.name = 'Credenciales inválidas';
+      throw err;
     }
 
     const usuario = resultado.rows[0];
 
     if (!usuario.activo) {
-      return res.status(403).json({
-        error: 'Cuenta inactiva',
-        mensaje: 'Tu cuenta ha sido desactivada.',
-      });
+      const err = new Error('Tu cuenta ha sido desactivada.');
+      err.status = 403;
+      err.name = 'Cuenta inactiva';
+      throw err;
     }
 
     const passwordValida = await bcrypt.compare(password, usuario.password_hash);
 
     if (!passwordValida) {
-      return res.status(401).json({
-        error: 'Credenciales inválidas',
-        mensaje: 'Email o contraseña incorrectos.',
-      });
+      const err = new Error('Email o contraseña incorrectos.');
+      err.status = 401;
+      err.name = 'Credenciales inválidas';
+      throw err;
     }
 
     const token = jwt.sign(
