@@ -52,20 +52,20 @@ export function Toast({ message, type = 'info', onClose }) {
   const style = getStyle();
 
   return (
-    <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl min-w-[380px] max-w-lg transition-all duration-300 ${isClosing ? 'opacity-0 -translate-y-4 scale-95' : 'animate-in slide-in-from-top-8 fade-in zoom-in-95'}`}>
+    <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col overflow-hidden bg-[#0A0A0B]/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] min-w-[460px] max-w-xl transition-all duration-300 ${isClosing ? 'opacity-0 -translate-y-4 scale-95' : 'animate-in slide-in-from-top-8 fade-in zoom-in-95'}`}>
       
-      <div className="flex items-center gap-4 px-6 py-4">
+      <div className="flex items-center gap-6 px-8 py-6">
         {/* Ícono Brillante */}
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${style.bg} ${style.text} ${style.border} border ${style.glow}`}>
-          <Icon path={style.icon} size={20} />
+        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${style.bg} ${style.text} ${style.border} border ${style.glow}`}>
+          <Icon path={style.icon} size={28} />
         </div>
         
         {/* Texto */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-white uppercase tracking-wide leading-tight">
+          <p className="text-lg font-black text-white uppercase tracking-wider leading-tight">
             {style.title}
           </p>
-          <p className="text-xs font-bold text-neutral-400 mt-0.5 leading-snug">
+          <p className="text-sm font-bold text-neutral-400 mt-1 leading-relaxed">
             {message}
           </p>
         </div>
@@ -73,10 +73,10 @@ export function Toast({ message, type = 'info', onClose }) {
         {/* Botón Cerrar */}
         <button 
           onClick={handleClose} 
-          className="text-neutral-500 hover:text-white ml-2 p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+          className="text-neutral-500 hover:text-white ml-2 p-3 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
           aria-label="Cerrar notificación"
         >
-          <Icon path={ICONS.x} size={16} />
+          <Icon path={ICONS.x} size={24} />
         </button>
       </div>
 
