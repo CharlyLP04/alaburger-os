@@ -5,7 +5,7 @@ const obtenerInventario = async (req, res) => {
     const { stock_bajo } = req.query;
 
     let queryText = `
-      SELECT i.id, ing.nombre, i.cantidad_disponible AS cantidad_actual,
+      SELECT i.id, ing.id AS ingrediente_id, ing.nombre, i.cantidad_disponible AS cantidad_actual,
              ing.unidad, i.stock_minimo, i.updated_at AS ultima_actualizacion
       FROM inventario i
       INNER JOIN ingredientes ing ON ing.id = i.ingrediente_id
@@ -23,6 +23,7 @@ const obtenerInventario = async (req, res) => {
 
     const data = resultado.rows.map((row) => ({
       id: row.id,
+      ingrediente_id: row.ingrediente_id,
       nombre: row.nombre,
       cantidad_actual: Number(row.cantidad_actual),
       unidad: row.unidad,

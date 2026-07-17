@@ -60,6 +60,45 @@ export function getProductos() {
   return apiFetch('/productos');
 }
 
+export function getAllProductos() {
+  return apiFetch('/productos/all');
+}
+
+export function createProducto(payload) {
+  return apiFetch('/productos', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateProducto(id, payload) {
+  return apiFetch(`/productos/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteProducto(id) {
+  return apiFetch(`/productos/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function getCategorias() {
+  return apiFetch('/productos/categorias');
+}
+
+export function getReceta(productoId) {
+  return apiFetch(`/productos/${productoId}/receta`);
+}
+
+export function updateReceta(productoId, ingredientes) {
+  return apiFetch(`/productos/${productoId}/receta`, {
+    method: 'PUT',
+    body: JSON.stringify({ ingredientes }),
+  });
+}
+
 export function crearPedido(payload) {
   return apiFetch('/pedidos', {
     method: 'POST',
@@ -95,4 +134,50 @@ export function registrarEntrada(id, payload) {
 
 export function getAlertasStockBajo() {
   return apiFetch('/inventario/alertas/resumen');
+}
+
+// Usuarios
+export function getUsuarios() {
+  return apiFetch('/usuarios');
+}
+
+export function getRoles() {
+  return apiFetch('/usuarios/roles');
+}
+
+export function createUsuario(payload) {
+  return apiFetch('/usuarios', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateUsuario(id, payload) {
+  return apiFetch(`/usuarios/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function toggleUsuarioStatus(id) {
+  return apiFetch(`/usuarios/${id}/status`, {
+    method: 'PATCH',
+  });
+}
+
+// Configuración
+export function getConfiguraciones() {
+  return apiFetch('/configuracion');
+}
+
+export function updateConfiguraciones(payload) {
+  return apiFetch('/configuracion', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+// Búsqueda Global
+export function globalSearch(query) {
+  return apiFetch(`/search?q=${encodeURIComponent(query)}`);
 }
