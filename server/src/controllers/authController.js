@@ -1,7 +1,6 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
-const { manejarErrorInterno } = require('../utils/errorHandler');
+const { Usuario } = require('../models'); 
 
 const login = async (req, res) => {
   try {
@@ -46,29 +45,6 @@ const login = async (req, res) => {
       err.name = 'Credenciales inválidas';
       throw err;
     }
-
-    const token = jwt.sign(
-      {
-        id: usuario.id,
-        email: usuario.email,
-        rol: usuario.rol,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '8h' }
-    );
-
-    return res.status(200).json({
-      token,
-      usuario: {
-        id: usuario.id,
-        nombre: `${usuario.nombre} ${usuario.apellido}`,
-        email: usuario.email,
-        rol: usuario.rol,
-      },
-    });
-  } catch (error) {
-    return manejarErrorInterno(error, res, 'login');
-  }
 };
 
 module.exports = { login };

@@ -549,7 +549,6 @@ export default function Inventario() {
             </div>
           )}
         </main>
-      </div>
 
       {/* MODAL DE INGREDIENTE */}
       {isModalOpen && (
