@@ -166,7 +166,7 @@ export default function Usuarios() {
                             </div>
                             <div>
                               <p className="text-neutral-200">{user.nombre} {user.apellido}</p>
-                              <p className="text-xs text-neutral-500">{user.email}</p>
+                              <p className="text-xs text-neutral-500">@{user.email}</p>
                             </div>
                           </div>
                         </td>
@@ -251,14 +251,14 @@ export default function Usuarios() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Correo Electrónico</label>
+                <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Nombre de Usuario</label>
                 <input
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-[#141416] border border-[#1F1F23] focus:border-[#E8530A] focus:ring-1 focus:ring-[#E8530A] text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold"
-                  placeholder="ejemplo@alaburger.com"
+                  placeholder="Ej. juanperez"
                 />
               </div>
 

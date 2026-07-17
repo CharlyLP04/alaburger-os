@@ -49,8 +49,8 @@ const createUser = async (req, res) => {
       usuario: result.rows[0]
     });
   } catch (error) {
-    if (error.code === '23505') { // Unique constraint violation (email)
-      return res.status(400).json({ error: 'El correo electrónico ya está registrado.' });
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'El nombre de usuario ya está registrado.' });
     }
     manejarErrorInterno(res, error, 'crear usuario');
   }
@@ -91,7 +91,7 @@ const updateUser = async (req, res) => {
     res.json({ mensaje: 'Usuario actualizado exitosamente' });
   } catch (error) {
     if (error.code === '23505') {
-      return res.status(400).json({ error: 'El correo electrónico ya está registrado por otro usuario.' });
+      return res.status(400).json({ error: 'El nombre de usuario ya está registrado por otro usuario.' });
     }
     manejarErrorInterno(res, error, 'actualizar usuario');
   }
