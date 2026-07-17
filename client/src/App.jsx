@@ -10,6 +10,7 @@ import Productos from './pages/Productos';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
 import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
+import Products from './pages/Products';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
