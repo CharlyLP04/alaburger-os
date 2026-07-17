@@ -6,6 +6,7 @@ import WaiterApp from './pages/WaiterApp';
 import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
 import Inventario from './pages/Inventario';
+import Productos from './pages/Productos';
 import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
@@ -68,7 +69,7 @@ export default function App() {
           path="/productos"
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Productos" />
+              <Productos />
             </ProtectedRoute>
           }
         />

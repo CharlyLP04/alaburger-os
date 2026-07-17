@@ -60,6 +60,45 @@ export function getProductos() {
   return apiFetch('/productos');
 }
 
+export function getAllProductos() {
+  return apiFetch('/productos/all');
+}
+
+export function createProducto(payload) {
+  return apiFetch('/productos', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateProducto(id, payload) {
+  return apiFetch(`/productos/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteProducto(id) {
+  return apiFetch(`/productos/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function getCategorias() {
+  return apiFetch('/productos/categorias');
+}
+
+export function getReceta(productoId) {
+  return apiFetch(`/productos/${productoId}/receta`);
+}
+
+export function updateReceta(productoId, ingredientes) {
+  return apiFetch(`/productos/${productoId}/receta`, {
+    method: 'PUT',
+    body: JSON.stringify({ ingredientes }),
+  });
+}
+
 export function crearPedido(payload) {
   return apiFetch('/pedidos', {
     method: 'POST',
