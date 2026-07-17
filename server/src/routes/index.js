@@ -3,6 +3,7 @@ const authRoutes = require('./authRoutes');
 const productRoutes = require('./productRoutes');
 const orderRoutes = require('./orderRoutes');
 const paymentRoutes = require('./paymentRoutes');
+const inventoryRoutes = require('./inventoryRoutes');
 const userRoutes = require('./userRoutes');
 const configRoutes = require('./configRoutes');
 
