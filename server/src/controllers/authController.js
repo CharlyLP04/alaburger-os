@@ -3,42 +3,47 @@ const jwt = require('jsonwebtoken');
 const { Usuario } = require('../models'); 
 
 const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        const usuario = await Usuario.findOne({ where: { email } });
+    if (!email || !password) {
+      const err = new Error('Email y contraseña son obligatorios.');
+      err.status = 400;
+      err.name = 'Datos incompletos';
+      throw err;
+    }
 
-        if (!usuario) {
-            return res.status(401).json({ error: "Credenciales inválidas" });
-        }
+    const resultado = await pool.query(
+      `SELECT u.id, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre AS rol
+       FROM usuarios u
+       INNER JOIN roles r ON r.id = u.rol_id
+       WHERE u.email = $1`,
+      [email.toLowerCase().trim()]
+    );
 
-        const passwordValido = await bcrypt.compare(password, usuario.password_hash);
-        if (!passwordValido) {
-            return res.status(401).json({ error: "Credenciales inválidas" });
-        }
+    if (resultado.rows.length === 0) {
+      const err = new Error('Email o contraseña incorrectos.');
+      err.status = 401;
+      err.name = 'Credenciales inválidas';
+      throw err;
+    }
 
-        const payload = {
-            sub: usuario.id,
-            rol: usuario.rol
-        };
+    const usuario = resultado.rows[0];
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { 
-            algorithm: 'HS256', 
-            expiresIn: '8h' 
-        });
+    if (!usuario.activo) {
+      const err = new Error('Tu cuenta ha sido desactivada.');
+      err.status = 403;
+      err.name = 'Cuenta inactiva';
+      throw err;
+    }
 
-        return res.status(200).json({
-            token,
-            user: {
-                id: usuario.id,
-                nombre: usuario.nombre,
-                rol: usuario.rol
-            }
-        });
+    const passwordValida = await bcrypt.compare(password, usuario.password_hash);
 
-    } catch (error) {
-        console.error("Error en login:", error.message);
-        return res.status(500).json({ error: "Error interno del servidor" });
+    if (!passwordValida) {
+      const err = new Error('Email o contraseña incorrectos.');
+      err.status = 401;
+      err.name = 'Credenciales inválidas';
+      throw err;
     }
 };
 
