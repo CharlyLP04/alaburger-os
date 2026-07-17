@@ -166,48 +166,29 @@ export function getAlertasStockBajo() {
   return apiFetch('/inventario/alertas/resumen');
 }
 
-// Usuarios
-export function getUsuarios() {
-  return apiFetch('/usuarios');
+export function getMovimientos(id, tipo = '', fechaDesde = '', fechaHasta = '') {
+  const params = new URLSearchParams();
+  if (tipo) params.append('tipo', tipo);
+  if (fechaDesde) params.append('fecha_desde', fechaDesde);
+  if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+  
+  const query = params.toString();
+  return apiFetch(`/inventario/${id}/movimientos${query ? '?' + query : ''}`);
 }
 
-export function getRoles() {
-  return apiFetch('/usuarios/roles');
-}
-
-export function createUsuario(payload) {
-  return apiFetch('/usuarios', {
+export function registrarMerma(id, payload) {
+  return apiFetch(`/inventario/${id}/merma`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 }
 
-export function updateUsuario(id, payload) {
-  return apiFetch(`/usuarios/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(payload),
-  });
-}
-
-export function toggleUsuarioStatus(id) {
-  return apiFetch(`/usuarios/${id}/status`, {
-    method: 'PATCH',
-  });
-}
-
-// Configuración
-export function getConfiguraciones() {
-  return apiFetch('/configuracion');
-}
-
-export function updateConfiguraciones(payload) {
-  return apiFetch('/configuracion', {
-    method: 'PUT',
-    body: JSON.stringify(payload),
-  });
-}
-
-// Búsqueda Global
-export function globalSearch(query) {
-  return apiFetch(`/search?q=${encodeURIComponent(query)}`);
+export function getTodosLosMovimientos(tipo = '', fechaDesde = '', fechaHasta = '') {
+  const params = new URLSearchParams();
+  if (tipo) params.append('tipo', tipo);
+  if (fechaDesde) params.append('fecha_desde', fechaDesde);
+  if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+  
+  const query = params.toString();
+  return apiFetch(`/inventario/movimientos${query ? '?' + query : ''}`);
 }
