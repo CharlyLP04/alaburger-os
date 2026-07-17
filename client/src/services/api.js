@@ -176,3 +176,8 @@ export function updateConfiguraciones(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+// Búsqueda Global
+export function globalSearch(query) {
+  return apiFetch(`/search?q=${encodeURIComponent(query)}`);
+}

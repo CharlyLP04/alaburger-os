@@ -1,13 +1,70 @@
-import React, { useMemo, useState } from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { Icon, ICONS } from '../ui/Icon';
 import { Toast } from '../ui/Toast';
 import { clearAuth, getInitials, getUsuario } from '../../utils/auth';
+import { globalSearch } from '../../services/api';
 
 export default function AppLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const usuario = getUsuario();
   const [toast, setToast] = useState(null);
+
+  // Search State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+  // Click outside to close search
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Keyboard shortcut CMD+K / CTRL+K
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Debounced search
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const delayDebounceFn = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const results = await globalSearch(searchQuery);
+        setSearchResults(results);
+        setShowSearchResults(true);
+      } catch (error) {
+        console.error('Error in search', error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
 
   const handleLogout = () => {
     clearAuth();
@@ -146,23 +203,74 @@ export default function AppLayout() {
           {/* Buscador y Controles de Usuario */}
           <div className="flex items-center gap-6">
             {/* Buscador */}
-            <div className="relative w-64 hidden lg:block">
+            <div className="relative w-64 hidden lg:block" ref={searchRef}>
               <span className="absolute inset-y-0 left-3 flex items-center text-neutral-500">
                 <Icon path={ICONS.search} size={16} />
               </span>
               <input 
+                ref={searchInputRef}
                 type="text" 
-                placeholder="Buscar pedido, prod..." 
-                className="w-full bg-[#141416] border border-[#1F1F23] rounded-xl pl-10 pr-10 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    setToast({ message: 'Buscador: Función en desarrollo para una futura HU.', type: 'warning' });
-                  }
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSearchResults(true);
                 }}
+                onFocus={() => {
+                  if (searchQuery.trim()) setShowSearchResults(true);
+                }}
+                placeholder="Buscar pedido, prod..." 
+                className="w-full bg-[#141416] border border-[#1F1F23] rounded-xl pl-10 pr-10 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-[#E8530A] transition-colors"
               />
-              <span className="absolute inset-y-0 right-3 flex items-center text-[10px] text-neutral-500 font-bold bg-[#09090A] px-2 my-2 border border-[#1F1F23] rounded-lg">
-                ⌘K
-              </span>
+              {!searchQuery && (
+                <span className="absolute inset-y-0 right-3 flex items-center text-[10px] text-neutral-500 font-bold bg-[#09090A] px-2 my-2 border border-[#1F1F23] rounded-lg">
+                  ⌘K
+                </span>
+              )}
+
+              {/* Search Results Dropdown */}
+              {showSearchResults && (searchQuery.trim() !== '') && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-[#141416] border border-[#1F1F23] rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[400px]">
+                  {isSearching ? (
+                    <div className="p-4 text-center text-neutral-500 text-sm font-bold flex items-center justify-center gap-2">
+                      <Icon path={ICONS.refresh} size={16} className="animate-spin" />
+                      Buscando...
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="p-4 text-center text-neutral-500 text-sm">
+                      No se encontraron resultados para "{searchQuery}"
+                    </div>
+                  ) : (
+                    <div className="overflow-y-auto">
+                      {searchResults.map((res) => (
+                        <div 
+                          key={`${res.type}-${res.id}`}
+                          onClick={() => {
+                            setShowSearchResults(false);
+                            setSearchQuery('');
+                            // Determine route based on type
+                            if (res.type === 'producto') navigate('/productos');
+                            if (res.type === 'usuario') navigate('/usuarios');
+                            if (res.type === 'inventario') navigate('/inventario');
+                            if (res.type === 'pedido') navigate('/pedidos');
+                          }}
+                          className="px-4 py-3 hover:bg-[#1C1C1F] border-b border-[#1F1F23] last:border-0 cursor-pointer transition-colors flex items-center gap-3"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-[#27272A] flex items-center justify-center text-neutral-400 shrink-0">
+                            {res.type === 'producto' && <Icon path={ICONS.box} size={16} />}
+                            {res.type === 'usuario' && <Icon path={ICONS.users} size={16} />}
+                            {res.type === 'inventario' && <Icon path={ICONS.box} size={16} />}
+                            {res.type === 'pedido' && <Icon path={ICONS.bag} size={16} />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-neutral-200 font-bold truncate">{res.title}</p>
+                            <p className="text-[10px] text-neutral-500 truncate uppercase tracking-wider">{res.subtitle}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Acciones Rápidas */}

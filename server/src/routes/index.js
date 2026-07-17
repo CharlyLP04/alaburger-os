@@ -6,6 +6,7 @@ const paymentRoutes = require('./paymentRoutes');
 const inventoryRoutes = require('./inventoryRoutes');
 const userRoutes = require('./userRoutes');
 const configRoutes = require('./configRoutes');
+const searchRoutes = require('./searchRoutes');
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/pagos', paymentRoutes);
 router.use('/inventario', inventoryRoutes);
 router.use('/usuarios', userRoutes);
 router.use('/configuracion', configRoutes);
+router.use('/search', searchRoutes);
 
 module.exports = router;
