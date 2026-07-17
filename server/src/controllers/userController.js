@@ -12,7 +12,7 @@ const getUsers = async (req, res) => {
     );
     res.json(result.rows);
   } catch (error) {
-    manejarErrorInterno(res, error, 'obtener usuarios');
+    manejarErrorInterno(error, res, 'obtener usuarios');
   }
 };
 
@@ -21,7 +21,7 @@ const getRoles = async (req, res) => {
     const result = await pool.query('SELECT id, nombre, descripcion FROM roles ORDER BY id ASC');
     res.json(result.rows);
   } catch (error) {
-    manejarErrorInterno(res, error, 'obtener roles');
+    manejarErrorInterno(error, res, 'obtener roles');
   }
 };
 
@@ -52,7 +52,7 @@ const createUser = async (req, res) => {
     if (error.code === '23505') {
       return res.status(400).json({ error: 'El nombre de usuario ya está registrado.' });
     }
-    manejarErrorInterno(res, error, 'crear usuario');
+    manejarErrorInterno(error, res, 'crear usuario');
   }
 };
 
@@ -97,7 +97,7 @@ const updateUser = async (req, res) => {
     if (error.code === '23505') {
       return res.status(400).json({ error: 'El nombre de usuario ya está registrado por otro usuario.' });
     }
-    manejarErrorInterno(res, error, 'actualizar usuario');
+    manejarErrorInterno(error, res, 'actualizar usuario');
   }
 };
 
@@ -123,7 +123,7 @@ const toggleUserStatus = async (req, res) => {
       activo: result.rows[0].activo
     });
   } catch (error) {
-    manejarErrorInterno(res, error, 'cambiar estado del usuario');
+    manejarErrorInterno(error, res, 'cambiar estado del usuario');
   }
 };
 

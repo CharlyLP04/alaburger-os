@@ -35,9 +35,9 @@ const searchAll = async (req, res) => {
       ),
       // Inventario
       pool.query(
-        `SELECT id, nombre, unidad_medida 
+        `SELECT id, nombre, unidad as unidad_medida 
          FROM ingredientes 
-         WHERE nombre ILIKE $1 AND activo = true 
+         WHERE nombre ILIKE $1 
          LIMIT 5`,
         [searchQuery]
       )
@@ -75,7 +75,7 @@ const searchAll = async (req, res) => {
 
     res.json(results);
   } catch (error) {
-    manejarErrorInterno(res, error, 'realizar búsqueda global');
+    manejarErrorInterno(error, res, 'realizar búsqueda global');
   }
 };
 

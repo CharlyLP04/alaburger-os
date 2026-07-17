@@ -14,7 +14,7 @@ const getConfiguraciones = async (req, res) => {
     });
     res.json(configObj);
   } catch (error) {
-    manejarErrorInterno(res, error, 'obtener configuraciones');
+    manejarErrorInterno(error, res, 'obtener configuraciones');
   }
 };
 
@@ -37,7 +37,7 @@ const updateConfiguraciones = async (req, res) => {
     res.json({ mensaje: 'Configuración actualizada exitosamente' });
   } catch (error) {
     await pool.query('ROLLBACK');
-    manejarErrorInterno(res, error, 'actualizar configuraciones');
+    manejarErrorInterno(error, res, 'actualizar configuraciones');
   }
 };
 
