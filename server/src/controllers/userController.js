@@ -65,6 +65,10 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ error: 'Faltan datos requeridos.' });
     }
 
+    if (id === '1' && parseInt(rol_id, 10) !== 1) {
+      return res.status(403).json({ error: 'No se pueden modificar los permisos del administrador principal.' });
+    }
+
     let result;
     if (password) {
       const salt = await bcrypt.genSalt(10);
@@ -100,6 +104,10 @@ const updateUser = async (req, res) => {
 const toggleUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    if (id === '1') {
+      return res.status(403).json({ error: 'No se puede desactivar al administrador principal.' });
+    }
     
     const result = await pool.query(
       `UPDATE usuarios SET activo = NOT activo, updated_at = NOW() WHERE id = $1 RETURNING activo`,

@@ -184,24 +184,26 @@ export default function Usuarios() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => openEditModal(user)}
-                              className="p-2 text-neutral-400 hover:text-white bg-[#1C1C1F] hover:bg-[#27272A] rounded-lg transition-colors cursor-pointer"
-                              title="Editar empleado"
-                            >
-                              <Icon path={ICONS.edit} size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleToggleStatus(user)}
-                              className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                                user.activo ? 'text-destructive hover:bg-destructive/10 bg-[#1C1C1F]' : 'text-success hover:bg-success/10 bg-[#1C1C1F]'
-                              }`}
-                              title={user.activo ? 'Desactivar empleado' : 'Activar empleado'}
-                            >
-                              <Icon path={user.activo ? ICONS.trash : ICONS.check} size={16} />
-                            </button>
-                          </div>
+                          {user.id !== 1 && (
+                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => openEditModal(user)}
+                                className="p-2 text-neutral-400 hover:text-white bg-[#1C1C1F] hover:bg-[#27272A] rounded-lg transition-colors cursor-pointer"
+                                title="Editar empleado"
+                              >
+                                <Icon path={ICONS.edit} size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleToggleStatus(user)}
+                                className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                                  user.activo ? 'text-destructive hover:bg-destructive/10 bg-[#1C1C1F]' : 'text-success hover:bg-success/10 bg-[#1C1C1F]'
+                                }`}
+                                title={user.activo ? 'Desactivar empleado' : 'Activar empleado'}
+                              >
+                                <Icon path={user.activo ? ICONS.trash : ICONS.check} size={16} />
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}

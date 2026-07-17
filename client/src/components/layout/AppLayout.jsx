@@ -184,13 +184,13 @@ export default function AppLayout() {
                   2
                 </span>
               </button>
-              <button 
-                onClick={() => setToast({ message: 'Configuración: Módulo en desarrollo', type: 'warning' })}
-                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
+              <Link 
+                to="/configuracion"
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer inline-flex items-center justify-center"
                 title="Configuración"
               >
                 <Icon path={ICONS.settings} size={22} />
-              </button>
+              </Link>
             </div>
 
             {/* Perfil de Usuario */}

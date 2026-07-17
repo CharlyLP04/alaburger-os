@@ -164,3 +164,15 @@ export function toggleUsuarioStatus(id) {
     method: 'PATCH',
   });
 }
+
+// Configuración
+export function getConfiguraciones() {
+  return apiFetch('/configuracion');
+}
+
+export function updateConfiguraciones(payload) {
+  return apiFetch('/configuracion', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
