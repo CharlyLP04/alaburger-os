@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { clearAuth, getInitials, getUsuario } from '../utils/auth';
 import { getAlertasStockBajo } from '../services/api';
+import { Toast } from '../components/ui/Toast';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -175,35 +176,12 @@ export default function Dashboard() {
           </div>
         </main>
 
-      {/* Toast Alert */}
       {toast && (
-        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-[#141416] border-2 border-neutral-800 rounded-2xl px-6 py-4 shadow-2xl min-w-[380px] max-w-lg animate-in slide-in-from-top-8 fade-in duration-300">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-            toast.type === 'success' ? 'bg-success/10 text-success border border-success/30' :
-            toast.type === 'warning' ? 'bg-destructive/10 text-destructive border border-destructive/30' : 
-            'bg-[#E8530A]/10 text-[#E8530A] border border-[#E8530A]/30'
-          }`}>
-            <Icon 
-              path={toast.type === 'success' ? ICONS.check : toast.type === 'warning' ? ICONS.bell : ICONS.settings} 
-              size={20} 
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-black text-white uppercase tracking-wide leading-tight">
-              {toast.type === 'success' ? 'Éxito' : toast.type === 'warning' ? 'Advertencia' : 'Información'}
-            </p>
-            <p className="text-xs font-bold text-neutral-400 mt-0.5 leading-snug">
-              {toast.message}
-            </p>
-          </div>
-          <button 
-            onClick={() => setToast(null)} 
-            className="text-neutral-500 hover:text-white ml-2 p-2 hover:bg-[#1C1C1F] rounded-lg transition-colors cursor-pointer text-sm font-black"
-            aria-label="Cerrar notificación"
-          >
-            ✕
-          </button>
-        </div>
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
       )}
     </>
   );
