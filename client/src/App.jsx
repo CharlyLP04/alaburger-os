@@ -10,6 +10,7 @@ import Productos from './pages/Productos';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
 import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
+import Products from './pages/Products';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
@@ -48,6 +49,55 @@ export default function App() {
 
         {/* RUTAS ADMINISTRATIVAS ENVUELTAS EN EL LAYOUT GLOBAL */}
         <Route
+          path="/"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inventario"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Inventario />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pedidos"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Pedidos" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/productos"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sucursales"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Sucursales" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute allowedRoles={['administrador']}>
+              <ModuloEnDesarrollo modulo="Usuarios" />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reportes"
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
               <AppLayout />
