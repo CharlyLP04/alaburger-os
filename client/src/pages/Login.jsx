@@ -22,12 +22,7 @@ export default function Login() {
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail) {
-      setError('El correo es obligatorio.');
-      return false;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError('Ingresa un correo electrónico válido.');
+      setError('El usuario es obligatorio.');
       return false;
     }
 
@@ -109,19 +104,18 @@ export default function Login() {
                 </p>
               )}
 
-              {/* Input Correo */}
+              {/* Input Usuario */}
               <div className="space-y-2">
-                <label className="text-sm text-muted-foreground" htmlFor="email">
-                  Correo
+                <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">
+                  Usuario
                 </label>
                 <input 
-                  type="email" 
-                  id="email"
+                  type="text" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="correo@ejemplo.com"
+                  placeholder="ej. admin"
                   required
-                  className="w-full bg-muted border border-transparent focus:border-primary text-foreground rounded-lg px-4 py-3 outline-none transition-colors"
+                  className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary focus:ring-1 focus:ring-primary text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold"
                 />
               </div>
 
