@@ -175,8 +175,6 @@ export default function Dashboard() {
           </div>
         </main>
 
-      </div>
-
       {/* Toast Alert */}
       {toast && (
         <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-[#141416] border-2 border-neutral-800 rounded-2xl px-6 py-4 shadow-2xl min-w-[380px] max-w-lg animate-in slide-in-from-top-8 fade-in duration-300">

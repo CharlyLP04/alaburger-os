@@ -217,7 +217,6 @@ export default function Productos() {
   };
 
   return (
-  return (
     <>
       {/* 3. ÁREA DE TRABAJO */}
       <main className="flex-1 p-8 overflow-y-auto">
@@ -365,7 +364,6 @@ export default function Productos() {
           )}
         </div>
       </main>
-    </div>
 
       {/* Product Modal */}
       {isProductModalOpen && (

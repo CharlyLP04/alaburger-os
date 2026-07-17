@@ -37,7 +37,6 @@ export default function ModuloEnDesarrollo({ modulo }) {
   };
 
   return (
-  return (
     <>
       {/* 3. ÁREA DE TRABAJO */}
         <main className="flex-1 p-8 overflow-y-auto flex items-center justify-center">
@@ -69,7 +68,6 @@ export default function ModuloEnDesarrollo({ modulo }) {
             </Link>
           </div>
         </main>
-      </div>
 
       {/* Toast Alert */}
       {toast && (
