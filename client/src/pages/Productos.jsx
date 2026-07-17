@@ -217,86 +217,166 @@ export default function Productos() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
-      {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-card border-r border-[#1E1E1E] flex flex-col sticky top-0 md:h-screen z-10">
-        <div className="p-6 border-b border-[#1E1E1E] flex-shrink-0">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center font-bold text-white">
+    <div className="flex min-h-screen bg-[#0E0E10] text-white font-sans selection:bg-primary/30">
+      
+      {/* 1. BARRA LATERAL (SIDEBAR) */}
+      <aside className="w-64 bg-[#09090A] border-r border-[#1F1F23] flex flex-col justify-between h-screen sticky top-0">
+        <div>
+          {/* Logo */}
+          <div className="p-6 border-b border-[#1F1F23] flex items-center gap-3">
+            <div className="bg-[#E8530A] text-white font-black w-6 h-6 rounded flex items-center justify-center text-xs tracking-wider">
               A
             </div>
-            <span className="font-bold text-sm tracking-widest text-foreground">A LA BURGER OS</span>
+            <h2 className="font-black tracking-widest text-sm uppercase">A LA BURGER OS</h2>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">
-              {getInitials()}
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">{usuario?.nombre} {usuario?.apellido}</p>
-              <p className="text-xs text-muted-foreground capitalize">{usuario?.rol}</p>
-            </div>
+
+          {/* Sección de Navegación */}
+          <div className="p-4">
+            <p className="text-[10px] font-bold text-neutral-500 tracking-widest uppercase px-2 mb-3">
+              Navegación
+            </p>
+            <nav className="space-y-1">
+              <Link 
+                to="/" 
+                className="flex items-center justify-between px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon path={ICONS.dashboard} size={18} />
+                  <span>Dashboard</span>
+                </div>
+              </Link>
+
+              <Link 
+                to="/pedidos" 
+                className="flex items-center justify-between px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon path={ICONS.bag} size={18} />
+                  <span>Pedidos</span>
+                </div>
+              </Link>
+
+              <Link 
+                to="/cocina" 
+                className="flex items-center justify-between px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon path={ICONS.chef} size={18} />
+                  <span>Cocina</span>
+                </div>
+              </Link>
+
+              <Link 
+                to="/productos" 
+                className="flex items-center justify-between px-3 py-2.5 bg-[#141416] rounded-lg border-l-2 border-[#E8530A] text-[#E8530A] font-bold text-sm transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon path={ICONS.box} size={18} />
+                  <span>Productos</span>
+                </div>
+              </Link>
+
+              {["Inventario", "Sucursales", "Usuarios", "Reportes"].map((item, index) => {
+                const iconMap = [ICONS.box, ICONS.store, ICONS.users, ICONS.chart];
+                return (
+                  <Link 
+                    key={index}
+                    to={`/${item.toLowerCase()}`} 
+                    className="flex items-center gap-3 px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <Icon path={iconMap[index]} size={18} />
+                    <span>{item}</span>
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </div>
 
-        <nav className="p-4 space-y-2 flex-grow overflow-y-auto">
-          {['Dashboard', 'Productos', 'Inventario', 'Usuarios', 'Reportes'].map((item) => {
-            const pathMap = {
-              'Dashboard': '/',
-              'Productos': '/productos',
-              'Inventario': '/inventario',
-              'Usuarios': '/usuarios',
-              'Reportes': '/reportes'
-            };
-            const iconMap = [ICONS.grid, ICONS.box, ICONS.box, ICONS.users, ICONS.chart];
-            const isActive = item === 'Productos';
-            
-            return (
-              <Link
-                key={item}
-                to={pathMap[item]}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary text-white'
-                    : 'text-muted-foreground hover:bg-[#1E1E1E] hover:text-foreground'
-                }`}
-              >
-                <Icon
-                  path={iconMap[['Dashboard', 'Productos', 'Inventario', 'Usuarios', 'Reportes'].indexOf(item)]}
-                  className={`w-5 h-5 ${isActive ? 'opacity-100' : 'opacity-70'}`}
-                />
-                {item}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-[#1E1E1E] mt-auto">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-          >
-            <Icon path={ICONS.logOut} className="w-5 h-5" />
-            Cerrar Sesión
-          </button>
+        {/* Estado del Sistema */}
+        <div className="p-4 border-t border-[#1F1F23] bg-[#050506]">
+          <div className="flex items-center justify-between text-xs font-bold tracking-wide mb-2">
+            <span className="text-neutral-500 uppercase">Sistema</span>
+            <span className="text-success flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span> ONLINE
+            </span>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-[11px] text-neutral-400">
+              <span>CPU - Carga del sistema</span>
+              <span className="font-bold">24%</span>
+            </div>
+            <div className="w-full bg-[#1F1F23] h-1.5 rounded-full overflow-hidden">
+              <div className="bg-success h-full w-[24%] rounded-full"></div>
+            </div>
+          </div>
+          
+          {/* User Profile */}
+          <div className="mt-4 pt-4 border-t border-[#1F1F23] flex flex-col gap-3">
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-9 h-9 rounded-full bg-[#E8530A]/10 text-[#E8530A] flex items-center justify-center font-bold text-sm">
+                {getInitials(usuario?.nombre)}
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-sm font-bold text-white truncate">{usuario?.nombre} {usuario?.apellido}</p>
+                <p className="text-xs text-neutral-500 capitalize truncate">{usuario?.rol}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-2 w-full px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-500 bg-red-500/10 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header */}
-        <header className="h-20 border-b border-[#1E1E1E] bg-background flex items-center justify-between px-8 sticky top-0 z-10 shrink-0">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Catálogo de Productos</h1>
-            <p className="text-sm text-muted-foreground mt-1">Gestiona los productos finales y sus recetas.</p>
+      {/* CONTENIDO PRINCIPAL */}
+      <div className="flex-1 flex flex-col min-w-0">
+        
+        {/* 2. BARRA SUPERIOR (TOP BAR) */}
+        <header className="h-16 border-b border-[#1F1F23] bg-[#09090A]/80 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-40">
+          {/* Breadcrumb */}
+          <div className="text-xs font-bold tracking-wider text-neutral-400 uppercase">
+            A LA BURGER OS <span className="text-neutral-600 mx-1">/</span> <span className="text-white">Productos</span>
           </div>
-          <button
-            onClick={openNewProductModal}
-            className="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-[0_0_15px_rgba(255,87,34,0.3)] hover:shadow-[0_0_25px_rgba(255,87,34,0.5)] flex items-center gap-2"
-          >
-            <Icon path={ICONS.plus} className="w-5 h-5" />
-            Nuevo Producto
-          </button>
+
+          {/* Controles de Usuario */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-xs font-bold leading-tight">{usuario?.nombre || 'Usuario'}</p>
+                <p className="text-[10px] text-[#E8530A] font-black tracking-wider uppercase">{usuario?.rol || 'Sin rol'}</p>
+              </div>
+              <div
+                aria-hidden="true"
+                className="w-8 h-8 rounded-full bg-[#E8530A] font-bold text-xs flex items-center justify-center shadow-lg border border-[#E8530A]/30"
+              >
+                {getInitials(usuario?.nombre)}
+              </div>
+            </div>
+          </div>
         </header>
+
+        {/* 3. ÁREA DE TRABAJO */}
+        <main className="flex-1 p-8 overflow-y-auto">
+          {/* Título de la Página */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-2xl font-black tracking-wide mb-1">Catálogo de Productos</h1>
+              <p className="text-xs font-bold text-neutral-500 tracking-wider uppercase">
+                Gestiona los productos finales y sus recetas
+              </p>
+            </div>
+            <button
+              onClick={openNewProductModal}
+              className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors cursor-pointer shadow-lg shadow-[#E8530A]/20"
+            >
+              <Icon path={ICONS.plus} className="w-4 h-4" />
+              Nuevo Producto
+            </button>
+          </div>
 
         {/* Alerts */}
         {(error || successMessage) && (
@@ -395,6 +475,7 @@ export default function Productos() {
           )}
         </div>
       </main>
+    </div>
 
       {/* Product Modal */}
       {isProductModalOpen && (
