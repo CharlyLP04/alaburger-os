@@ -1,74 +1,45 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
-const { manejarErrorInterno } = require('../utils/errorHandler');
+const { Usuario } = require('../models'); 
 
 const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        error: 'Datos incompletos',
-        mensaje: 'Email y contraseña son obligatorios.',
-      });
+        const usuario = await Usuario.findOne({ where: { email } });
+
+        if (!usuario) {
+            return res.status(401).json({ error: "Credenciales inválidas" });
+        }
+
+        const passwordValido = await bcrypt.compare(password, usuario.password_hash);
+        if (!passwordValido) {
+            return res.status(401).json({ error: "Credenciales inválidas" });
+        }
+
+        const payload = {
+            sub: usuario.id,
+            rol: usuario.rol
+        };
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { 
+            algorithm: 'HS256', 
+            expiresIn: '8h' 
+        });
+
+        return res.status(200).json({
+            token,
+            user: {
+                id: usuario.id,
+                nombre: usuario.nombre,
+                rol: usuario.rol
+            }
+        });
+
+    } catch (error) {
+        console.error("Error en login:", error.message);
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
-
-    const resultado = await pool.query(
-      `SELECT u.id, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre AS rol
-       FROM usuarios u
-       INNER JOIN roles r ON r.id = u.rol_id
-       WHERE u.email = $1`,
-      [email.toLowerCase().trim()]
-    );
-
-    if (resultado.rows.length === 0) {
-      return res.status(401).json({
-        error: 'Credenciales inválidas',
-        mensaje: 'Email o contraseña incorrectos.',
-      });
-    }
-
-    const usuario = resultado.rows[0];
-
-    if (!usuario.activo) {
-      return res.status(403).json({
-        error: 'Cuenta inactiva',
-        mensaje: 'Tu cuenta ha sido desactivada.',
-      });
-    }
-
-    const passwordValida = await bcrypt.compare(password, usuario.password_hash);
-
-    if (!passwordValida) {
-      return res.status(401).json({
-        error: 'Credenciales inválidas',
-        mensaje: 'Email o contraseña incorrectos.',
-      });
-    }
-
-    const token = jwt.sign(
-      {
-        id: usuario.id,
-        email: usuario.email,
-        rol: usuario.rol,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '8h' }
-    );
-
-    return res.status(200).json({
-      token,
-      usuario: {
-        id: usuario.id,
-        nombre: `${usuario.nombre} ${usuario.apellido}`,
-        email: usuario.email,
-        rol: usuario.rol,
-      },
-    });
-  } catch (error) {
-    return manejarErrorInterno(error, res, 'login');
-  }
 };
 
 module.exports = { login };

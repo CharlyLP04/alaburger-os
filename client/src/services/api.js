@@ -165,3 +165,49 @@ export function registrarEntrada(id, payload) {
 export function getAlertasStockBajo() {
   return apiFetch('/inventario/alertas/resumen');
 }
+
+// Usuarios
+export function getUsuarios() {
+  return apiFetch('/usuarios');
+}
+
+export function getRoles() {
+  return apiFetch('/usuarios/roles');
+}
+
+export function createUsuario(payload) {
+  return apiFetch('/usuarios', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateUsuario(id, payload) {
+  return apiFetch(`/usuarios/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function toggleUsuarioStatus(id) {
+  return apiFetch(`/usuarios/${id}/status`, {
+    method: 'PATCH',
+  });
+}
+
+// Configuración
+export function getConfiguraciones() {
+  return apiFetch('/configuracion');
+}
+
+export function updateConfiguraciones(payload) {
+  return apiFetch('/configuracion', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+// Búsqueda Global
+export function globalSearch(query) {
+  return apiFetch(`/search?q=${encodeURIComponent(query)}`);
+}
