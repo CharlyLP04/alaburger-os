@@ -142,8 +142,57 @@ export default function AppLayout() {
             <span className="text-[#E8530A]">{currentNav?.label || 'DASHBOARD'}</span>
           </div>
 
-          {/* Controles de Usuario */}
+          {/* Buscador y Controles de Usuario */}
           <div className="flex items-center gap-6">
+            {/* Buscador */}
+            <div className="relative w-64 hidden lg:block">
+              <span className="absolute inset-y-0 left-3 flex items-center text-neutral-500">
+                <Icon path={ICONS.search} size={16} />
+              </span>
+              <input 
+                type="text" 
+                placeholder="Buscar pedido, prod..." 
+                className="w-full bg-[#141416] border border-[#1F1F23] rounded-xl pl-10 pr-10 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    alert('Buscador: Función en desarrollo para una futura HU.');
+                  }
+                }}
+              />
+              <span className="absolute inset-y-0 right-3 flex items-center text-[10px] text-neutral-500 font-bold bg-[#09090A] px-2 my-2 border border-[#1F1F23] rounded-lg">
+                ⌘K
+              </span>
+            </div>
+
+            {/* Acciones Rápidas */}
+            <div className="flex items-center gap-3 text-neutral-300 border-r border-[#1F1F23] pr-6">
+              <button 
+                onClick={() => alert('Actualizando datos...')}
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
+                title="Actualizar datos"
+              >
+                <Icon path={ICONS.refresh} size={22} />
+              </button>
+              <button 
+                onClick={() => alert('Tienes 2 notificaciones nuevas')}
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors relative cursor-pointer"
+                title="Ver notificaciones"
+              >
+                <Icon path={ICONS.bell} size={22} />
+                <span className="absolute top-1 right-1 w-5.5 h-5.5 bg-[#E8530A] text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-[#09090A]">
+                  2
+                </span>
+              </button>
+              <button 
+                onClick={() => alert('Configuración: Módulo en desarrollo')}
+                className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
+                title="Configuración"
+              >
+                <Icon path={ICONS.settings} size={22} />
+              </button>
+            </div>
+
+            {/* Perfil de Usuario */}
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold leading-tight">{usuario?.nombre || 'Usuario'}</p>
