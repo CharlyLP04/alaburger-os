@@ -27,6 +27,8 @@ function DevNavigation() {
   );
 }
 
+import AppLayout from './components/layout/AppLayout';
+
 function AuthenticatedRedirect() {
   const usuario = getUsuario();
   return <Navigate to={getDefaultRouteForRole(usuario?.rol)} replace />;
@@ -41,62 +43,23 @@ export default function App() {
           element={isAuthenticated() ? <AuthenticatedRedirect /> : <Login />}
         />
         <Route path="/403" element={<Forbidden />} />
+
+        {/* RUTAS ADMINISTRATIVAS ENVUELTAS EN EL LAYOUT GLOBAL */}
         <Route
-          path="/"
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
-              <Dashboard />
+              <AppLayout />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/inventario"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <Inventario />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pedidos"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Pedidos" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/productos"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <Productos />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/sucursales"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Sucursales" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/usuarios"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Usuarios" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reportes"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Reportes" />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/inventario" element={<Inventario />} />
+          <Route path="/pedidos" element={<ModuloEnDesarrollo modulo="Pedidos" />} />
+          <Route path="/productos" element={<Productos />} />
+          <Route path="/sucursales" element={<ModuloEnDesarrollo modulo="Sucursales" />} />
+          <Route path="/usuarios" element={<ModuloEnDesarrollo modulo="Usuarios" />} />
+          <Route path="/reportes" element={<ModuloEnDesarrollo modulo="Reportes" />} />
+        </Route>
         <Route
           path="/cocina"
           element={

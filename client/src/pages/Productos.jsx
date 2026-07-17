@@ -217,150 +217,10 @@ export default function Productos() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0E0E10] text-white font-sans selection:bg-primary/30">
-      
-      {/* 1. BARRA LATERAL (SIDEBAR) */}
-      <aside className="w-64 bg-[#09090A] border-r border-[#1F1F23] flex flex-col justify-between h-screen sticky top-0">
-        <div>
-          {/* Logo */}
-          <div className="p-6 border-b border-[#1F1F23] flex items-center gap-3">
-            <div className="bg-[#E8530A] text-white font-black w-6 h-6 rounded flex items-center justify-center text-xs tracking-wider">
-              A
-            </div>
-            <h2 className="font-black tracking-widest text-sm uppercase">A LA BURGER OS</h2>
-          </div>
-
-          {/* Sección de Navegación */}
-          <div className="p-4">
-            <p className="text-[10px] font-bold text-neutral-500 tracking-widest uppercase px-2 mb-3">
-              Navegación
-            </p>
-            <nav className="space-y-1">
-              <Link 
-                to="/" 
-                className="flex items-center justify-between px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon path={ICONS.dashboard} size={18} />
-                  <span>Dashboard</span>
-                </div>
-              </Link>
-
-              <Link 
-                to="/pedidos" 
-                className="flex items-center justify-between px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon path={ICONS.bag} size={18} />
-                  <span>Pedidos</span>
-                </div>
-              </Link>
-
-              <Link 
-                to="/cocina" 
-                className="flex items-center justify-between px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon path={ICONS.chef} size={18} />
-                  <span>Cocina</span>
-                </div>
-              </Link>
-
-              <Link 
-                to="/productos" 
-                className="flex items-center justify-between px-3 py-2.5 bg-[#141416] rounded-lg border-l-2 border-[#E8530A] text-[#E8530A] font-bold text-sm transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon path={ICONS.box} size={18} />
-                  <span>Productos</span>
-                </div>
-              </Link>
-
-              {["Inventario", "Sucursales", "Usuarios", "Reportes"].map((item, index) => {
-                const iconMap = [ICONS.box, ICONS.store, ICONS.users, ICONS.chart];
-                return (
-                  <Link 
-                    key={index}
-                    to={`/${item.toLowerCase()}`} 
-                    className="flex items-center gap-3 px-3 py-2.5 text-neutral-400 hover:text-white hover:bg-[#141416] rounded-lg text-sm font-medium transition-colors"
-                  >
-                    <Icon path={iconMap[index]} size={18} />
-                    <span>{item}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-
-        {/* Estado del Sistema */}
-        <div className="p-4 border-t border-[#1F1F23] bg-[#050506]">
-          <div className="flex items-center justify-between text-xs font-bold tracking-wide mb-2">
-            <span className="text-neutral-500 uppercase">Sistema</span>
-            <span className="text-success flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span> ONLINE
-            </span>
-          </div>
-          <div className="space-y-1">
-            <div className="flex justify-between text-[11px] text-neutral-400">
-              <span>CPU - Carga del sistema</span>
-              <span className="font-bold">24%</span>
-            </div>
-            <div className="w-full bg-[#1F1F23] h-1.5 rounded-full overflow-hidden">
-              <div className="bg-success h-full w-[24%] rounded-full"></div>
-            </div>
-          </div>
-          
-          {/* User Profile */}
-          <div className="mt-4 pt-4 border-t border-[#1F1F23] flex flex-col gap-3">
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-9 h-9 rounded-full bg-[#E8530A]/10 text-[#E8530A] flex items-center justify-center font-bold text-sm">
-                {getInitials(usuario?.nombre)}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-sm font-bold text-white truncate">{usuario?.nombre} {usuario?.apellido}</p>
-                <p className="text-xs text-neutral-500 capitalize truncate">{usuario?.rol}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center justify-center gap-2 w-full px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-500 bg-red-500/10 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* CONTENIDO PRINCIPAL */}
-      <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* 2. BARRA SUPERIOR (TOP BAR) */}
-        <header className="h-16 border-b border-[#1F1F23] bg-[#09090A]/80 backdrop-blur-md px-8 flex items-center justify-between sticky top-0 z-40">
-          {/* Breadcrumb */}
-          <div className="text-xs font-bold tracking-wider text-neutral-400 uppercase">
-            A LA BURGER OS <span className="text-neutral-600 mx-1">/</span> <span className="text-white">Productos</span>
-          </div>
-
-          {/* Controles de Usuario */}
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-xs font-bold leading-tight">{usuario?.nombre || 'Usuario'}</p>
-                <p className="text-[10px] text-[#E8530A] font-black tracking-wider uppercase">{usuario?.rol || 'Sin rol'}</p>
-              </div>
-              <div
-                aria-hidden="true"
-                className="w-8 h-8 rounded-full bg-[#E8530A] font-bold text-xs flex items-center justify-center shadow-lg border border-[#E8530A]/30"
-              >
-                {getInitials(usuario?.nombre)}
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* 3. ÁREA DE TRABAJO */}
-        <main className="flex-1 p-8 overflow-y-auto">
+  return (
+    <>
+      {/* 3. ÁREA DE TRABAJO */}
+      <main className="flex-1 p-8 overflow-y-auto">
           {/* Título de la Página */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
@@ -715,6 +575,6 @@ export default function Productos() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
