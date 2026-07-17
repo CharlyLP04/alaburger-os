@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { Icon, ICONS } from '../ui/Icon';
+import { Toast } from '../ui/Toast';
 import { clearAuth, getInitials, getUsuario } from '../../utils/auth';
 
 export default function AppLayout() {
   const location = useLocation();
   const usuario = getUsuario();
+  const [toast, setToast] = useState(null);
 
   const handleLogout = () => {
     clearAuth();
@@ -155,7 +157,7 @@ export default function AppLayout() {
                 className="w-full bg-[#141416] border border-[#1F1F23] rounded-xl pl-10 pr-10 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-neutral-700 transition-colors"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    alert('Buscador: Función en desarrollo para una futura HU.');
+                    setToast({ message: 'Buscador: Función en desarrollo para una futura HU.', type: 'warning' });
                   }
                 }}
               />
@@ -167,14 +169,14 @@ export default function AppLayout() {
             {/* Acciones Rápidas */}
             <div className="flex items-center gap-3 text-neutral-300 border-r border-[#1F1F23] pr-6">
               <button 
-                onClick={() => alert('Actualizando datos...')}
+                onClick={() => setToast({ message: 'Actualizando datos...', type: 'info' })}
                 className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
                 title="Actualizar datos"
               >
                 <Icon path={ICONS.refresh} size={22} />
               </button>
               <button 
-                onClick={() => alert('Tienes 2 notificaciones nuevas')}
+                onClick={() => setToast({ message: 'Tienes 2 notificaciones nuevas', type: 'info' })}
                 className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors relative cursor-pointer"
                 title="Ver notificaciones"
               >
@@ -184,7 +186,7 @@ export default function AppLayout() {
                 </span>
               </button>
               <button 
-                onClick={() => alert('Configuración: Módulo en desarrollo')}
+                onClick={() => setToast({ message: 'Configuración: Módulo en desarrollo', type: 'warning' })}
                 className="p-3 hover:text-white rounded-xl hover:bg-[#141416] transition-colors cursor-pointer"
                 title="Configuración"
               >
@@ -211,6 +213,15 @@ export default function AppLayout() {
         {/* 3. ÁREA DE TRABAJO (RENDERIZA LAS RUTAS HIJAS AQUÍ) */}
         <Outlet />
       </div>
+
+      {/* Toast Global desde el Layout */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
     </div>
   );
 }
