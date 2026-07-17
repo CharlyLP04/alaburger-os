@@ -422,51 +422,81 @@ export default function Productos() {
                         </td>
                       </tr>
                     ) : (
-                      productos.map((prod) => (
+                      productos.map((prod) => {
+                        const esBebida = prod.categoria.toLowerCase().includes('bebida');
+                        
+                        const getCategoryIcon = (category) => {
+                          const cat = category.toLowerCase();
+                          if (cat.includes('hamburguesa') || cat.includes('burger')) return '🍔';
+                          if (cat.includes('bebida') || cat.includes('refresco') || cat.includes('jugo')) return '🥤';
+                          if (cat.includes('postre') || cat.includes('helado')) return '🍰';
+                          if (cat.includes('complemento') || cat.includes('papa') || cat.includes('snack')) return '🍟';
+                          if (cat.includes('ensalada')) return '🥗';
+                          if (cat.includes('combo')) return '🍱';
+                          return '📦';
+                        };
+
+                        return (
                         <tr key={prod.id} className="hover:bg-[#141416]/50 transition-colors group">
                           <td className="p-4">
-                            <p className="text-sm font-medium text-foreground">{prod.nombre}</p>
-                            {prod.descripcion && <p className="text-xs text-muted-foreground">{prod.descripcion}</p>}
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#141416] to-[#0E0E10] border border-[#1E1E1E] flex items-center justify-center text-2xl shadow-sm">
+                                {getCategoryIcon(prod.categoria)}
+                              </div>
+                              <div>
+                                <p className="text-sm font-bold text-white">{prod.nombre}</p>
+                                {prod.descripcion && <p className="text-xs text-neutral-500 mt-0.5">{prod.descripcion}</p>}
+                              </div>
+                            </div>
                           </td>
-                          <td className="p-4 text-sm text-foreground capitalize">{prod.categoria}</td>
-                          <td className="p-4 text-sm text-foreground">${prod.precio.toFixed(2)}</td>
                           <td className="p-4">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#141416] border border-[#1E1E1E] text-xs font-medium text-neutral-400 capitalize">
+                              {prod.categoria}
+                            </span>
+                          </td>
+                          <td className="p-4 text-sm font-bold text-white">${prod.precio.toFixed(2)}</td>
+                          <td className="p-4">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
                               prod.disponible
-                                ? 'bg-green-500/10 text-green-500 border-green-500/20'
+                                ? 'bg-success/10 text-success border-success/20'
                                 : 'bg-red-500/10 text-red-500 border-red-500/20'
                             }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${prod.disponible ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                              <span className={`w-1.5 h-1.5 rounded-full ${prod.disponible ? 'bg-success' : 'bg-red-500'}`}></span>
                               {prod.disponible ? 'Disponible' : 'Agotado'}
                             </span>
                           </td>
                           <td className="p-4 text-right flex items-center justify-end gap-2">
                             <button
                               onClick={() => openEditProductModal(prod)}
-                              className="flex items-center gap-2 bg-[#141416] hover:bg-[#1E1E1E] text-muted-foreground hover:text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent hover:border-[#333]"
+                              className="flex items-center gap-2 bg-[#141416] hover:bg-[#1E1E1E] text-neutral-400 hover:text-white px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border border-transparent hover:border-[#333]"
                               title="Editar Producto"
                             >
                               <Icon path={ICONS.edit} className="w-4 h-4" />
                               <span className="hidden sm:inline">Editar</span>
                             </button>
                             <button
-                              onClick={() => openRecipeModal(prod)}
-                              className="flex items-center gap-2 bg-[#141416] hover:bg-[#1E1E1E] text-muted-foreground hover:text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent hover:border-[#333]"
-                              title="Gestionar Receta"
+                              onClick={() => !esBebida && openRecipeModal(prod)}
+                              disabled={esBebida}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border ${
+                                esBebida 
+                                  ? 'bg-neutral-900/50 text-neutral-600 border-transparent cursor-not-allowed'
+                                  : 'bg-[#141416] hover:bg-[#1E1E1E] text-neutral-400 hover:text-white border-transparent hover:border-[#333]'
+                              }`}
+                              title={esBebida ? "Las bebidas no requieren receta" : "Gestionar Receta"}
                             >
                               <Icon path={ICONS.box} className="w-4 h-4" />
                               <span className="hidden sm:inline">Receta</span>
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(prod.id)}
-                              className="flex items-center gap-2 bg-[#141416] hover:bg-red-500/10 text-muted-foreground hover:text-red-500 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-transparent hover:border-red-500/20"
+                              className="flex items-center justify-center bg-[#141416] hover:bg-red-500/10 text-neutral-400 hover:text-red-500 w-8 h-8 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
                               title="Eliminar"
                             >
                               <Icon path={ICONS.trash} className="w-4 h-4" />
                             </button>
                           </td>
                         </tr>
-                      ))
+                      )})
                     )}
                   </tbody>
                 </table>
