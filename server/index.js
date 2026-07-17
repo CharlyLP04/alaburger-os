@@ -1,6 +1,7 @@
 // Punto de entrada principal del servidor A La Burger OS
 require('dotenv').config();
 
+const authRoutes = require('./routes/authRoutes');
 const express = require('express');
 const cors = require('cors');
 const rutas = require('./src/routes/index');
@@ -31,6 +32,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+app.use('/api/auth', authRoutes);
 
 // Parsear cuerpos JSON en las peticiones
 app.use(express.json());
