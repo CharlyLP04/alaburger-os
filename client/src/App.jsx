@@ -57,7 +57,6 @@ export default function App() {
           <Route path="/inventario" element={<Inventario />} />
           <Route path="/pedidos" element={<ModuloEnDesarrollo modulo="Pedidos" />} />
           <Route path="/productos" element={<Productos />} />
-          <Route path="/sucursales" element={<ModuloEnDesarrollo modulo="Sucursales" />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/reportes" element={<ModuloEnDesarrollo modulo="Reportes" />} />
         </Route>

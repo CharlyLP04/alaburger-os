@@ -21,7 +21,6 @@ export default function AppLayout() {
     { path: '/cocina', label: 'Cocina', icon: ICONS.chef },
     { path: '/productos', label: 'Productos', icon: ICONS.box },
     { path: '/inventario', label: 'Inventario', icon: ICONS.box },
-    { path: '/sucursales', label: 'Sucursales', icon: ICONS.store },
     { path: '/usuarios', label: 'Usuarios', icon: ICONS.users },
     { path: '/reportes', label: 'Reportes', icon: ICONS.chart },
   ];
