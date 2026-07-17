@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
 import Inventario from './pages/Inventario';
 import Productos from './pages/Productos';
+import Usuarios from './pages/Usuarios';
 import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
 import ProtectedRoute from './components/ProtectedRoute';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
@@ -57,7 +58,7 @@ export default function App() {
           <Route path="/pedidos" element={<ModuloEnDesarrollo modulo="Pedidos" />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/sucursales" element={<ModuloEnDesarrollo modulo="Sucursales" />} />
-          <Route path="/usuarios" element={<ModuloEnDesarrollo modulo="Usuarios" />} />
+          <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/reportes" element={<ModuloEnDesarrollo modulo="Reportes" />} />
         </Route>
         <Route

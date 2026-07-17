@@ -1,0 +1,128 @@
+const bcrypt = require('bcryptjs');
+const pool = require('../config/db');
+const { manejarErrorInterno } = require('../utils/errorHandler');
+
+const getUsers = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT u.id, u.nombre, u.apellido, u.email, u.activo, u.created_at, r.nombre AS rol, r.id AS rol_id
+       FROM usuarios u
+       INNER JOIN roles r ON r.id = u.rol_id
+       ORDER BY u.created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (error) {
+    manejarErrorInterno(res, error, 'obtener usuarios');
+  }
+};
+
+const getRoles = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, nombre, descripcion FROM roles ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (error) {
+    manejarErrorInterno(res, error, 'obtener roles');
+  }
+};
+
+const createUser = async (req, res) => {
+  try {
+    const { nombre, apellido, email, password, rol_id } = req.body;
+
+    if (!nombre || !apellido || !email || !password || !rol_id) {
+      return res.status(400).json({ error: 'Faltan datos requeridos.' });
+    }
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    const result = await pool.query(
+      `INSERT INTO usuarios (nombre, apellido, email, password_hash, rol_id, activo)
+       VALUES ($1, $2, $3, $4, $5, true)
+       RETURNING id, nombre, apellido, email, activo`,
+      [nombre, apellido, email.toLowerCase().trim(), password_hash, rol_id]
+    );
+
+    res.status(201).json({
+      mensaje: 'Usuario creado exitosamente',
+      usuario: result.rows[0]
+    });
+  } catch (error) {
+    if (error.code === '23505') { // Unique constraint violation (email)
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado.' });
+    }
+    manejarErrorInterno(res, error, 'crear usuario');
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, apellido, email, rol_id, password } = req.body;
+
+    if (!nombre || !apellido || !email || !rol_id) {
+      return res.status(400).json({ error: 'Faltan datos requeridos.' });
+    }
+
+    let result;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const password_hash = await bcrypt.hash(password, salt);
+      result = await pool.query(
+        `UPDATE usuarios 
+         SET nombre = $1, apellido = $2, email = $3, rol_id = $4, password_hash = $5, updated_at = NOW()
+         WHERE id = $6 RETURNING id`,
+        [nombre, apellido, email.toLowerCase().trim(), rol_id, password_hash, id]
+      );
+    } else {
+      result = await pool.query(
+        `UPDATE usuarios 
+         SET nombre = $1, apellido = $2, email = $3, rol_id = $4, updated_at = NOW()
+         WHERE id = $5 RETURNING id`,
+        [nombre, apellido, email.toLowerCase().trim(), rol_id, id]
+      );
+    }
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
+    }
+
+    res.json({ mensaje: 'Usuario actualizado exitosamente' });
+  } catch (error) {
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado por otro usuario.' });
+    }
+    manejarErrorInterno(res, error, 'actualizar usuario');
+  }
+};
+
+const toggleUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(
+      `UPDATE usuarios SET activo = NOT activo, updated_at = NOW() WHERE id = $1 RETURNING activo`,
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
+    }
+
+    res.json({
+      mensaje: result.rows[0].activo ? 'Usuario activado exitosamente' : 'Usuario desactivado exitosamente',
+      activo: result.rows[0].activo
+    });
+  } catch (error) {
+    manejarErrorInterno(res, error, 'cambiar estado del usuario');
+  }
+};
+
+module.exports = {
+  getUsers,
+  getRoles,
+  createUser,
+  updateUser,
+  toggleUserStatus
+};

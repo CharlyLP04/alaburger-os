@@ -135,3 +135,32 @@ export function registrarEntrada(id, payload) {
 export function getAlertasStockBajo() {
   return apiFetch('/inventario/alertas/resumen');
 }
+
+// Usuarios
+export function getUsuarios() {
+  return apiFetch('/usuarios');
+}
+
+export function getRoles() {
+  return apiFetch('/usuarios/roles');
+}
+
+export function createUsuario(payload) {
+  return apiFetch('/usuarios', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateUsuario(id, payload) {
+  return apiFetch(`/usuarios/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function toggleUsuarioStatus(id) {
+  return apiFetch(`/usuarios/${id}/status`, {
+    method: 'PATCH',
+  });
+}
