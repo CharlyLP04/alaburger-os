@@ -20,7 +20,7 @@ const searchAll = async (req, res) => {
         `SELECT p.id, p.nombre, c.nombre as categoria 
          FROM productos p 
          LEFT JOIN categorias c ON p.categoria_id = c.id 
-         WHERE p.nombre ILIKE $1 AND p.activo = true 
+         WHERE p.nombre ILIKE $1 AND p.disponible = true 
          LIMIT 5`,
         [searchQuery]
       ),
