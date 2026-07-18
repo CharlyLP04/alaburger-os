@@ -10,8 +10,8 @@ import Productos from './pages/Productos';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
 import ModuloEnDesarrollo from './pages/ModuloEnDesarrollo';
-import Products from './pages/Products';
 import ProtectedRoute from './components/ProtectedRoute';
+import AppLayout from './components/layout/AppLayout';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
 function DevNavigation() {
@@ -30,8 +30,6 @@ function DevNavigation() {
   );
 }
 
-import AppLayout from './components/layout/AppLayout';
-
 function AuthenticatedRedirect() {
   const usuario = getUsuario();
   return <Navigate to={getDefaultRouteForRole(usuario?.rol)} replace />;
@@ -49,47 +47,6 @@ export default function App() {
 
         {/* RUTAS ADMINISTRATIVAS ENVUELTAS EN EL LAYOUT GLOBAL */}
         <Route
-          path="/"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/inventario"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <Inventario />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pedidos"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Pedidos" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/productos"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Productos" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/usuarios"
-          element={
-            <ProtectedRoute allowedRoles={['administrador']}>
-              <ModuloEnDesarrollo modulo="Usuarios" />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reportes"
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
               <AppLayout />
