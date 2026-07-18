@@ -8,6 +8,9 @@ import {
   updateProducto,
   deleteProducto,
   getCategorias,
+  createCategoria,
+  updateCategoria,
+  deleteCategoria,
   getReceta,
   updateReceta,
   getInventario
@@ -45,6 +48,14 @@ export default function Productos() {
   
   const [recipeError, setRecipeError] = useState('');
   const [recipeSubmitting, setRecipeSubmitting] = useState(false);
+
+  // Category Modal State
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isEditingCategory, setIsEditingCategory] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [catNombre, setCatNombre] = useState('');
+  const [catError, setCatError] = useState('');
+  const [catSubmitting, setCatSubmitting] = useState(false);
 
   useEffect(() => {
     loadInitialData();
@@ -144,6 +155,69 @@ export default function Productos() {
     }
   };
 
+  // --- Category Management ---
+  const resetCategoryForm = () => {
+    setIsEditingCategory(false);
+    setEditingCategoryId(null);
+    setCatNombre('');
+    setCatError('');
+  };
+
+  const openCategoryModal = () => {
+    resetCategoryForm();
+    setIsCategoryModalOpen(true);
+  };
+
+  const openEditCategoryModal = (cat) => {
+    setIsEditingCategory(true);
+    setEditingCategoryId(cat.id);
+    setCatNombre(cat.nombre);
+    setCatError('');
+  };
+
+  const handleCategorySubmit = async (e) => {
+    e.preventDefault();
+    if (!catNombre.trim()) {
+      setCatError('El nombre de la categoría es obligatorio.');
+      return;
+    }
+    setCatSubmitting(true);
+    setCatError('');
+    try {
+      const payload = { nombre: catNombre.trim() };
+      if (editingCategoryId != null) {
+        await updateCategoria(editingCategoryId, payload);
+        setSuccessMessage('Categoría actualizada exitosamente.');
+      } else {
+        await createCategoria(payload);
+        setSuccessMessage('Categoría creada exitosamente.');
+      }
+      resetCategoryForm();
+      await loadInitialData();
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setCatError(err.message || 'Error al guardar la categoría.');
+    } finally {
+      setCatSubmitting(false);
+    }
+  };
+
+  const handleDeleteCategory = async (id) => {
+    if (!window.confirm('¿Estás seguro de eliminar esta categoría?')) return;
+    setCatError('');
+    try {
+      await deleteCategoria(id);
+      setSuccessMessage('Categoría eliminada correctamente.');
+      if (editingCategoryId === id) {
+        resetCategoryForm();
+      }
+      loadInitialData();
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setCatError(err.message || 'Error al eliminar la categoría.');
+    }
+  };
+
   // --- Recipe Management ---
   const openRecipeModal = async (product) => {
     setActiveRecipeProduct(product);
@@ -228,13 +302,24 @@ export default function Productos() {
                 Gestiona los productos finales y sus recetas
               </p>
             </div>
-            <button
-              onClick={openNewProductModal}
-              className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors cursor-pointer shadow-lg shadow-[#E8530A]/20"
-            >
-              <Icon path={ICONS.plus} className="w-4 h-4" />
-              Nuevo Producto
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={openCategoryModal}
+                className="flex items-center gap-2 bg-[#141416] hover:bg-[#1E1E1E] text-neutral-400 hover:text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border border-transparent hover:border-[#333] cursor-pointer"
+              >
+                <Icon path={ICONS.settings} className="w-4 h-4" />
+                Administrar Categorías
+              </button>
+              <button
+                type="button"
+                onClick={openNewProductModal}
+                className="text-xs font-bold uppercase tracking-wider text-white bg-[#E8530A] hover:bg-[#ff6214] px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors cursor-pointer shadow-lg shadow-[#E8530A]/20"
+              >
+                <Icon path={ICONS.plus} className="w-4 h-4" />
+                Nuevo Producto
+              </button>
+            </div>
           </div>
 
         {/* Alerts */}
@@ -465,6 +550,116 @@ export default function Productos() {
                 className="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {prodSubmitting ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Category Modal */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-[#1E1E1E] rounded-xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-[#1E1E1E] flex items-center justify-between shrink-0 bg-[#141416]">
+              <h2 className="text-xl font-bold text-foreground">Administrar Categorías</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCategoryModalOpen(false);
+                  resetCategoryForm();
+                }}
+                className="text-muted-foreground hover:text-foreground transition-colors p-1"
+              >
+                <Icon path={ICONS.x} className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto">
+              {catError && (
+                <div className="mb-4 bg-red-500/10 border border-red-500/50 text-red-500 px-3 py-2 rounded-lg text-sm">
+                  {catError}
+                </div>
+              )}
+
+              <div className="space-y-2 mb-6">
+                {categorias.length === 0 ? (
+                  <div className="text-center py-6 text-sm text-muted-foreground border border-dashed border-[#1E1E1E] rounded-lg">
+                    No hay categorías registradas.
+                  </div>
+                ) : (
+                  categorias.map((cat) => (
+                    <div
+                      key={cat.id}
+                      className="flex items-center justify-between bg-[#141416] border border-[#1E1E1E] rounded-lg px-4 py-3"
+                    >
+                      <span className="text-sm font-medium text-foreground capitalize">{cat.nombre}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEditCategoryModal(cat)}
+                          className="flex items-center justify-center bg-[#141416] hover:bg-[#1E1E1E] text-neutral-400 hover:text-white w-8 h-8 rounded-lg transition-colors border border-transparent hover:border-[#333]"
+                          title="Editar categoría"
+                        >
+                          <Icon path={ICONS.edit} className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteCategory(cat.id)}
+                          className="flex items-center justify-center bg-[#141416] hover:bg-red-500/10 text-neutral-400 hover:text-red-500 w-8 h-8 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                          title="Eliminar categoría"
+                        >
+                          <Icon path={ICONS.trash} className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <form id="categoryForm" onSubmit={handleCategorySubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                    {isEditingCategory ? 'Editar categoría' : 'Nueva categoría'}
+                  </label>
+                  <input
+                    type="text"
+                    value={catNombre}
+                    onChange={(e) => setCatNombre(e.target.value)}
+                    className="w-full bg-[#141416] border border-[#1E1E1E] rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Ej. Hamburguesas"
+                    required
+                  />
+                </div>
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-[#1E1E1E] flex justify-end gap-3 shrink-0 bg-[#141416]">
+              {isEditingCategory && (
+                <button
+                  type="button"
+                  onClick={resetCategoryForm}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-[#1E1E1E] hover:text-foreground transition-colors"
+                >
+                  Cancelar edición
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCategoryModalOpen(false);
+                  resetCategoryForm();
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-[#1E1E1E] hover:text-foreground transition-colors"
+              >
+                Cerrar
+              </button>
+              <button
+                type="submit"
+                form="categoryForm"
+                disabled={catSubmitting}
+                className="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {catSubmitting ? 'Guardando...' : (isEditingCategory ? 'Actualizar' : 'Agregar')}
               </button>
             </div>
           </div>

@@ -6,6 +6,9 @@ const {
   actualizarProducto,
   eliminarProducto,
   obtenerCategorias,
+  crearCategoria,
+  actualizarCategoria,
+  eliminarCategoria,
   obtenerReceta,
   actualizarReceta
 } = require('../controllers/productController');
@@ -17,6 +20,26 @@ const router = express.Router();
 router.get('/', verificarToken, obtenerProductos); // public
 router.get('/all', verificarToken, obtenerTodosLosProductos);
 router.get('/categorias', verificarToken, obtenerCategorias);
+router.post(
+  '/categorias',
+  verificarToken,
+  verificarAdministrador,
+  crearCategoria
+);
+
+router.put(
+  '/categorias/:id',
+  verificarToken,
+  verificarAdministrador,
+  actualizarCategoria
+);
+
+router.delete(
+  '/categorias/:id',
+  verificarToken,
+  verificarAdministrador,
+  eliminarCategoria
+);
 router.post(
   '/',
   verificarToken,
