@@ -60,6 +60,45 @@ export function getProductos() {
   return apiFetch('/productos');
 }
 
+export function getAllProductos() {
+  return apiFetch('/productos/all');
+}
+
+export function createProducto(payload) {
+  return apiFetch('/productos', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateProducto(id, payload) {
+  return apiFetch(`/productos/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteProducto(id) {
+  return apiFetch(`/productos/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function getCategorias() {
+  return apiFetch('/productos/categorias');
+}
+
+export function getReceta(id) {
+  return apiFetch(`/productos/${id}/receta`);
+}
+
+export function updateReceta(id, ingredientes) {
+  return apiFetch(`/productos/${id}/receta`, {
+    method: 'PUT',
+    body: JSON.stringify({ ingredientes }),
+  });
+}
+
 export async function getProductosList({ page = 1, limit = 20, categoria_id, activo } = {}) {
   const params = new URLSearchParams();
   const filtroPorNombre = categoria_id !== undefined
@@ -191,4 +230,48 @@ export function getTodosLosMovimientos(tipo = '', fechaDesde = '', fechaHasta = 
   
   const query = params.toString();
   return apiFetch(`/inventario/movimientos${query ? '?' + query : ''}`);
+}
+
+export function getUsuarios() {
+  return apiFetch('/usuarios');
+}
+
+export function getRoles() {
+  return apiFetch('/usuarios/roles');
+}
+
+export function createUsuario(payload) {
+  return apiFetch('/usuarios', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateUsuario(id, payload) {
+  return apiFetch(`/usuarios/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function toggleUsuarioStatus(id) {
+  return apiFetch(`/usuarios/${id}/status`, {
+    method: 'PATCH',
+  });
+}
+
+export function getConfiguraciones() {
+  return apiFetch('/configuracion');
+}
+
+export function updateConfiguraciones(payload) {
+  return apiFetch('/configuracion', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function globalSearch(query) {
+  const params = new URLSearchParams({ q: query });
+  return apiFetch(`/search?${params.toString()}`);
 }
