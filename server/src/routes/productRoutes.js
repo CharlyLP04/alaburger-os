@@ -10,15 +10,33 @@ const {
   actualizarReceta
 } = require('../controllers/productController');
 const { verificarToken } = require('../middleware/auth');
+const { verificarAdministrador } = require('../middleware/admin');
 
 const router = express.Router();
 
 router.get('/', verificarToken, obtenerProductos); // public
 router.get('/all', verificarToken, obtenerTodosLosProductos);
 router.get('/categorias', verificarToken, obtenerCategorias);
-router.post('/', verificarToken, crearProducto);
-router.put('/:id', verificarToken, actualizarProducto);
-router.delete('/:id', verificarToken, eliminarProducto);
+router.post(
+  '/',
+  verificarToken,
+  verificarAdministrador,
+  crearProducto
+);
+
+router.put(
+  '/:id',
+  verificarToken,
+  verificarAdministrador,
+  actualizarProducto
+);
+
+router.delete(
+  '/:id',
+  verificarToken,
+  verificarAdministrador,
+  eliminarProducto
+);
 
 // Recetas
 router.get('/:id/receta', verificarToken, obtenerReceta);
