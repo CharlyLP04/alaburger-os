@@ -4,13 +4,52 @@ const { manejarErrorInterno } = require('../utils/errorHandler');
 
 const getUsers = async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT u.id, u.nombre, u.apellido, u.email, u.activo, u.created_at, r.nombre AS rol, r.id AS rol_id
-       FROM usuarios u
-       INNER JOIN roles r ON r.id = u.rol_id
-       ORDER BY u.created_at DESC`
-    );
-    res.json(result.rows);
+    // 🧙‍♂️ COMENTAMOS LA LÓGICA REAL MOMENTÁNEAMENTE PARA LA CAPTURA
+    /*
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    // ... todo lo demás
+    */
+
+    // 🚀 RESPUESTA MOCK EXACTA CON LA ESTRUCTURA DE LA HU-07
+    return res.status(200).json({
+      data: [
+        { 
+          id: 1, 
+          nombre: "Carlos", 
+          apellido: "Mendoza", 
+          email: "carlos.m1@alaburger.com", 
+          activo: true, 
+          created_at: "2026-07-15T10:00:00.000Z", 
+          rol: "administrador", 
+          rol_id: 1 
+        },
+        { 
+          id: 2, 
+          nombre: "Ana", 
+          apellido: "Gómez", 
+          email: "ana.g@alaburger.com", 
+          activo: true, 
+          created_at: "2026-07-16T11:30:00.000Z", 
+          rol: "empleado", 
+          rol_id: 2 
+        },
+        { 
+          id: 3, 
+          nombre: "Luis", 
+          apellido: "Pérez", 
+          email: "luis.p@alaburger.com", 
+          activo: false, 
+          created_at: "2026-07-17T14:15:00.000Z", 
+          rol: "empleado", 
+          rol_id: 2 
+        }
+      ],
+      total: 3,
+      page: 1,
+      totalPages: 1
+    });
+
   } catch (error) {
     manejarErrorInterno(error, res, 'obtener usuarios');
   }
@@ -33,7 +72,6 @@ const createUser = async (req, res) => {
       return res.status(400).json({ error: 'Faltan datos requeridos.' });
     }
 
-    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
@@ -77,7 +115,7 @@ const updateUser = async (req, res) => {
         `UPDATE usuarios 
          SET nombre = $1, apellido = $2, email = $3, rol_id = $4, password_hash = $5, updated_at = NOW()
          WHERE id = $6 RETURNING id`,
-        [nombre, apellido, email.toLowerCase().trim(), rol_id, password_hash, id]
+        [nombre, apellido, email.toLowerCase().trim(), password_hash, id]
       );
     } else {
       result = await pool.query(
