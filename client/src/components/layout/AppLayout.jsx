@@ -66,9 +66,33 @@ export default function AppLayout() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
-  const handleLogout = () => {
-    clearAuth();
-    window.location.href = '/login';
+  // Función de cierre de sesión actualizada para HU-02
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        // Petición POST al endpoint protegido para invalidar sesión en backend
+        await fetch('http://localhost:4000/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      }
+    } catch (error) {
+      // Si el servidor falla, no bloqueamos al usuario, limpiamos localmente
+      console.error('Error al intentar cerrar sesión en el servidor:', error);
+    } finally {
+      // Limpieza de credenciales locales e invalidación de sesión en cliente
+      clearAuth();
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+
+      // Redirección limpia a la pantalla de login
+      window.location.href = '/login';
+    }
   };
 
   // Define the navigation items

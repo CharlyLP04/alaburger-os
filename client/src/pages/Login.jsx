@@ -1,62 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { login as loginApi } from '../services/api';
 import { consumeAuthMessage, getDefaultRouteForRole, setAuth } from '../utils/auth';
 
+// ─────────────────────────────────────────────────────────────
+// ESQUEMA DE VALIDACIÓN (Zod) - Satisface las Reglas del Negocio
+// ─────────────────────────────────────────────────────────────
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "El correo es obligatorio." }) // Criterio 1
+    .email({ message: "Por favor, ingresa un correo con formato válido (ej. usuario@dominio.com)." }), // Criterio 2
+  password: z
+    .string()
+    .min(8, { message: "La contraseña debe tener al menos 8 caracteres." }), // Criterio 3
+});
+
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [apiError, setApiError] = useState(''); // Error exclusivo de la respuesta del servidor
   const [loading, setLoading] = useState(false);
+
+  // Integración de React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    mode: 'onBlur', // Criterio 2: Dispara validación al perder el foco (onBlur)
+  });
 
   useEffect(() => {
     const pendingMessage = consumeAuthMessage();
     if (pendingMessage) {
-      setError(pendingMessage);
+      setApiError(pendingMessage);
     }
   }, []);
 
-  const validateForm = () => {
-    const trimmedEmail = email.trim();
-
-    if (!trimmedEmail) {
-      setError('El usuario es obligatorio.');
-      return false;
-    }
-
-    if (!password) {
-      setError('La contraseña es obligatoria.');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    if (!validateForm()) {
-      return;
-    }
-
+  // Criterio 4: Solo se ejecuta si pasa Zod sin errores visuales residuales
+  const onSubmit = async (data) => {
+    setApiError('');
     setLoading(true);
 
     try {
-      const data = await loginApi(email.trim(), password);
-      setAuth(data.token, data.usuario);
-      navigate(getDefaultRouteForRole(data.usuario?.rol), { replace: true });
+      // El data.email ya viene limpio por validación
+      const responseData = await loginApi(data.email.trim(), data.password);
+      setAuth(responseData.token, responseData.usuario);
+      navigate(getDefaultRouteForRole(responseData.usuario?.rol), { replace: true });
     } catch (err) {
-      setError(err.message || 'No se pudo iniciar sesión.');
+      setApiError(err.message || 'No se pudo iniciar sesión.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    // Contenedor principal con fondo oscuro y patrón de cuadrícula
     <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:40px_40px]">
       
       {/* Navbar Simple */}
@@ -74,19 +77,16 @@ export default function Login() {
         
         {/* Columna Izquierda: Textos */}
         <div className="space-y-6">
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-muted bg-card">
             <span className="w-2 h-2 rounded-full bg-primary"></span>
             <span className="text-xs font-semibold tracking-wider text-foreground">PLATAFORMA PARA RESTAURANTES</span>
           </div>
 
-          {/* Título Principal */}
           <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight uppercase leading-none">
             Tu operación,<br />
             <span className="text-primary">sin caos.</span>
           </h1>
 
-          {/* Descripción */}
           <p className="text-muted-foreground text-lg max-w-md leading-relaxed">
             A La Burger OS centraliza pedidos, inventario y administración en una sola plataforma. Diseñado exclusivamente para cadenas de hamburguesas que quieren crecer con control total.
           </p>
@@ -97,26 +97,30 @@ export default function Login() {
           <div className="bg-card p-8 rounded-2xl border border-muted shadow-2xl">
             <h2 className="text-xl font-bold mb-6 tracking-wide uppercase">Login</h2>
             
-            <form className="space-y-5" onSubmit={handleSubmit}>
-              {error && (
+            <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
+              {apiError && (
                 <p className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-2">
-                  {error}
+                  {apiError}
                 </p>
               )}
 
-              {/* Input Usuario */}
+              {/* Input Usuario (Email) */}
               <div className="space-y-2">
                 <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">
-                  Usuario
+                  Usuario / Correo
                 </label>
                 <input 
-                  type="text" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ej. admin"
-                  required
-                  className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary focus:ring-1 focus:ring-primary text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold"
+                  type="email" 
+                  {...register('email')}
+                  placeholder="ej. admin@alaburger.com"
+                  className={`w-full bg-[#141416] border text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold ${
+                    errors.email ? 'border-destructive focus:ring-1 focus:ring-destructive' : 'border-[#1F1F23] focus:border-primary focus:ring-1 focus:ring-primary'
+                  }`}
                 />
+                {/* Error Inline - Criterio 1 y 2 */}
+                {errors.email && (
+                  <p className="text-xs text-destructive pl-1 font-semibold">{errors.email.message}</p>
+                )}
               </div>
 
               {/* Input Contraseña */}
@@ -128,11 +132,11 @@ export default function Login() {
                   <input 
                     type={showPassword ? "text" : "password"} 
                     id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    {...register('password')}
                     placeholder="••••••••"
-                    required
-                    className="w-full bg-muted border border-transparent focus:border-primary text-foreground rounded-lg pl-4 pr-12 py-3 outline-none transition-colors"
+                    className={`w-full bg-muted border text-foreground rounded-lg pl-4 pr-12 py-3 outline-none transition-all ${
+                      errors.password ? 'border-destructive' : 'border-transparent focus:border-primary'
+                    }`}
                   />
                   <button
                     type="button"
@@ -152,6 +156,10 @@ export default function Login() {
                     )}
                   </button>
                 </div>
+                {/* Error Inline - Criterio 3 */}
+                {errors.password && (
+                  <p className="text-xs text-destructive pl-1 font-semibold">{errors.password.message}</p>
+                )}
               </div>
 
               {/* Botón de Submit */}
@@ -164,10 +172,9 @@ export default function Login() {
               </button>
             </form>
 
-            {/* Link secundario */}
             <div className="mt-6 text-center">
               <a href="#" className="text-sm text-muted-foreground hover:text-white transition-colors">
-               
+                 
               </a>
             </div>
           </div>
