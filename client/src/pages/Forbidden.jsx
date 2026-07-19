@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { getDefaultRouteForRole, getUsuario } from '../utils/auth';
+import { Link, useNavigate } from 'react-router-dom';
+import { getDefaultRouteForRole, getUsuario, clearAuth } from '../utils/auth';
 
 export default function Forbidden() {
   const usuario = getUsuario();
+  const navigate = useNavigate();
   const homeRoute = usuario ? getDefaultRouteForRole(usuario.rol) : '/login';
 
   return (
@@ -14,12 +15,25 @@ export default function Forbidden() {
         <p className="text-sm text-muted-foreground mb-6">
           No tienes permisos para acceder a esta sección. (Rol detectado: {usuario?.rol || 'ninguno'})
         </p>
-        <Link
-          to={homeRoute}
-          className="inline-block bg-primary hover:bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm"
-        >
-          {usuario ? 'Ir a mi inicio' : 'Iniciar sesión'}
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <Link
+            to={homeRoute}
+            className="inline-block bg-primary hover:bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm w-full sm:w-auto text-center"
+          >
+            {usuario ? 'Reintentar inicio' : 'Iniciar sesión'}
+          </Link>
+          {usuario && (
+            <button
+              onClick={() => {
+                clearAuth();
+                navigate('/login');
+              }}
+              className="inline-block bg-[#1E1E1E] hover:bg-neutral-800 border border-[#2A2A2F] text-neutral-300 font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm w-full sm:w-auto"
+            >
+              Cerrar sesión
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
