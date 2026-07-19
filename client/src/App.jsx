@@ -6,6 +6,7 @@ import WaiterApp from './pages/WaiterApp';
 import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
 import Inventario from './pages/Inventario';
+import Pedidos from './pages/Pedidos';
 import Productos from './pages/Productos';
 import Usuarios from './pages/Usuarios';
 import Configuracion from './pages/Configuracion';
@@ -44,7 +45,7 @@ export default function App() {
         >
           <Route path="/" element={<Dashboard />} />
           <Route path="/inventario" element={<Inventario />} />
-          <Route path="/pedidos" element={<ModuloEnDesarrollo modulo="Pedidos" />} />
+          <Route path="/pedidos" element={<Pedidos />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/configuracion" element={<Configuracion />} />

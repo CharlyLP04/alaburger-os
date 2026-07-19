@@ -190,10 +190,24 @@ export async function getCategoriasProducto() {
   );
 }
 
+// ==========================================
+// 🍔 PEDIDOS (ORDERS)
+// ==========================================
 export function crearPedido(payload) {
   return apiFetch('/pedidos', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+export function getPedidos() {
+  return apiFetch('/pedidos');
+}
+
+export function updatePedidoStatus(id, estado) {
+  return apiFetch(`/pedidos/${id}/estado`, {
+    method: 'PATCH',
+    body: JSON.stringify({ estado }),
   });
 }
 

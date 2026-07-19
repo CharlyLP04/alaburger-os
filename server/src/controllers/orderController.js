@@ -184,6 +184,82 @@ const crearPedido = async (req, res) => {
   } finally {
     client.release();
   }
+const obtenerPedidos = async (req, res) => {
+  try {
+    const pedidosResult = await pool.query(
+      `SELECT p.id, p.mesa_id, p.mesero_id, p.estado, p.tipo, p.notas, p.total, p.created_at, 
+              u.nombre AS mesero_nombre, u.apellido AS mesero_apellido, m.numero AS mesa_numero
+       FROM pedidos p
+       LEFT JOIN usuarios u ON p.mesero_id = u.id
+       LEFT JOIN mesas m ON p.mesa_id = m.id
+       ORDER BY p.created_at DESC`
+    );
+
+    const pedidos = pedidosResult.rows.map(p => ({
+      ...p,
+      total: parseFloat(p.total)
+    }));
+
+    if (pedidos.length === 0) {
+      return res.json([]);
+    }
+
+    const pedidoIds = pedidos.map(p => p.id);
+    const detallesResult = await pool.query(
+      `SELECT dp.pedido_id, dp.producto_id, dp.cantidad, dp.precio_unitario, dp.notas, pr.nombre AS producto_nombre
+       FROM detalle_pedido dp
+       INNER JOIN productos pr ON dp.producto_id = pr.id
+       WHERE dp.pedido_id = ANY($1)`,
+      [pedidoIds]
+    );
+
+    const detallesMap = {};
+    detallesResult.rows.forEach(d => {
+      if (!detallesMap[d.pedido_id]) {
+        detallesMap[d.pedido_id] = [];
+      }
+      detallesMap[d.pedido_id].push({
+        ...d,
+        precio_unitario: parseFloat(d.precio_unitario)
+      });
+    });
+
+    const pedidosConDetalles = pedidos.map(p => ({
+      ...p,
+      items: detallesMap[p.id] || []
+    }));
+
+    res.json(pedidosConDetalles);
+  } catch (error) {
+    manejarErrorInterno(error, res, 'obtener pedidos');
+  }
 };
 
-module.exports = { crearPedido };
+const actualizarEstadoPedido = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+    
+    if (!estado) {
+      return res.status(400).json({ error: 'El estado es requerido.' });
+    }
+
+    const result = await pool.query(
+      `UPDATE pedidos SET estado = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+      [estado, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Pedido no encontrado.' });
+    }
+
+    res.json({
+      mensaje: 'Estado del pedido actualizado exitosamente',
+      pedido: result.rows[0]
+    });
+  } catch (error) {
+    manejarErrorInterno(error, res, 'actualizar estado del pedido');
+  }
+};
+
+module.exports = { crearPedido, obtenerPedidos, actualizarEstadoPedido };
