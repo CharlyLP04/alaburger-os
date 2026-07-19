@@ -14,21 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
 import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/auth';
 
-function DevNavigation() {
-  return (
-    <div className="fixed bottom-4 right-4 bg-card border border-[#1E1E1E] p-2 rounded-xl flex gap-2 z-50 shadow-2xl opacity-40 hover:opacity-100 transition-opacity">
-      <Link to="/" className="text-xs bg-[#1E1E1E] hover:bg-primary text-foreground hover:text-white px-3 py-1.5 rounded-lg font-bold transition-colors">
-        Admin
-      </Link>
-      <Link to="/cocina" className="text-xs bg-[#1E1E1E] hover:bg-primary text-foreground hover:text-white px-3 py-1.5 rounded-lg font-bold transition-colors">
-        Cocina
-      </Link>
-      <Link to="/mesero" className="text-xs bg-[#1E1E1E] hover:bg-primary text-foreground hover:text-white px-3 py-1.5 rounded-lg font-bold transition-colors">
-        Mesero
-      </Link>
-    </div>
-  );
-}
+
 
 function AuthenticatedRedirect() {
   const usuario = getUsuario();
@@ -92,8 +78,7 @@ export default function App() {
         />
       </Routes>
 
-      {/* Barra flotante para testing en desarrollo */}
-      <DevNavigation />
+
     </>
   );
 }
