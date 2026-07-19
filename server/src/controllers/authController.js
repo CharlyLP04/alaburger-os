@@ -5,27 +5,27 @@ const { manejarErrorInterno } = require('../utils/errorHandler');
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return res.status(400).json({
         error: 'Datos incompletos',
-        mensaje: 'Email y contraseña son obligatorios.',
+        mensaje: 'Usuario y contraseña son obligatorios.',
       });
     }
 
     const resultado = await pool.query(
-      `SELECT u.id, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre AS rol
+      `SELECT u.id, u.nombre, u.apellido, u.username, u.password_hash, u.activo, r.nombre AS rol
        FROM usuarios u
        INNER JOIN roles r ON r.id = u.rol_id
-       WHERE u.email = $1`,
-      [email.toLowerCase().trim()]
+       WHERE u.username = $1`,
+      [username.toLowerCase().trim()]
     );
 
     if (resultado.rows.length === 0) {
       return res.status(401).json({
         error: 'Credenciales inválidas',
-        mensaje: 'Email o contraseña incorrectos.',
+        mensaje: 'Usuario o contraseña incorrectos.',
       });
     }
 
@@ -43,14 +43,14 @@ const login = async (req, res) => {
     if (!passwordValida) {
       return res.status(401).json({
         error: 'Credenciales inválidas',
-        mensaje: 'Email o contraseña incorrectos.',
+        mensaje: 'Usuario o contraseña incorrectos.',
       });
     }
 
     const token = jwt.sign(
       {
         id: usuario.id,
-        email: usuario.email,
+        username: usuario.username,
         rol: usuario.rol,
       },
       process.env.JWT_SECRET,
@@ -62,7 +62,7 @@ const login = async (req, res) => {
       usuario: {
         id: usuario.id,
         nombre: `${usuario.nombre} ${usuario.apellido}`,
-        email: usuario.email,
+        username: usuario.username,
         rol: usuario.rol,
       },
     });

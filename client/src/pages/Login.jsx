@@ -5,7 +5,7 @@ import { consumeAuthMessage, getDefaultRouteForRole, setAuth } from '../utils/au
 
 export default function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -19,9 +19,9 @@ export default function Login() {
   }, []);
 
   const validateForm = () => {
-    const trimmedEmail = email.trim();
+    const trimmedUsername = username.trim();
 
-    if (!trimmedEmail) {
+    if (!trimmedUsername) {
       setError('El usuario es obligatorio.');
       return false;
     }
@@ -45,7 +45,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const data = await loginApi(email.trim(), password);
+      const data = await loginApi(username.trim(), password);
       setAuth(data.token, data.usuario);
       navigate(getDefaultRouteForRole(data.usuario?.rol), { replace: true });
     } catch (err) {
@@ -111,8 +111,10 @@ export default function Login() {
                 </label>
                 <input 
                   type="text" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  name="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   placeholder="ej. admin"
                   required
                   className="w-full bg-[#141416] border border-[#1F1F23] focus:border-primary focus:ring-1 focus:ring-primary text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold"

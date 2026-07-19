@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     id              SERIAL       PRIMARY KEY,
     nombre          VARCHAR(100) NOT NULL,
     apellido        VARCHAR(100) NOT NULL,
-    email           VARCHAR(150) NOT NULL UNIQUE,
+    username        VARCHAR(50) NOT NULL UNIQUE,
     password_hash   TEXT         NOT NULL,          -- contraseña hasheada con bcrypt
     rol_id          INTEGER      NOT NULL REFERENCES roles(id) ON DELETE RESTRICT,
     activo          BOOLEAN      NOT NULL DEFAULT TRUE,
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS ventas (
 -- ============================================================
 -- ÍNDICES  — mejoran el rendimiento en consultas frecuentes
 -- ============================================================
-CREATE INDEX IF NOT EXISTS idx_usuarios_email      ON usuarios(email);
+CREATE INDEX IF NOT EXISTS idx_usuarios_username   ON usuarios(username);
 CREATE INDEX IF NOT EXISTS idx_usuarios_rol        ON usuarios(rol_id);
 CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos(categoria_id);
 CREATE INDEX IF NOT EXISTS idx_pedidos_mesa        ON pedidos(mesa_id);
@@ -304,29 +304,29 @@ ON CONFLICT (nombre) DO NOTHING;
 --   cajero123  → hash incluido
 -- IMPORTANTE: en producción, cambiar estas contraseñas.
 -- ------------------------------------------------------------
-INSERT INTO usuarios (nombre, apellido, email, password_hash, rol_id) VALUES
+INSERT INTO usuarios (nombre, apellido, username, password_hash, rol_id) VALUES
     (
         'Carlos',
         'Olaya',
-        'admin@alaburger.com',
+        'admin',
         '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',  -- admin123
         (SELECT id FROM roles WHERE nombre = 'administrador')
     ),
     (
         'Jarumi',
         'Flores',
-        'mesero@alaburger.com',
+        'mesero',
         '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',  -- mesero123
         (SELECT id FROM roles WHERE nombre = 'mesero')
     ),
     (
         'Manelic',
         'Reyes',
-        'cajero@alaburger.com',
+        'cajero',
         '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',  -- cajero123
         (SELECT id FROM roles WHERE nombre = 'cajero')
     )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (username) DO NOTHING;
 
 -- ------------------------------------------------------------
 -- Categorías de productos

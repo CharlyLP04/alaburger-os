@@ -26,10 +26,10 @@ const searchAll = async (req, res) => {
       ),
       // Usuarios
       pool.query(
-        `SELECT u.id, u.nombre, u.apellido, u.email as username, r.nombre as rol 
+        `SELECT u.id, u.nombre, u.apellido, u.username as username, r.nombre as rol 
          FROM usuarios u 
-         LEFT JOIN roles r ON u.rol_id = r.id 
-         WHERE (u.nombre ILIKE $1 OR u.apellido ILIKE $1 OR u.email ILIKE $1) AND u.activo = true 
+         JOIN roles r ON u.rol_id = r.id 
+         WHERE (u.nombre ILIKE $1 OR u.apellido ILIKE $1 OR u.username ILIKE $1) AND u.activo = true 
          LIMIT 5`,
         [searchQuery]
       ),
