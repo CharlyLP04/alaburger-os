@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { getProductos, crearPedido } from '../services/api';
 import { getUsuario, clearAuth } from '../utils/auth';
@@ -18,6 +18,7 @@ function getEmoji(categoria) {
 }
 
 export default function WaiterApp() {
+  const navigate = useNavigate();
   const usuario = getUsuario();
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -130,7 +131,7 @@ export default function WaiterApp() {
                 MESA <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">5</span>
               </div>
               <button 
-                onClick={() => { clearAuth(); window.location.href = '/login'; }}
+                onClick={() => { clearAuth(); navigate('/login'); }}
                 className="text-xs text-destructive hover:text-white bg-destructive/10 hover:bg-destructive font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
               >
                 Salir

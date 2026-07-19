@@ -91,7 +91,7 @@ export default function AppLayout() {
       localStorage.removeItem('refreshToken');
 
       // Redirección limpia a la pantalla de login
-      window.location.href = '/login';
+      navigate('/login');
     }
   };
 

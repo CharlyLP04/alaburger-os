@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { getUsuario, clearAuth } from '../utils/auth';
 
@@ -25,6 +25,7 @@ const ORDERS = [
 ];
 
 export default function KDS() {
+  const navigate = useNavigate();
   const usuario = getUsuario();
   const getModColor = (type) => {
     if (type === 'remove') return 'border-destructive text-destructive bg-destructive/10';
@@ -55,7 +56,7 @@ export default function KDS() {
           <span className="text-success items-center gap-1 hidden sm:flex"><div className="w-2 h-2 border border-success"></div> EXTRA</span>
           
           <button 
-            onClick={() => { clearAuth(); window.location.href = '/login'; }}
+            onClick={() => { clearAuth(); navigate('/login'); }}
             className="text-xs text-destructive hover:text-white bg-destructive/10 hover:bg-destructive font-bold px-4 py-2 rounded-lg transition-colors cursor-pointer uppercase tracking-wider ml-4"
           >
             Salir
