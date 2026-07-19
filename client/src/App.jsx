@@ -24,6 +24,20 @@ function AuthenticatedRedirect() {
   return <Navigate to={getDefaultRouteForRole(usuario?.rol)} replace />;
 }
 
+function PublicRoute({ children }) {
+  if (isAuthenticated()) {
+    return <AuthenticatedRedirect />;
+  }
+  return children;
+}
+
+function CatchAllRoute() {
+  if (isAuthenticated()) {
+    return <AuthenticatedRedirect />;
+  }
+  return <Navigate to="/login" replace />;
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -31,7 +45,7 @@ export default function App() {
         {/* RUTA DE INGRESO (LOGIN) */}
         <Route
           path="/login"
-          element={isAuthenticated() ? <AuthenticatedRedirect /> : <Login />}
+          element={<PublicRoute><Login /></PublicRoute>}
         />
         
         {/* Criterio de Aceptación: Pantalla de Acceso Denegado 403 */}
@@ -77,7 +91,7 @@ export default function App() {
         {/* MANEJO DE RUTAS INEXISTENTES (FALLBACK RESILIENTE) */}
         <Route
           path="*"
-          element={isAuthenticated() ? <AuthenticatedRedirect /> : <Navigate to="/login" replace />}
+          element={<CatchAllRoute />}
         />
       </Routes>
     </ErrorBoundary>
