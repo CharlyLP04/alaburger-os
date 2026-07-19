@@ -10,6 +10,9 @@ const rutas = require('./src/routes/index');
 // Inicializar la aplicación Express
 const app = express();
 
+// Necesario para Render/Heroku: confiar en el proxy reverso
+app.set('trust proxy', 1);
+
 // Puerto desde variables de entorno
 const PUERTO = process.env.PORT || 3000;
 
