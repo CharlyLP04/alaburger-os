@@ -39,13 +39,16 @@ export default function App() {
   return (
     <>
       <Routes>
+        {/* RUTA DE INGRESO (LOGIN) */}
         <Route
           path="/login"
           element={isAuthenticated() ? <AuthenticatedRedirect /> : <Login />}
         />
+        
+        {/* Criterio de Aceptación: Pantalla de Acceso Denegado 403 */}
         <Route path="/403" element={<Forbidden />} />
 
-        {/* RUTAS ADMINISTRATIVAS ENVUELTAS EN EL LAYOUT GLOBAL */}
+        {/* 🔴 RUTAS ADMINISTRATIVAS ENVUELTAS EN EL LAYOUT GLOBAL */}
         <Route
           element={
             <ProtectedRoute allowedRoles={['administrador']}>
@@ -61,6 +64,8 @@ export default function App() {
           <Route path="/configuracion" element={<Configuracion />} />
           <Route path="/reportes" element={<ModuloEnDesarrollo modulo="Reportes" />} />
         </Route>
+
+        {/* 🍳 PANTALLA DE COCINA (KDS) */}
         <Route
           path="/cocina"
           element={
@@ -69,6 +74,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* 🛒 PANTALLA DE MESEROS (WAITER APP) */}
         <Route
           path="/mesero"
           element={
@@ -77,12 +84,15 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* MANEJO DE RUTAS INEXISTENTES (FALLBACK RESILIENTE) */}
         <Route
           path="*"
           element={isAuthenticated() ? <AuthenticatedRedirect /> : <Navigate to="/login" replace />}
         />
       </Routes>
 
+      {/* Barra flotante para testing en desarrollo */}
       <DevNavigation />
     </>
   );
