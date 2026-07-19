@@ -146,15 +146,12 @@ const crearProducto = async (req, res) => {
     }
 
     // Validar categoría
-console.log("BODY:", req.body);
-console.log("categoria_id:", categoria_id);
 
 const categoria = await pool.query(
   'SELECT id FROM categorias WHERE id = $1',
   [categoria_id]
 );
 
-console.log("Categoria encontrada:", categoria.rows);
 
 if (!categoria.rows.length) {
   return res.status(400).json({
@@ -191,9 +188,7 @@ return res.status(201).json({
 });
 
   } catch (error) {
-    console.error("ERROR INSERTANDO PRODUCTO:");
-    console.error(error);
-  
+
     return manejarErrorInterno(error, res, 'crear producto');
   }
 };
