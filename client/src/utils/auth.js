@@ -2,11 +2,11 @@ const TOKEN_KEY = 'alaburger_token';
 const USER_KEY = 'alaburger_usuario';
 const AUTH_MESSAGE_KEY = 'alaburger_auth_message';
 
-/** Rutas de inicio según el rol del usuario (HU-01). */
 const DEFAULT_ROUTES_BY_ROLE = {
   administrador: '/',
   cocina: '/cocina',
   mesero: '/mesero',
+  cajero: '/mesero',
 };
 
 export function getToken() {

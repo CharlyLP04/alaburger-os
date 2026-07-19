@@ -78,11 +78,11 @@ export default function App() {
           }
         />
 
-        {/* 🛒 PANTALLA DE MESEROS (WAITER APP) */}
+        {/* 🛒 PANTALLA DE MESEROS (WAITER APP / CAJA) */}
         <Route
           path="/mesero"
           element={
-            <ProtectedRoute allowedRoles={['mesero', 'administrador']}>
+            <ProtectedRoute allowedRoles={['mesero', 'cajero', 'administrador']}>
               <WaiterApp />
             </ProtectedRoute>
           }
