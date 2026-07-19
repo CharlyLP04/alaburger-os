@@ -20,6 +20,9 @@ const PUERTO = process.env.PORT || 3000;
 const origenesPermitidos = [
   'http://localhost:5173',
   'http://localhost:4173',
+  // URLs de Vercel (producción)
+  'https://alaburgeros-git-main-charlys-projects-ae36c62e.vercel.app',
+  'https://alaburger-os.vercel.app',
   ...(process.env.FRONTEND_URL
     ? process.env.FRONTEND_URL.split(',').map((u) => u.trim())
     : []),
