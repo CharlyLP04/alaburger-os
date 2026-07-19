@@ -212,7 +212,7 @@ export default function Dashboard() {
               </div>
               <div className="relative z-10">
                 <h3 className="text-3xl font-black text-white tracking-tight mb-2 flex items-baseline gap-2">
-                  {loadingAlerts ? '...' : alertCount} 
+                  {loading ? '...' : alertCount} 
                   <span className="text-xs font-bold text-neutral-500 ml-0.5">INSUMOS</span>
                 </h3>
                 <div className="flex items-center gap-2 mt-1.5">
