@@ -38,7 +38,7 @@ export default function KDS() {
       {/* Header Cocina */}
       <header className="flex justify-between items-center mb-8 border-b border-[#1E1E1E] pb-4">
         <div className="flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link to={usuario?.rol === 'administrador' ? '/' : '/cocina'} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="bg-primary text-white font-bold w-6 h-6 rounded flex items-center justify-center text-xs">A</div>
             <h1 className="font-bold tracking-widest text-sm uppercase text-white">Burger OS <span className="text-muted-foreground ml-2">/ KDS Cocina</span></h1>
           </Link>

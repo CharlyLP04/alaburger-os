@@ -12,7 +12,7 @@ export default function Forbidden() {
         <p className="text-primary font-black text-5xl mb-4">403</p>
         <h1 className="text-xl font-bold mb-2 uppercase tracking-wide">Acceso denegado</h1>
         <p className="text-sm text-muted-foreground mb-6">
-          No tienes permisos para acceder a esta sección.
+          No tienes permisos para acceder a esta sección. (Rol detectado: {usuario?.rol || 'ninguno'})
         </p>
         <Link
           to={homeRoute}
