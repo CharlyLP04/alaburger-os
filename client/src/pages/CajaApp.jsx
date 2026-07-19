@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { getUsuario, clearAuth } from '../utils/auth';
-import { getPedidos, actualizarEstadoPedido } from '../services/api';
+import { getPedidos, updatePedidoStatus } from '../services/api';
 import { Toast } from '../components/ui/Toast';
 
 export default function CajaApp() {
@@ -35,7 +35,7 @@ export default function CajaApp() {
   const handleUpdateStatus = async (id, newStatus) => {
     setProcessingId(id);
     try {
-      await actualizarEstadoPedido(id, newStatus);
+      await updatePedidoStatus(id, newStatus);
       setToast({ message: `Pedido #${id} marcado como ${newStatus}`, type: 'success' });
       await fetchPedidos();
     } catch (err) {
