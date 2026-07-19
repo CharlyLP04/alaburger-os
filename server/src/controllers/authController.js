@@ -1,22 +1,21 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-// 🛠️ RUTA CORREGIDA: Apunta directo a tu archivo db.js dentro de config
 const pool = require('../config/db'); 
 const { manejarErrorInterno } = require('../utils/errorHandler');
+const { generarAccessToken, generarRefreshToken } = require('../utils/jwt');
 
+/**
+ * 🔐 Inicio de sesión
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Validación de datos de entrada
     if (!email || !password) {
-      const err = new Error('Email y contraseña son obligatorios.');
-      err.status = 400;
-      err.name = 'Datos incompletos';
-      throw err;
+      return res.status(400).json({ error: 'Email y contraseña son obligatorios.' });
     }
 
-    // 2. Consulta a la base de datos limpia
     const resultado = await pool.query(
       `SELECT u.id, u.nombre, u.apellido, u.email, u.password_hash, u.activo, r.nombre AS rol
        FROM usuarios u
@@ -25,62 +24,136 @@ const login = async (req, res) => {
       [email.toLowerCase().trim()]
     );
 
-    // 3. Mitigación de User Enumeration (Mismo error si no existe el usuario)
     if (resultado.rows.length === 0) {
-      const err = new Error('Email o contraseña incorrectos.');
-      err.status = 401;
-      err.name = 'Credenciales inválidas';
-      throw err;
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
     const usuario = resultado.rows[0];
 
-    // 4. Verificación de estado del usuario
     if (!usuario.activo) {
-      const err = new Error('Tu cuenta ha sido desactivada.');
-      err.status = 403;
-      err.name = 'Cuenta inactiva';
-      throw err;
+      return res.status(403).json({ error: 'Tu cuenta ha sido desactivada.' });
     }
 
-    // 5. Validación de contraseña (Temporal con bypass para pruebas)
     const passwordValida = await bcrypt.compare(password, usuario.password_hash);
-    
-    // SI LA CONTRASEÑA ES 123456, LA DEJAMOS PASAR DIRECTO
-    const esPasswordPrueba = (password === '123456');
 
-    if (!passwordValida && !esPasswordPrueba) {
-      const err = new Error('Email o contraseña incorrectos.');
-      err.status = 401;
-      err.name = 'Credenciales inválidas';
-      throw err;
+    if (!passwordValida) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // 6. Generación del JWT con vigencia de 8 horas
-    const token = jwt.sign(
-      {
-        id: usuario.id,
-        email: usuario.email,
-        rol: usuario.rol,
-      },
-      process.env.JWT_SECRET || 'secret_key_temporal',
-      { expiresIn: '8h' }
+    // 🛠️ HU-02: Generación de tokens usando utilidades centralizadas
+    const accessToken = generarAccessToken(usuario);
+    const refreshToken = generarRefreshToken(usuario);
+
+    // Criterio DoD: Almacenar hash del refreshToken para máxima seguridad
+    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 días
+
+    // Inserta en la tabla (Asegúrate si tu columna es user_id o usuario_id)
+    await pool.query(
+      `INSERT INTO refresh_tokens (user_id, token_hash, expires_at) 
+       VALUES ($1, $2, $3)`,
+      [usuario.id, tokenHash, expiresAt]
     );
 
-    // 7. Respuesta exitosa (Campos limpios sin hash de contraseña)
     return res.status(200).json({
-      token,
-      usuario: {
+      token: accessToken,
+      refreshToken,
+      user: {
         id: usuario.id,
         nombre: `${usuario.nombre} ${usuario.apellido}`.trim(),
-        email: usuario.email,
         rol: usuario.rol,
       },
     });
   } catch (error) {
-    // Manejador centralizado de errores de tu arquitectura
     return manejarErrorInterno(error, res, 'login');
   }
 };
 
-module.exports = { login };
+/**
+ * 🔄 🛠️ HU-02: Renovación de Access Token
+ * Endpoint: POST /api/auth/refresh
+ */
+const refreshSession = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({ error: 'Refresh token requerido.' });
+    }
+
+    let decoded;
+    try {
+      // Verifica firma matemática y expiración inicial de 7 días
+      decoded = jwt.verify(refreshToken, process.env.JWT_SECRET || 'secret_key_temporal');
+    } catch (err) {
+      // Criterio de Aceptación 4: Token inválido/matemáticamente expirado -> Fuerza re-login
+      return res.status(401).json({ error: 'Refresh token inválido o expirado. Inicie sesión de nuevo.' });
+    }
+
+    // Obtener el hash para buscarlo en la Base de Datos
+    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+
+    const resultadoToken = await pool.query(
+      `SELECT * FROM refresh_tokens 
+       WHERE token_hash = $1 AND revoked_at IS NULL`,
+      [tokenHash]
+    );
+
+    const tokenDb = resultadoToken.rows[0];
+
+    // Criterio de Aceptación 4: Si no existe, fue revocado o expiró la fecha en BD
+    if (!tokenDb || new Date() > new Date(tokenDb.expires_at)) {
+      return res.status(401).json({ error: 'Refresh token inválido o expirado. Inicie sesión de nuevo.' });
+    }
+
+    // Obtener datos frescos del usuario para armar el nuevo payload
+    const resultadoUsuario = await pool.query(
+      `SELECT u.id, r.nombre AS rol 
+       FROM usuarios u
+       INNER JOIN roles r ON r.id = u.rol_id
+       WHERE u.id = $1`,
+      [decoded.sub]
+    );
+
+    const usuario = resultadoUsuario.rows[0];
+    if (!usuario) {
+      return res.status(401).json({ error: 'Usuario no encontrado.' });
+    }
+
+    // Criterio de Aceptación 3: Emite un nuevo accessToken sin requerir contraseña
+    const nuevoAccessToken = generarAccessToken(usuario);
+
+    return res.status(200).json({
+      token: nuevoAccessToken
+    });
+  } catch (error) {
+    return manejarErrorInterno(error, res, 'refreshSession');
+  }
+};
+
+/**
+ * 🚪 Cierre de sesión seguro
+ */
+const logout = async (req, res) => {
+  try {
+    const usuarioId = req.user?.id || req.user?.sub; 
+
+    if (!usuarioId) {
+      return res.status(401).json({ error: 'No autorizado' });
+    }
+
+    // Revocar TODOS los tokens activos de este usuario en BD
+    await pool.query(
+      `UPDATE refresh_tokens 
+       SET revoked_at = NOW() 
+       WHERE user_id = $1 AND revoked_at IS NULL`,
+      [usuarioId]
+    );
+
+    return res.status(200).json({ mensaje: 'Sesión cerrada exitosamente.' });
+  } catch (error) {
+    return manejarErrorInterno(error, res, 'logout');
+  }
+};
+// Asegúrate de que las TRES funciones estén aquí dentro:
+module.exports = { login, logout, refreshSession };
