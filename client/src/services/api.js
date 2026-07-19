@@ -88,15 +88,104 @@ export function getCategorias() {
   return apiFetch('/productos/categorias');
 }
 
-export function getReceta(productoId) {
-  return apiFetch(`/productos/${productoId}/receta`);
+export function createCategoria(payload) {
+  return apiFetch('/productos/categorias', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }
 
-export function updateReceta(productoId, ingredientes) {
-  return apiFetch(`/productos/${productoId}/receta`, {
+export function updateCategoria(id, payload) {
+  return apiFetch(`/productos/categorias/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteCategoria(id) {
+  return apiFetch(`/productos/categorias/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export function getReceta(id) {
+  return apiFetch(`/productos/${id}/receta`);
+}
+
+export function updateReceta(id, ingredientes) {
+  return apiFetch(`/productos/${id}/receta`, {
     method: 'PUT',
     body: JSON.stringify({ ingredientes }),
   });
+}
+
+export async function getProductosList({ page = 1, limit = 20, categoria_id, activo } = {}) {
+  const params = new URLSearchParams();
+  const filtroPorNombre = categoria_id !== undefined
+    && categoria_id !== null
+    && categoria_id !== ''
+    && Number.isNaN(Number(categoria_id));
+
+  if (filtroPorNombre) {
+    params.set('page', '1');
+    params.set('limit', '10000');
+  } else {
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+
+    if (categoria_id !== undefined && categoria_id !== null && categoria_id !== '') {
+      params.set('categoria_id', String(categoria_id));
+    }
+  }
+
+  if (activo === true || activo === 'true') {
+    params.set('activo', 'true');
+  } else if (activo === false || activo === 'false') {
+    params.set('activo', 'false');
+  }
+
+  const resultado = await apiFetch(`/productos?${params.toString()}`);
+
+  if (!filtroPorNombre) {
+    return resultado;
+  }
+
+  const filtrados = (resultado.data ?? []).filter(
+    (producto) => producto.categoria === categoria_id
+  );
+  const total = filtrados.length;
+  const offset = (page - 1) * limit;
+
+  return {
+    data: filtrados.slice(offset, offset + limit),
+    total,
+    page,
+    totalPages: total === 0 ? 1 : Math.ceil(total / limit),
+  };
+}
+
+export async function getCategoriasProducto() {
+  const resultado = await getProductosList({ page: 1, limit: 10000 });
+  const categoriasMap = new Map();
+
+  for (const producto of resultado.data ?? []) {
+    if (
+      producto.categoria_id == null ||
+      !producto.categoria ||
+      categoriasMap.has(producto.categoria_id)
+    ) {
+      continue;
+    }
+
+    categoriasMap.set(producto.categoria_id, {
+      id: producto.categoria_id,
+      nombre: producto.categoria,
+    });
+  }
+
+  return Array.from(categoriasMap.values()).sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es')
+  );
 }
 
 export function crearPedido(payload) {
@@ -136,7 +225,33 @@ export function getAlertasStockBajo() {
   return apiFetch('/inventario/alertas/resumen');
 }
 
-// Usuarios
+export function getMovimientos(id, tipo = '', fechaDesde = '', fechaHasta = '') {
+  const params = new URLSearchParams();
+  if (tipo) params.append('tipo', tipo);
+  if (fechaDesde) params.append('fecha_desde', fechaDesde);
+  if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+  
+  const query = params.toString();
+  return apiFetch(`/inventario/${id}/movimientos${query ? '?' + query : ''}`);
+}
+
+export function registrarMerma(id, payload) {
+  return apiFetch(`/inventario/${id}/merma`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getTodosLosMovimientos(tipo = '', fechaDesde = '', fechaHasta = '') {
+  const params = new URLSearchParams();
+  if (tipo) params.append('tipo', tipo);
+  if (fechaDesde) params.append('fecha_desde', fechaDesde);
+  if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+  
+  const query = params.toString();
+  return apiFetch(`/inventario/movimientos${query ? '?' + query : ''}`);
+}
+
 export function getUsuarios() {
   return apiFetch('/usuarios');
 }
@@ -165,7 +280,6 @@ export function toggleUsuarioStatus(id) {
   });
 }
 
-// Configuración
 export function getConfiguraciones() {
   return apiFetch('/configuracion');
 }
@@ -177,7 +291,7 @@ export function updateConfiguraciones(payload) {
   });
 }
 
-// Búsqueda Global
 export function globalSearch(query) {
-  return apiFetch(`/search?q=${encodeURIComponent(query)}`);
+  const params = new URLSearchParams({ q: query });
+  return apiFetch(`/search?${params.toString()}`);
 }

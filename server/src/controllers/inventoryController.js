@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const { manejarErrorInterno } = require('../utils/errorHandler');
 
 const obtenerInventario = async (req, res) => {
   try {
@@ -411,4 +412,217 @@ const obtenerResumenStockBajo = async (req, res) => {
   }
 };
 
-module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada, obtenerResumenStockBajo };
+const obtenerMovimientos = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tipo, fecha_desde, fecha_hasta } = req.query;
+
+    const resInventario = await pool.query(
+      'SELECT ingrediente_id FROM inventario WHERE id = $1',
+      [id]
+    );
+
+    if (resInventario.rows.length === 0) {
+      const err = new Error('El ingrediente de inventario especificado no existe.');
+      err.status = 404;
+      err.name = 'No encontrado';
+      throw err;
+    }
+
+    const ingredienteId = resInventario.rows[0].ingrediente_id;
+
+    let queryText = `
+      SELECT id, tipo, cantidad, motivo, referencia, costo_unitario, usuario_id, fecha, created_at
+      FROM movimientos_inventario
+      WHERE ingrediente_id = $1
+    `;
+    const queryParams = [ingredienteId];
+    let paramCount = 2;
+
+    if (tipo) {
+      queryText += ` AND tipo = $${paramCount}`;
+      queryParams.push(tipo.toLowerCase());
+      paramCount++;
+    }
+
+    if (fecha_desde) {
+      queryText += ` AND fecha >= $${paramCount}`;
+      queryParams.push(fecha_desde);
+      paramCount++;
+    }
+
+    if (fecha_hasta) {
+      queryText += ` AND fecha <= $${paramCount}`;
+      queryParams.push(fecha_hasta);
+      paramCount++;
+    }
+
+    queryText += ' ORDER BY fecha DESC NULLS LAST, created_at DESC';
+
+    const resultado = await pool.query(queryText, queryParams);
+
+    const data = resultado.rows.map((row) => ({
+      id: row.id,
+      tipo: row.tipo,
+      cantidad: Number(row.cantidad),
+      motivo: row.motivo,
+      referencia: row.referencia,
+      costo_unitario: row.costo_unitario ? Number(row.costo_unitario) : null,
+      usuario_id: row.usuario_id,
+      fecha: row.fecha,
+      created_at: row.created_at,
+    }));
+
+    return res.status(200).json({ data, total: data.length });
+  } catch (error) {
+    return manejarErrorInterno(error, res, 'obtener movimientos');
+  }
+};
+
+const obtenerTodosLosMovimientos = async (req, res) => {
+  try {
+    const { tipo, fecha_desde, fecha_hasta } = req.query;
+
+    let queryText = `
+      SELECT m.id, m.tipo, m.cantidad, m.motivo, m.referencia, m.costo_unitario, m.usuario_id, m.fecha, m.created_at,
+             ing.nombre as ingrediente_nombre
+      FROM movimientos_inventario m
+      INNER JOIN ingredientes ing ON ing.id = m.ingrediente_id
+      WHERE 1=1
+    `;
+    const queryParams = [];
+    let paramCount = 1;
+
+    if (tipo) {
+      queryText += ` AND m.tipo = $${paramCount}`;
+      queryParams.push(tipo.toLowerCase());
+      paramCount++;
+    }
+
+    if (fecha_desde) {
+      queryText += ` AND m.fecha >= $${paramCount}`;
+      queryParams.push(fecha_desde);
+      paramCount++;
+    }
+
+    if (fecha_hasta) {
+      queryText += ` AND m.fecha <= $${paramCount}`;
+      queryParams.push(fecha_hasta);
+      paramCount++;
+    }
+
+    queryText += ' ORDER BY m.fecha DESC NULLS LAST, m.created_at DESC';
+
+    const resultado = await pool.query(queryText, queryParams);
+
+    const data = resultado.rows.map((row) => ({
+      id: row.id,
+      tipo: row.tipo,
+      cantidad: Number(row.cantidad),
+      motivo: row.motivo,
+      referencia: row.referencia,
+      costo_unitario: row.costo_unitario ? Number(row.costo_unitario) : null,
+      usuario_id: row.usuario_id,
+      fecha: row.fecha,
+      created_at: row.created_at,
+      ingrediente_nombre: row.ingrediente_nombre,
+    }));
+
+    return res.status(200).json({ data, total: data.length });
+  } catch (error) {
+    return manejarErrorInterno(error, res, 'obtener todos los movimientos');
+  }
+};
+
+const registrarMerma = async (req, res) => {
+  const { id } = req.params;
+  const client = await pool.connect();
+  try {
+    const { cantidad, motivo } = req.body;
+
+    const cantidadNum = Number(cantidad);
+    if (isNaN(cantidadNum) || cantidadNum <= 0) {
+      const err = new Error('La cantidad debe ser un número mayor a 0.');
+      err.status = 400;
+      err.name = 'Datos inválidos';
+      throw err;
+    }
+
+    if (!motivo || typeof motivo !== 'string' || motivo.trim() === '') {
+      const err = new Error('El motivo es obligatorio para registrar una merma.');
+      err.status = 400;
+      err.name = 'Datos inválidos';
+      throw err;
+    }
+
+    await client.query('BEGIN');
+
+    const resInventario = await client.query(
+      'SELECT ingrediente_id, cantidad_disponible, stock_minimo FROM inventario WHERE id = $1 FOR UPDATE',
+      [id]
+    );
+
+    if (resInventario.rows.length === 0) {
+      const err = new Error('El ingrediente de inventario especificado no existe.');
+      err.status = 404;
+      err.name = 'No encontrado';
+      throw err;
+    }
+
+    const currentInv = resInventario.rows[0];
+
+    if (cantidadNum > Number(currentInv.cantidad_disponible)) {
+      const err = new Error('Cantidad excede el stock disponible');
+      err.status = 400;
+      err.name = 'Stock insuficiente';
+      throw err;
+    }
+
+    const resUpdate = await client.query(
+      `UPDATE inventario
+       SET cantidad_disponible = cantidad_disponible - $1,
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING cantidad_disponible, stock_minimo`,
+      [cantidadNum, id]
+    );
+
+    const updatedInv = resUpdate.rows[0];
+
+    const resMovimiento = await client.query(
+      `INSERT INTO movimientos_inventario (ingrediente_id, tipo, cantidad, motivo, usuario_id, fecha)
+       VALUES ($1, 'merma', $2, $3, $4, NOW())
+       RETURNING id, tipo, cantidad, motivo, fecha`,
+      [
+        currentInv.ingrediente_id,
+        cantidadNum,
+        motivo.trim(),
+        req.usuario.id
+      ]
+    );
+
+    await client.query('COMMIT');
+
+    const stockBajo = Number(updatedInv.cantidad_disponible) <= Number(updatedInv.stock_minimo);
+
+    return res.status(200).json({
+      cantidad_actual: Number(updatedInv.cantidad_disponible),
+      stock_bajo: stockBajo,
+      movimiento: {
+        id: resMovimiento.rows[0].id,
+        tipo: resMovimiento.rows[0].tipo,
+        cantidad: Number(resMovimiento.rows[0].cantidad),
+        motivo: resMovimiento.rows[0].motivo,
+        fecha: resMovimiento.rows[0].fecha
+      }
+    });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    return manejarErrorInterno(error, res, 'registrar merma');
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = { obtenerInventario, crearIngrediente, editarIngrediente, registrarEntrada, obtenerResumenStockBajo, obtenerMovimientos, obtenerTodosLosMovimientos, registrarMerma };
