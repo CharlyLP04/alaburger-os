@@ -20,30 +20,9 @@ const PUERTO = process.env.PORT || 3000;
 // CORS
 // ─────────────────────────────────────────────────────────────
 
-const origenesPermitidos = [
-  'http://localhost:5173',
-  'http://localhost:4173',
-  // URLs de Vercel (producción) - se permite cualquier subdominio del proyecto
-  'https://alaburgeros-charlys-projects-ae36c62e.vercel.app',
-  ...(process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL.split(',').map((u) => u.trim())
-    : []),
-];
-
-// Patrón para aceptar cualquier URL de despliegue de Vercel del proyecto
-const vercelPattern = /^https:\/\/alaburger[a-z0-9-]*-charlys-projects-ae36c62e\.vercel\.app$/;
-
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      if (origenesPermitidos.includes(origin) || vercelPattern.test(origin)) {
-        return callback(null, true);
-      }
-
-      callback(new Error(`CORS bloqueado para origen: ${origin}`));
-    },
+    origin: '*', // Permitir cualquier origen para evitar bloqueos en la app interna
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
