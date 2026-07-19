@@ -184,6 +184,8 @@ const crearPedido = async (req, res) => {
   } finally {
     client.release();
   }
+};
+
 const obtenerPedidos = async (req, res) => {
   try {
     const pedidosResult = await pool.query(
