@@ -6,7 +6,7 @@ const DEFAULT_ROUTES_BY_ROLE = {
   administrador: '/',
   cocina: '/cocina',
   mesero: '/mesero',
-  cajero: '/mesero',
+  cajero: '/caja',
 };
 
 export function getToken() {

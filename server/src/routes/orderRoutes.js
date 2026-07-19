@@ -6,7 +6,7 @@ const { verificarRol } = require('../middleware/checkRole');
 const router = express.Router();
 
 router.post('/', verificarToken, crearPedido);
-router.get('/', verificarToken, verificarRol('administrador'), obtenerPedidos);
-router.patch('/:id/estado', verificarToken, verificarRol('administrador', 'cocina'), actualizarEstadoPedido);
+router.get('/', verificarToken, verificarRol('administrador', 'cajero'), obtenerPedidos);
+router.patch('/:id/estado', verificarToken, verificarRol('administrador', 'cocina', 'cajero'), actualizarEstadoPedido);
 
 module.exports = router;

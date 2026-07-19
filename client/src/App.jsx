@@ -3,6 +3,7 @@ import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import KDS from './pages/KDS';
 import WaiterApp from './pages/WaiterApp';
+import CajaApp from './pages/CajaApp';
 import Login from './pages/Login';
 import Forbidden from './pages/Forbidden';
 import Inventario from './pages/Inventario';
@@ -78,12 +79,22 @@ export default function App() {
           }
         />
 
-        {/* 🛒 PANTALLA DE MESEROS (WAITER APP / CAJA) */}
+        {/* 🛒 PANTALLA DE MESEROS (WAITER APP) */}
         <Route
           path="/mesero"
           element={
-            <ProtectedRoute allowedRoles={['mesero', 'cajero', 'administrador']}>
+            <ProtectedRoute allowedRoles={['mesero', 'administrador']}>
               <WaiterApp />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 💵 PANTALLA DE CAJERO (CAJA APP) */}
+        <Route
+          path="/caja"
+          element={
+            <ProtectedRoute allowedRoles={['cajero', 'administrador']}>
+              <CajaApp />
             </ProtectedRoute>
           }
         />
