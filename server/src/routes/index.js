@@ -8,6 +8,8 @@ const userRoutes = require('./userRoutes');
 const configRoutes = require('./configRoutes');
 const searchRoutes = require('./searchRoutes');
 
+const dashboardRoutes = require('./dashboardRoutes');
+
 const router = express.Router();
 
 router.get('/health', (req, res) => {
@@ -19,6 +21,7 @@ router.get('/health', (req, res) => {
 });
 
 router.use('/auth', authRoutes);
+router.use('/dashboard', dashboardRoutes);
 router.use('/productos', productRoutes);
 router.use('/pedidos', orderRoutes);
 router.use('/pagos', paymentRoutes);

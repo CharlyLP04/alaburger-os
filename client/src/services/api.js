@@ -311,3 +311,10 @@ export function globalSearch(query) {
   const params = new URLSearchParams({ q: query });
   return apiFetch(`/search?${params.toString()}`);
 }
+
+// ==========================================
+// 📊 DASHBOARD METRICS
+// ==========================================
+export function getDashboardMetrics() {
+  return apiFetch('/dashboard/metrics');
+}
