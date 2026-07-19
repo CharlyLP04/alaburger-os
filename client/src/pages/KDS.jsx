@@ -20,7 +20,7 @@ export default function KDS() {
     try {
       const data = await getPedidos();
       // Filtrar solo pedidos que le importan a la cocina
-      const cocinaPedidos = data.filter(p => p.estado === 'pendiente' || p.estado === 'preparando');
+      const cocinaPedidos = data.filter(p => p.estado === 'pendiente' || p.estado === 'en_preparacion');
       // Ordenar por fecha de creación ascendente (los más viejos primero)
       cocinaPedidos.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
       setPedidos(cocinaPedidos);
@@ -142,7 +142,7 @@ export default function KDS() {
         /* Grid de Comandas */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {pedidos.map((order) => {
-            const timeClass = order.estado === 'preparando' ? 'text-primary' : 'text-success';
+            const timeClass = order.estado === 'en_preparacion' ? 'text-primary' : 'text-success';
             return (
               <div key={order.id} className="bg-card border border-[#1E1E1E] rounded-xl p-5 flex flex-col h-full shadow-lg">
                 {/* Cabecera de la comanda */}
@@ -181,7 +181,7 @@ export default function KDS() {
 
                 {/* Botones de acción */}
                 <div className="mt-6 pt-4 border-t border-[#1E1E1E]">
-                  {order.estado === 'preparando' ? (
+                  {order.estado === 'en_preparacion' ? (
                     <button 
                       onClick={() => handleUpdateStatus(order.id, 'listo')}
                       disabled={processingId === order.id}
@@ -195,7 +195,7 @@ export default function KDS() {
                     <div className="space-y-2">
                       <div className="text-center text-primary text-xs font-bold tracking-widest mb-2">NUEVO</div>
                       <button 
-                        onClick={() => handleUpdateStatus(order.id, 'preparando')}
+                        onClick={() => handleUpdateStatus(order.id, 'en_preparacion')}
                         disabled={processingId === order.id}
                         className="w-full bg-primary hover:bg-[#c94508] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 tracking-widest text-sm transition-colors disabled:opacity-50"
                       >

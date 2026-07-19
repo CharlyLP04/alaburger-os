@@ -58,7 +58,7 @@ export default function Pedidos() {
       case 'pendiente':
       case 'nuevo':
         return <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">Nuevo</span>;
-      case 'preparando':
+      case 'en_preparacion':
         return <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/20">Preparando</span>;
       case 'listo':
         return <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider bg-success/10 text-success border border-success/20">Listo</span>;
@@ -246,8 +246,8 @@ export default function Pedidos() {
                   Nuevo
                 </button>
                 <button 
-                  disabled={isUpdating || selectedPedido.estado === 'preparando'}
-                  onClick={() => handleUpdateStatus(selectedPedido.id, 'preparando')}
+                  disabled={isUpdating || selectedPedido.estado === 'en_preparacion'}
+                  onClick={() => handleUpdateStatus(selectedPedido.id, 'en_preparacion')}
                   className="px-4 py-2 bg-[#1C1C1F] hover:bg-secondary/20 text-white hover:text-secondary rounded-xl text-xs font-black uppercase tracking-wider transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer border border-[#27272A] hover:border-secondary/50"
                 >
                   Preparando

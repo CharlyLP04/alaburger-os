@@ -68,7 +68,7 @@ export default function CajaApp() {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'listo': return 'bg-success/20 text-success border-success';
-      case 'preparando': return 'bg-primary/20 text-primary border-primary';
+      case 'en_preparacion': return 'bg-primary/20 text-primary border-primary';
       case 'pendiente': return 'bg-secondary/20 text-secondary border-secondary';
       default: return 'bg-neutral-800 text-neutral-400 border-neutral-700';
     }

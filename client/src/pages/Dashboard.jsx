@@ -74,7 +74,7 @@ export default function Dashboard() {
       case 'pendiente':
       case 'nuevo':
         return <span className="inline-flex items-center px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">Nuevo</span>;
-      case 'preparando':
+      case 'en_preparacion':
         return <span className="inline-flex items-center px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/20">Preparando</span>;
       case 'listo':
         return <span className="inline-flex items-center px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider bg-success/10 text-success border border-success/20">Listo</span>;
