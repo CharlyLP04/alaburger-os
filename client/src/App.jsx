@@ -17,6 +17,8 @@ import { getDefaultRouteForRole, getUsuario, isAuthenticated } from './utils/aut
 
 
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 function AuthenticatedRedirect() {
   const usuario = getUsuario();
   return <Navigate to={getDefaultRouteForRole(usuario?.rol)} replace />;
@@ -24,7 +26,7 @@ function AuthenticatedRedirect() {
 
 export default function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Routes>
         {/* RUTA DE INGRESO (LOGIN) */}
         <Route
@@ -78,8 +80,6 @@ export default function App() {
           element={isAuthenticated() ? <AuthenticatedRedirect /> : <Navigate to="/login" replace />}
         />
       </Routes>
-
-
-    </>
+    </ErrorBoundary>
   );
 }
