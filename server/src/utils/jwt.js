@@ -1,0 +1,21 @@
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Criterio de Aceptación: exp a 8 horas desde iat
+export function generarAccessToken(usuario) {
+  return jwt.sign(
+    { sub: usuario.id, rol: usuario.rol_id },
+    JWT_SECRET,
+    { expiresIn: '8h' }
+  );
+}
+
+// Refresh token de larga duración (7 días)
+export function generarRefreshToken(usuario) {
+  return jwt.sign(
+    { sub: usuario.id },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+}
