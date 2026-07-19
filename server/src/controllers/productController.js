@@ -412,6 +412,11 @@ const eliminarCategoria = async (req, res) => {
 const obtenerReceta = async (req, res) => {
   const { id } = req.params;
   try {
+    const producto = await pool.query('SELECT id FROM productos WHERE id = $1', [id]);
+    if (producto.rows.length === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
     const query = `
       SELECT pi.ingrediente_id, i.nombre, i.unidad, pi.cantidad
       FROM producto_ingredientes pi
@@ -428,40 +433,76 @@ const obtenerReceta = async (req, res) => {
 const actualizarReceta = async (req, res) => {
   const { id } = req.params; // producto_id
   const { ingredientes } = req.body; // array de { ingrediente_id, cantidad }
-  
+
   if (!Array.isArray(ingredientes)) {
     return res.status(400).json({ error: 'Formato inválido. "ingredientes" debe ser un arreglo' });
   }
 
-  const client = await pool.connect();
+  const idsVistos = new Set();
+  for (const ing of ingredientes) {
+    if (idsVistos.has(ing.ingrediente_id)) {
+      return res.status(400).json({ error: 'No se permiten ingredientes duplicados.' });
+    }
+    idsVistos.add(ing.ingrediente_id);
+  }
+
+  for (const ing of ingredientes) {
+    const cantidad = Number(ing.cantidad);
+    if (ing.cantidad == null || Number.isNaN(cantidad) || cantidad <= 0) {
+      return res.status(400).json({ error: 'La cantidad debe ser mayor que cero.' });
+    }
+  }
+
   try {
-    await client.query('BEGIN');
-    
-    // Eliminar la receta anterior
-    await client.query('DELETE FROM producto_ingredientes WHERE producto_id = $1', [id]);
-    
-    // Insertar los nuevos ingredientes
+    const producto = await pool.query('SELECT id FROM productos WHERE id = $1', [id]);
+    if (producto.rows.length === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado.' });
+    }
+
     if (ingredientes.length > 0) {
-      const valores = [];
-      const placeholders = ingredientes.map((ing, i) => {
-        valores.push(id, ing.ingrediente_id, ing.cantidad);
-        const idx = i * 3;
-        return `($${idx + 1}, $${idx + 2}, $${idx + 3})`;
-      }).join(', ');
-      
-      await client.query(`
+      const ingredienteIds = ingredientes.map((ing) => ing.ingrediente_id);
+      const existentes = await pool.query(
+        'SELECT id FROM ingredientes WHERE id = ANY($1::int[])',
+        [ingredienteIds]
+      );
+
+      if (existentes.rows.length !== ingredienteIds.length) {
+        return res.status(400).json({ error: 'Ingrediente no encontrado.' });
+      }
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Eliminar la receta anterior
+      await client.query('DELETE FROM producto_ingredientes WHERE producto_id = $1', [id]);
+
+      // Insertar los nuevos ingredientes
+      if (ingredientes.length > 0) {
+        const valores = [];
+        const placeholders = ingredientes.map((ing, i) => {
+          valores.push(id, ing.ingrediente_id, ing.cantidad);
+          const idx = i * 3;
+          return `($${idx + 1}, $${idx + 2}, $${idx + 3})`;
+        }).join(', ');
+
+        await client.query(`
         INSERT INTO producto_ingredientes (producto_id, ingrediente_id, cantidad)
         VALUES ${placeholders}
       `, valores);
+      }
+
+      await client.query('COMMIT');
+      res.status(200).json({ mensaje: 'Receta actualizada exitosamente' });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      return manejarErrorInterno(error, res, 'actualizar receta');
+    } finally {
+      client.release();
     }
-    
-    await client.query('COMMIT');
-    res.status(200).json({ mensaje: 'Receta actualizada exitosamente' });
   } catch (error) {
-    await client.query('ROLLBACK');
     return manejarErrorInterno(error, res, 'actualizar receta');
-  } finally {
-    client.release();
   }
 };
 
