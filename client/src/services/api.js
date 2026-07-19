@@ -88,6 +88,26 @@ export function getCategorias() {
   return apiFetch('/productos/categorias');
 }
 
+export function createCategoria(payload) {
+  return apiFetch('/productos/categorias', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateCategoria(id, payload) {
+  return apiFetch(`/productos/categorias/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteCategoria(id) {
+  return apiFetch(`/productos/categorias/${id}`, {
+    method: 'DELETE',
+  });
+}
+
 export function getReceta(id) {
   return apiFetch(`/productos/${id}/receta`);
 }
