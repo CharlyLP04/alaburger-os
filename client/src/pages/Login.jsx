@@ -20,6 +20,7 @@ const loginSchema = z.object({
 
 export default function Login() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState(''); // Error exclusivo de la respuesta del servidor
   const [loading, setLoading] = useState(false);
 
