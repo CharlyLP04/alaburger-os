@@ -34,7 +34,7 @@ export default function WaiterApp() {
       try {
         const data = await getProductos();
         if (!cancelled) {
-          setProductos(data.productos || []);
+          setProductos(data.data || data.productos || []);
         }
       } catch (err) {
         if (!cancelled) {
