@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
-import { getUsuario } from '../utils/auth';
+import { getUsuario, clearAuth } from '../utils/auth';
 
 const ORDERS = [
   { id: "#4822", table: "MESA 3", time: "3:19", status: "PREPARANDO", items: [
@@ -48,11 +48,18 @@ export default function KDS() {
             </Link>
           )}
         </div>
-        <div className="flex gap-4 text-xs font-bold tracking-wider">
-          <span className="text-muted-foreground">MODIFICACIONES:</span>
-          <span className="text-destructive flex items-center gap-1"><div className="w-2 h-2 border border-destructive"></div> ELIMINAR</span>
-          <span className="text-secondary flex items-center gap-1"><div className="w-2 h-2 border border-secondary"></div> AGREGAR</span>
-          <span className="text-success flex items-center gap-1"><div className="w-2 h-2 border border-success"></div> EXTRA</span>
+        <div className="flex gap-4 text-xs font-bold tracking-wider items-center">
+          <span className="text-muted-foreground hidden md:inline">MODIFICACIONES:</span>
+          <span className="text-destructive items-center gap-1 hidden sm:flex"><div className="w-2 h-2 border border-destructive"></div> ELIMINAR</span>
+          <span className="text-secondary items-center gap-1 hidden sm:flex"><div className="w-2 h-2 border border-secondary"></div> AGREGAR</span>
+          <span className="text-success items-center gap-1 hidden sm:flex"><div className="w-2 h-2 border border-success"></div> EXTRA</span>
+          
+          <button 
+            onClick={() => { clearAuth(); window.location.href = '/login'; }}
+            className="text-xs text-destructive hover:text-white bg-destructive/10 hover:bg-destructive font-bold px-4 py-2 rounded-lg transition-colors cursor-pointer uppercase tracking-wider ml-4"
+          >
+            Salir
+          </button>
         </div>
       </header>
 

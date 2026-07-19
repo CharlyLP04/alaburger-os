@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { getProductos, crearPedido } from '../services/api';
-import { getUsuario } from '../utils/auth';
+import { getUsuario, clearAuth } from '../utils/auth';
 
 const MESA_ID = 5;
 
@@ -125,8 +125,16 @@ export default function WaiterApp() {
                 </Link>
               )}
             </div>
-            <div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-muted-foreground">
-              MESA <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">5</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-muted-foreground">
+                MESA <span className="bg-primary text-white px-2 py-0.5 rounded text-xs">5</span>
+              </div>
+              <button 
+                onClick={() => { clearAuth(); window.location.href = '/login'; }}
+                className="text-xs text-destructive hover:text-white bg-destructive/10 hover:bg-destructive font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer uppercase tracking-wider"
+              >
+                Salir
+              </button>
             </div>
           </div>
           <button
