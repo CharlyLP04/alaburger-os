@@ -290,10 +290,10 @@ END $$;
 -- Roles del sistema
 -- ------------------------------------------------------------
 INSERT INTO roles (nombre, descripcion) VALUES
-    ('administrador', 'Acceso total al sistema: usuarios, reportes, configuración'),
-    ('gerente',       'Gestión de inventario, reportes de ventas y supervisión de turno'),
-    ('cajero',        'Cobro de pedidos, generación de tickets y cierre de caja'),
-    ('mesero',        'Toma y seguimiento de pedidos en sala')
+    ('administrador', 'Acceso total al sistema'),
+    ('cajero',        'Cobro de mesas y gestión de caja'),
+    ('cocina',        'Preparación de pedidos y control del KDS'),
+    ('mesero',        'Toma de pedidos y atención a mesas')
 ON CONFLICT (nombre) DO NOTHING;
 
 -- ------------------------------------------------------------
