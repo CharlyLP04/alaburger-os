@@ -98,7 +98,7 @@ export default function AppLayout() {
   // Define the navigation items
   const navItems = [
     { path: '/', label: 'Dashboard', icon: ICONS.dashboard },
-    { path: '/pedidos', label: 'Pedidos', icon: ICONS.bag, badge: 12 },
+    { path: '/pedidos', label: 'Pedidos', icon: ICONS.bag },
     { path: '/cocina', label: 'Cocina', icon: ICONS.chef },
     { path: '/productos', label: 'Productos', icon: ICONS.box },
     { path: '/inventario', label: 'Inventario', icon: ICONS.box },
