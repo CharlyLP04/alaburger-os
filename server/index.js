@@ -65,7 +65,13 @@ app.use((err, req, res, next) => {
 
 // ─── Iniciar servidor ──────────────────────────────────────────────────────
 
-app.listen(PUERTO, () => {
-  console.log(`🍔 Servidor A La Burger OS corriendo en http://localhost:${PUERTO}`);
-  console.log(`📡 Entorno: ${process.env.NODE_ENV || 'desarrollo'}`);
-});
+// Exportar la aplicación para que Vercel Serverless Functions pueda manejarla
+module.exports = app;
+
+// Iniciar servidor solo si no estamos en el entorno serverless de Vercel
+if (!process.env.VERCEL) {
+  app.listen(PUERTO, () => {
+    console.log(`🍔 Servidor A La Burger OS corriendo en http://localhost:${PUERTO}`);
+    console.log(`📡 Entorno: ${process.env.NODE_ENV || 'desarrollo'}`);
+  });
+}
