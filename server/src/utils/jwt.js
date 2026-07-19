@@ -5,7 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Criterio de Aceptación: exp a 8 horas desde iat
 function generarAccessToken(usuario) {
   return jwt.sign(
-    { sub: usuario.id, rol: usuario.rol_id },
+    { sub: usuario.id, rol: usuario.rol },
     JWT_SECRET,
     { expiresIn: '8h' }
   );
