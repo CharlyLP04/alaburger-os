@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, ICONS } from '../components/ui/Icon';
 import { getProductos, crearPedido } from '../services/api';
@@ -12,6 +12,13 @@ const CATEGORY_EMOJI = {
   Complementos: '🍟',
   Postres: '🍰',
 };
+
+const CATEGORY_ORDER = [
+  'Hamburguesas',
+  'Complementos',
+  'Bebidas',
+  'Postres',
+];
 
 function getEmoji(categoria) {
   return CATEGORY_EMOJI[categoria] || '🍔';
@@ -34,7 +41,7 @@ export default function WaiterApp() {
       try {
         const data = await getProductos();
         if (!cancelled) {
-          setProductos(data.productos || []);
+          setProductos(data.data || []);
         }
       } catch (err) {
         if (!cancelled) {
@@ -61,7 +68,37 @@ export default function WaiterApp() {
     setOrderMessage(null);
   };
 
+  const incrementItem = (productoId) => {
+    setCart((prev) => ({
+      ...prev,
+      [productoId]: (prev[productoId] || 0) + 1,
+    }));
+    setOrderMessage(null);
+  };
+
+  const decrementItem = (productoId) => {
+    setCart((prev) => {
+      const current = prev[productoId] || 0;
+      if (current <= 1) {
+        const next = { ...prev };
+        delete next[productoId];
+        return next;
+      }
+      return {
+        ...prev,
+        [productoId]: current - 1,
+      };
+    });
+    setOrderMessage(null);
+  };
+
   const cartCount = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+
+  useEffect(() => {
+    if (cartCount === 0) {
+      setShowCart(false);
+    }
+  }, [cartCount]);
 
   const cartItems = productos
     .filter((p) => cart[p.id])
@@ -71,6 +108,35 @@ export default function WaiterApp() {
     }));
 
   const cartTotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+
+  const categoriasAgrupadas = useMemo(() => {
+    const mapa = new Map();
+
+    for (const producto of productos) {
+      const nombre = producto.categoria;
+      if (!nombre) continue;
+
+      if (!mapa.has(nombre)) {
+        mapa.set(nombre, []);
+      }
+      mapa.get(nombre).push(producto);
+    }
+
+    return Array.from(mapa.entries())
+      .sort(([a], [b]) => {
+        const indexA = CATEGORY_ORDER.indexOf(a);
+        const indexB = CATEGORY_ORDER.indexOf(b);
+        const orderA = indexA === -1 ? CATEGORY_ORDER.length : indexA;
+        const orderB = indexB === -1 ? CATEGORY_ORDER.length : indexB;
+
+        if (orderA !== orderB) return orderA - orderB;
+        return a.localeCompare(b, 'es');
+      })
+      .map(([nombre, productosCategoria]) => ({
+        nombre,
+        productos: productosCategoria,
+      }));
+  }, [productos]);
 
   const handleSubmitOrder = async () => {
     if (cartItems.length === 0) return;
@@ -165,37 +231,63 @@ export default function WaiterApp() {
             <p className="text-destructive text-sm text-center py-8">{error}</p>
           )}
 
-          {!loading && !error && productos.map((item) => (
-            <div key={item.id} className="bg-card p-4 rounded-xl border border-[#1E1E1E] flex gap-4">
-              <div className="text-4xl pt-1">{getEmoji(item.categoria)}</div>
-              <div className="flex-1">
-                <h3 className="font-bold text-lg tracking-wide uppercase">{item.nombre}</h3>
-                <p className="text-muted-foreground text-sm leading-snug mb-3">
-                  {item.descripcion}
-                </p>
-                <div className="text-primary font-bold text-xl">${item.precio}</div>
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={() => addToCart(item.id)}
-                  className="bg-primary text-white p-2 rounded-full hover:bg-[#c94508] transition-colors"
-                >
-                  <Icon path={ICONS.plus} size={20} />
-                </button>
-              </div>
-            </div>
+          {!loading && !error && categoriasAgrupadas.map((categoria) => (
+            <section key={categoria.nombre} className="space-y-4">
+              <h2 className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
+                {getEmoji(categoria.nombre)} {categoria.nombre.toUpperCase()}
+              </h2>
+              {categoria.productos.map((item) => (
+                <div key={item.id} className="bg-card p-4 rounded-xl border border-[#1E1E1E] flex gap-4">
+                  <div className="text-4xl pt-1">{getEmoji(item.categoria)}</div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg tracking-wide uppercase">{item.nombre}</h3>
+                    <p className="text-muted-foreground text-sm leading-snug mb-3">
+                      {item.descripcion}
+                    </p>
+                    <div className="text-primary font-bold text-xl">${item.precio}</div>
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => addToCart(item.id)}
+                      className="bg-primary text-white p-2 rounded-full hover:bg-[#c94508] transition-colors"
+                    >
+                      <Icon path={ICONS.plus} size={20} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </section>
           ))}
         </div>
 
         {showCart && cartItems.length > 0 && (
           <div className="border-t border-[#1E1E1E] bg-card p-4 space-y-3">
             {cartItems.map((item) => (
-              <div key={item.id} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {item.cantidad}x {item.nombre}
-                </span>
-                <span className="font-bold">${(item.precio * item.cantidad).toFixed(0)}</span>
+              <div key={item.id} className="flex justify-between items-start gap-3 text-sm">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <button
+                      type="button"
+                      onClick={() => decrementItem(item.id)}
+                      className="bg-[#141416] border border-[#1E1E1E] text-white w-8 h-8 rounded-full hover:bg-[#1E1E1E] transition-colors flex items-center justify-center font-bold"
+                      aria-label={`Disminuir ${item.nombre}`}
+                    >
+                      −
+                    </button>
+                    <span className="font-bold w-5 text-center">{item.cantidad}</span>
+                    <button
+                      type="button"
+                      onClick={() => incrementItem(item.id)}
+                      className="bg-primary text-white w-8 h-8 rounded-full hover:bg-[#c94508] transition-colors flex items-center justify-center"
+                      aria-label={`Aumentar ${item.nombre}`}
+                    >
+                      <Icon path={ICONS.plus} size={16} />
+                    </button>
+                  </div>
+                  <span className="text-muted-foreground">{item.nombre}</span>
+                </div>
+                <span className="font-bold shrink-0">${(item.precio * item.cantidad).toFixed(0)}</span>
               </div>
             ))}
             <div className="flex justify-between font-bold text-lg pt-2 border-t border-[#1E1E1E]">
