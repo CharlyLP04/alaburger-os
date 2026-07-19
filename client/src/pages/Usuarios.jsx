@@ -287,7 +287,7 @@ export default function Usuarios() {
                   className="w-full bg-[#141416] border border-[#1F1F23] focus:border-[#E8530A] focus:ring-1 focus:ring-[#E8530A] text-white rounded-xl px-4 py-3 text-sm outline-none transition-all font-bold appearance-none cursor-pointer"
                 >
                   <option value="" disabled>Selecciona un rol...</option>
-                  {roles.map((rol) => (
+                  {roles.filter(r => r.nombre.toLowerCase() !== 'gerente').map((rol) => (
                     <option key={rol.id} value={rol.id}>
                       {rol.nombre.toUpperCase()}
                     </option>

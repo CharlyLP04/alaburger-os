@@ -7,6 +7,7 @@ const DEFAULT_ROUTES_BY_ROLE = {
   cocina: '/cocina',
   mesero: '/mesero',
   cajero: '/caja',
+  gerente: '/', // Fallback para cuentas antiguas antes de borrar el rol
 };
 
 export function getToken() {

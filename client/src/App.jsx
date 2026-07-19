@@ -55,7 +55,7 @@ export default function App() {
         {/* 🔴 RUTAS ADMINISTRATIVAS ENVUELTAS EN EL LAYOUT GLOBAL */}
         <Route
           element={
-            <ProtectedRoute allowedRoles={['administrador']}>
+            <ProtectedRoute allowedRoles={['administrador', 'gerente']}>
               <AppLayout />
             </ProtectedRoute>
           }
