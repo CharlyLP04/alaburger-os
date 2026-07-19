@@ -1,6 +1,6 @@
 import { getToken, handleSessionExpired } from '../utils/auth';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:3000/api';
 
 function isTokenAuthError(status, data, hadToken) {
   if (!hadToken) return false;
@@ -49,10 +49,10 @@ async function apiFetch(path, options = {}) {
   return data;
 }
 
-export function login(email, password) {
+export function login(username, password) {
   return apiFetch('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ username, password }),
   });
 }
 

@@ -5,7 +5,7 @@ const { manejarErrorInterno } = require('../utils/errorHandler');
 const getUsers = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT u.id, u.nombre, u.apellido, u.email, u.activo, u.created_at, r.nombre AS rol, r.id AS rol_id
+      `SELECT u.id, u.nombre, u.apellido, u.username, u.activo, u.created_at, r.nombre AS rol, r.id AS rol_id
        FROM usuarios u
        INNER JOIN roles r ON r.id = u.rol_id
        ORDER BY u.created_at DESC`
@@ -27,9 +27,9 @@ const getRoles = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { nombre, apellido, email, password, rol_id } = req.body;
+    const { nombre, apellido, username, password, rol_id } = req.body;
 
-    if (!nombre || !apellido || !email || !password || !rol_id) {
+    if (!nombre || !apellido || !username || !password || !rol_id) {
       return res.status(400).json({ error: 'Faltan datos requeridos.' });
     }
 
@@ -38,10 +38,10 @@ const createUser = async (req, res) => {
     const password_hash = await bcrypt.hash(password, salt);
 
     const result = await pool.query(
-      `INSERT INTO usuarios (nombre, apellido, email, password_hash, rol_id, activo)
+      `INSERT INTO usuarios (nombre, apellido, username, password_hash, rol_id, activo)
        VALUES ($1, $2, $3, $4, $5, true)
-       RETURNING id, nombre, apellido, email, activo`,
-      [nombre, apellido, email.toLowerCase().trim(), password_hash, rol_id]
+       RETURNING id, nombre, apellido, username, activo`,
+      [nombre, apellido, username.toLowerCase().trim(), password_hash, rol_id]
     );
 
     res.status(201).json({
@@ -59,9 +59,9 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, apellido, email, rol_id, password } = req.body;
+    const { nombre, apellido, username, rol_id, password } = req.body;
 
-    if (!nombre || !apellido || !email || !rol_id) {
+    if (!nombre || !apellido || !username || !rol_id) {
       return res.status(400).json({ error: 'Faltan datos requeridos.' });
     }
 
@@ -75,16 +75,16 @@ const updateUser = async (req, res) => {
       const password_hash = await bcrypt.hash(password, salt);
       result = await pool.query(
         `UPDATE usuarios 
-         SET nombre = $1, apellido = $2, email = $3, rol_id = $4, password_hash = $5, updated_at = NOW()
-         WHERE id = $6 RETURNING id`,
-        [nombre, apellido, email.toLowerCase().trim(), rol_id, password_hash, id]
+         SET nombre = $1, apellido = $2, username = $3, rol_id = $4, password_hash = $5, updated_at = NOW()
+         WHERE id = $6 RETURNING *`,
+        [nombre, apellido, username.toLowerCase().trim(), rol_id, password_hash, id]
       );
     } else {
       result = await pool.query(
         `UPDATE usuarios 
-         SET nombre = $1, apellido = $2, email = $3, rol_id = $4, updated_at = NOW()
-         WHERE id = $5 RETURNING id`,
-        [nombre, apellido, email.toLowerCase().trim(), rol_id, id]
+         SET nombre = $1, apellido = $2, username = $3, rol_id = $4, updated_at = NOW()
+         WHERE id = $5 RETURNING *`,
+        [nombre, apellido, username.toLowerCase().trim(), rol_id, id]
       );
     }
 

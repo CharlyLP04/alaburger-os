@@ -10,10 +10,9 @@ import { consumeAuthMessage, getDefaultRouteForRole, setAuth } from '../utils/au
 // ESQUEMA DE VALIDACIÓN (Zod) - Satisface las Reglas del Negocio
 // ─────────────────────────────────────────────────────────────
 const loginSchema = z.object({
-  email: z
+  username: z
     .string()
-    .min(1, { message: "El correo es obligatorio." }) // Criterio 1
-    .email({ message: "Por favor, ingresa un correo con formato válido (ej. usuario@dominio.com)." }), // Criterio 2
+    .min(1, { message: "El usuario es obligatorio." }),
   password: z
     .string()
     .min(8, { message: "La contraseña debe tener al menos 8 caracteres." }), // Criterio 3
@@ -21,7 +20,6 @@ const loginSchema = z.object({
 
 export default function Login() {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState(''); // Error exclusivo de la respuesta del servidor
   const [loading, setLoading] = useState(false);
 
@@ -48,8 +46,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // El data.email ya viene limpio por validación
-      const responseData = await loginApi(data.email.trim(), data.password);
+      // El data.username ya viene limpio por validación
+      const responseData = await loginApi(data.username.trim(), data.password);
       setAuth(responseData.token, responseData.usuario);
       navigate(getDefaultRouteForRole(responseData.usuario?.rol), { replace: true });
     } catch (err) {
@@ -104,22 +102,22 @@ export default function Login() {
                 </p>
               )}
 
-              {/* Input Usuario (Email) */}
+              {/* Input Usuario (Username) */}
               <div className="space-y-2">
                 <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">
-                  Usuario / Correo
+                  Usuario
                 </label>
                 <input 
-                  type="email" 
-                  {...register('email')}
-                  placeholder="ej. admin@alaburger.com"
+                  type="text" 
+                  {...register('username')}
+                  placeholder="ej. admin"
                   className={`w-full bg-[#141416] border text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold ${
-                    errors.email ? 'border-destructive focus:ring-1 focus:ring-destructive' : 'border-[#1F1F23] focus:border-primary focus:ring-1 focus:ring-primary'
+                    errors.username ? 'border-destructive focus:ring-1 focus:ring-destructive' : 'border-[#1F1F23] focus:border-primary focus:ring-1 focus:ring-primary'
                   }`}
                 />
                 {/* Error Inline - Criterio 1 y 2 */}
-                {errors.email && (
-                  <p className="text-xs text-destructive pl-1 font-semibold">{errors.email.message}</p>
+                {errors.username && (
+                  <p className="text-xs text-destructive pl-1 font-semibold">{errors.username.message}</p>
                 )}
               </div>
 

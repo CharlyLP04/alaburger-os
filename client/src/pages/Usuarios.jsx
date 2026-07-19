@@ -15,7 +15,7 @@ export default function Usuarios() {
   // Form state
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rolId, setRolId] = useState('');
   
@@ -50,7 +50,7 @@ export default function Usuarios() {
     setEditingUser(null);
     setNombre('');
     setApellido('');
-    setEmail('');
+    setUsername('');
     setPassword('');
     setRolId('');
     setIsModalOpen(true);
@@ -60,7 +60,7 @@ export default function Usuarios() {
     setEditingUser(user);
     setNombre(user.nombre);
     setApellido(user.apellido);
-    setEmail(user.email);
+    setUsername(user.username);
     setPassword(''); // Leave blank unless they want to change it
     setRolId(user.rol_id);
     setIsModalOpen(true);
@@ -85,7 +85,7 @@ export default function Usuarios() {
         await updateUsuario(editingUser.id, {
           nombre,
           apellido,
-          email,
+          username,
           rol_id: parseInt(rolId, 10),
           password: password || undefined
         });
@@ -94,7 +94,7 @@ export default function Usuarios() {
         await createUsuario({
           nombre,
           apellido,
-          email,
+          username,
           rol_id: parseInt(rolId, 10),
           password
         });
@@ -166,7 +166,7 @@ export default function Usuarios() {
                             </div>
                             <div>
                               <p className="text-neutral-200">{user.nombre} {user.apellido}</p>
-                              <p className="text-xs text-neutral-500">@{user.email}</p>
+                              <p className="text-xs text-neutral-500">@{user.username}</p>
                             </div>
                           </div>
                         </td>
@@ -257,8 +257,8 @@ export default function Usuarios() {
                 <input
                   type="text"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-[#141416] border border-[#1F1F23] focus:border-[#E8530A] focus:ring-1 focus:ring-[#E8530A] text-white rounded-xl px-4 py-3 text-sm outline-none transition-all placeholder:text-neutral-600 font-bold"
                   placeholder="Ej. juanperez"
                 />
