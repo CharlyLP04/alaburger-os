@@ -344,7 +344,7 @@ const registrarEntrada = async (req, res) => {
         cantidadNum,
         proveedor ? proveedor.trim() : null,
         costo_unitario !== undefined && costo_unitario !== null ? Number(costo_unitario) : null,
-        req.usuario.id,
+        req.usuario.sub,
         fecha || null
       ]
     );
@@ -597,7 +597,7 @@ const registrarMerma = async (req, res) => {
         currentInv.ingrediente_id,
         cantidadNum,
         motivo.trim(),
-        req.usuario.id
+        req.usuario.sub
       ]
     );
 

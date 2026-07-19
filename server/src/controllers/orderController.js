@@ -142,7 +142,7 @@ const crearPedido = async (req, res) => {
             rec.ingrediente_id,
             cantidadADescontar,
             `pedido #${pedido.id}`,
-            req.usuario?.id || null
+            req.usuario?.sub || null
           ]
         );
       }
